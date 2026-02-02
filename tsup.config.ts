@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
-  entry: ['src/server.ts'],   // Arquivo principal da sua aplicação
+  entry: ['src/infra/http/server.ts'],   // Arquivo principal da sua aplicação
   outDir: 'dist',          // build/main.cjs
 
   format: ['esm'],

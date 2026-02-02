@@ -1,14 +1,9 @@
-// import fastify from 'fastify'
-// import { Database } from '../../database/database.ts'
-// import { accountRoutes } from './routes/accountRoutes.ts'
-// import { userRoutes } from './routes/userRoutes.ts'
+import fastify from 'fastify'
 
-// export const database = new Database()
+const app = fastify()
 
-// const app = fastify()
+app.get('/', () => {
+  return { success: true }
+})
 
-// // Registrando as rotas da aplicação
-// app.register(userRoutes)
-// app.register(accountRoutes)
-
-// export default app
+export default app
