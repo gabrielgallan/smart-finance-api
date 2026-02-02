@@ -1,0 +1,67 @@
+import { Member } from '../../enterprise/entites/member.ts'
+import { IMembersRepository } from '../repositories/members-repository.ts'
+import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository.ts'
+import { AuthenticateMemberUseCase } from './authenticate-member.ts'
+import { Hash } from '@/domain/enterprise/entites/value-objects/hash.ts'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
+import { ResourceNotFoundError } from './errors/resource-not-found-error.ts'
+import { InvalidCredentialsError } from './errors/invalid-credentials-error.ts'
+import { makeMember } from 'tests/factories/make-member.ts'
+
+let membersRepository: IMembersRepository
+let sut: AuthenticateMemberUseCase
+
+describe('Authenticate member use case', () => {
+  beforeEach(() => {
+    membersRepository = new InMemoryMembersRepository()
+    sut = new AuthenticateMemberUseCase(membersRepository)
+  })
+
+  it('should be able to authenticate a member', async () => {
+    const member = await makeMember({
+      email: 'johndoe@email.com',
+      password: await Hash.crate('johnDoe123')
+    })
+
+    await membersRepository.create(member)
+
+    const result = await sut.execute({
+      email: 'johndoe@email.com',
+      password: 'johnDoe123',
+    })
+
+    expect(result.isRight()).toBe(true)
+
+    if (result.isRight()) {
+      expect(result.value.memberId).toBeInstanceOf(UniqueEntityID)
+      expect(result.value.memberId.toString()).toBe(member.id.toString())
+    }
+  })
+
+  it('should not be able to authenticate a member that does not exist', async () => {
+    const result = await sut.execute({
+      email: 'johndoe@email.com',
+      password: 'johnDoe123',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
+
+  it('should not be able to authenticate a member with incorrect credentials', async () => {
+    const member = await makeMember({
+      email: 'johndoe@email.com',
+      password: await Hash.crate('johnDoe123')
+    })
+    
+    await membersRepository.create(member)
+
+    const result = await sut.execute({
+      email: 'johndoe@email.com',
+      password: 'incorrectPassword',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(InvalidCredentialsError)
+  })
+})

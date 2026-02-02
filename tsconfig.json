@@ -4,7 +4,6 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["./src/*"],
-      "root/*": ["./"]
     },
 
     "module": "ESNext",            // <- Usa import/export moderno
@@ -19,8 +18,14 @@
     "skipLibCheck": true,
 
     "noEmit": true,                 // <- tsup fará o build, TS não deve gerar nada
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+
+    "types": [
+      "node", "vitest/globals"
+    ]
   },
-  "include": ["src", "tests/repositories/in-memory-members-repository.ts"],
+  "include": [
+    "./"
+  ],
   "exclude": ["dist", "node_modules"]
 }

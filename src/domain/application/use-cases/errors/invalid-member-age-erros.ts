@@ -1,5 +1,7 @@
-export class InvalidMemberAgeError extends Error {
-    constructor() {
-        super('Member must be over 14 years old to register')
-    }
+import { UseCaseError } from '@/core/errors/use-case-error'
+
+export class InvalidMemberAgeError extends Error implements UseCaseError {
+  constructor() {
+    super('Member must be over 14 years old to register')
+  }
 }
