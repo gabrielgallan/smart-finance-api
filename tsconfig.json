@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    // "rootDir": "./src",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./src/*"],
+      "root/*": ["./"]
+    },
+
+    "module": "ESNext",            // <- Usa import/export moderno
+    "target": "ES2020",            // OK para Node moderno
+    "moduleResolution": "Node",
+
+    "strict": true,
+
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+
+    "skipLibCheck": true,
+
+    "noEmit": true,                 // <- tsup fará o build, TS não deve gerar nada
+    "allowImportingTsExtensions": true
+  },
+  "include": ["src", "tests/repositories/in-memory-members-repository.ts"],
+  "exclude": ["dist", "node_modules"]
+}
