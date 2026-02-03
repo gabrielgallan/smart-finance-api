@@ -35,6 +35,10 @@ export class Account extends Entity<AccountProps> {
     return this.props.holderId
   }
 
+  get updatedAt() {
+    return this.props.updatedAt
+  }
+
   // => Setters
 
   // => Methods
