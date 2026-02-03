@@ -2,13 +2,14 @@ import { IMembersRepository } from '../repositories/members-repository'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { Either, left, right } from '@/core/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
+import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
 
 interface FetchAccountSummaryUseCaseRequest {
   memberId: string
 }
 
 type FetchAccountSummaryUseCaseResponse = Either<
-  ResourceNotFoundError,
+  ResourceNotFoundError | MemberAccountNotFoundError,
   {
     balance: number,
     lastUpdate: Date | null
@@ -33,7 +34,7 @@ export class FetchAccountSummaryUseCase {
     const account = await this.accountsRepository.findByHolderId(memberId)
 
     if (!account) {
-      return left(new ResourceNotFoundError())
+      return left(new MemberAccountNotFoundError())
     }
 
     return right({

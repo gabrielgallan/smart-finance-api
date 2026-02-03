@@ -1,0 +1,69 @@
+import { IMembersRepository } from '../repositories/members-repository'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { Either, left, right } from '@/core/either'
+import { IAccountsRepository } from '../repositories/accounts-repository'
+import { ICategoriesRepository } from '../repositories/categories-repository'
+import { Category } from '@/domain/enterprise/entites/category'
+import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
+import { Slug } from '@/domain/enterprise/entites/value-objects/slug'
+import { CategoryAlreadyExistsError } from './errors/category-already-exists-error'
+
+interface CreateAccountCategoryUseCaseRequest {
+  memberId: string
+  categoryName: string
+}
+
+type CreateAccountCategoryUseCaseResponse = Either<
+  ResourceNotFoundError | MemberAccountNotFoundError | CategoryAlreadyExistsError,
+  {
+    category: Category
+  }
+>
+
+export class CreateAccountCategoryUseCase {
+  constructor(
+    private membersRepository: IMembersRepository,
+    private accountsRepository: IAccountsRepository,
+    private categoriesRepository: ICategoriesRepository
+  ) {}
+
+  async execute({
+    memberId,
+    categoryName
+  }: CreateAccountCategoryUseCaseRequest): Promise<CreateAccountCategoryUseCaseResponse> {
+    const member = await this.membersRepository.findById(memberId)
+
+    if (!member) {
+      return left(new ResourceNotFoundError())
+    }
+
+    const account = await this.accountsRepository.findByHolderId(memberId)
+
+    if (!account) {
+      return left(new MemberAccountNotFoundError())
+    }
+
+    const categorySlug = Slug.createFromText(categoryName)
+
+    const accountCategoryWithSameSlug = await this.categoriesRepository.findByAccountIdAndSlug(
+      account.id.toString(),
+      categorySlug.value
+    )
+
+    if (accountCategoryWithSameSlug) {
+      return left(new CategoryAlreadyExistsError())
+    }
+
+    const category = Category.create({
+        accountId: account.id,
+        name: categoryName,
+        slug: categorySlug
+    })
+
+    await this.categoriesRepository.create(category)
+
+    return right({
+        category
+    })
+  }
+}

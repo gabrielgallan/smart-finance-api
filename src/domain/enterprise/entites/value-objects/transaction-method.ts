@@ -1,10 +1,21 @@
-enum Method {
+export enum Method {
     DEBIT_CARD = "DEBIT_CARD",
     CREDIT_CARD = "CREDIT_CARD",
     PIX = "PIX",
     UNKNOWN = "UNKNOWN"
 }
 
+/**
+ * Manage property method from entity {Transaction}
+ * 
+ * Receive a input string and it returns a Method of payment
+ * 
+ * @example
+ * 
+ * method: TransactionMethod.debit() => Method.DEBIT_CARD
+ *  or
+ * method: TransactionMethod.from('CREDIT_CARD') => Method.CREDIT_CARD
+ */
 export class TransactionMethod {
   private constructor(
     public readonly value: Method

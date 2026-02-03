@@ -1,7 +1,7 @@
-import { Entity } from '@/core/entities/entity'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
-import { TransactionMethod } from './value-objects/transaction-methods'
+import { TransactionMethod } from './value-objects/transaction-method'
+import { AggregateRoot } from '@/core/entities/aggregate-root'
 
 export enum TransactionOperation {
   INCOME = 'INCOME',
@@ -10,6 +10,7 @@ export enum TransactionOperation {
 
 interface TransactionProps {
   accountId: UniqueEntityID
+  categoryId?: UniqueEntityID
   title: string
   amount: number
   description?: string
@@ -19,7 +20,7 @@ interface TransactionProps {
   updatedAt?: Date
 }
 
-export class Transaction extends Entity<TransactionProps> {
+export class Transaction extends AggregateRoot<TransactionProps> {
   static create(
     props: Optional<TransactionProps, 'createdAt'>,
     id?: UniqueEntityID
@@ -40,6 +41,10 @@ export class Transaction extends Entity<TransactionProps> {
 
   get method() {
     return this.props.method
+  }
+
+  get categoryId() {
+    return this.props.categoryId
   }
 
   // => Setters

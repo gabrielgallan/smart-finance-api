@@ -4,14 +4,16 @@ import { ITransactionsRepository } from '../repositories/transactions-repository
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { Either, left, right } from '@/core/either'
 import { Transaction, TransactionOperation } from '@/domain/enterprise/entites/transaction'
-import { MemberNotAllowedError } from './errors/member-not-allowed-error'
+import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InvalidTransactionOperationError } from './errors/invalid-transaction-operation-error'
-import { TransactionMethod } from '@/domain/enterprise/entites/value-objects/transaction-methods'
+import { TransactionMethod } from '@/domain/enterprise/entites/value-objects/transaction-method'
+import { ICategoriesRepository } from '../repositories/categories-repository'
+import { InvalidCategoryAccountRelationError } from './errors/invalid-category-account-relation-error'
 
 interface CreateTransactionUseCaseRequest {
     memberId: string
-    accountId: string
+    categoryId?: string
     title: string
     description?: string
     amount: number
@@ -20,7 +22,7 @@ interface CreateTransactionUseCaseRequest {
 }
 
 type CreateTransactionUseCaseResponse = Either<
-    ResourceNotFoundError | MemberNotAllowedError,
+    ResourceNotFoundError | MemberAccountNotFoundError | InvalidCategoryAccountRelationError | InvalidTransactionOperationError,
     { transaction: Transaction }
 >
 
@@ -29,11 +31,12 @@ export class CreateTransactionUseCase {
         private membersRepository: IMembersRepository,
         private accountsRepository: IAccountsRepository,
         private transactionsRepository: ITransactionsRepository,
+        private categoriesRepository: ICategoriesRepository,
     ) { }
 
     async execute({
         memberId,
-        accountId,
+        categoryId,
         title,
         description,
         amount,
@@ -46,14 +49,22 @@ export class CreateTransactionUseCase {
             return left(new ResourceNotFoundError())
         }
 
-        const account = await this.accountsRepository.findById(accountId)
+        const account = await this.accountsRepository.findByHolderId(memberId)
 
         if (!account) {
-            return left(new ResourceNotFoundError())
+            return left(new MemberAccountNotFoundError())
         }
 
-        if (account.holderId.toString() !== member.id.toString()) {
-            return left(new MemberNotAllowedError())
+        if (categoryId) {
+            const category = await this.categoriesRepository.findById(categoryId)
+
+            if (!category) {
+                return left(new ResourceNotFoundError())
+            }
+
+            if (category.accountId.toString() !== account.id.toString()) {
+                return left(new InvalidCategoryAccountRelationError())
+            }
         }
 
         let transactionOperation: TransactionOperation
@@ -78,7 +89,8 @@ export class CreateTransactionUseCase {
         await this.accountsRepository.save(account)
 
         const transaction = Transaction.create({
-            accountId: new UniqueEntityID(accountId),
+            accountId: account.id,
+            categoryId: categoryId ? new UniqueEntityID(categoryId) : undefined,
             title,
             description,
             amount,

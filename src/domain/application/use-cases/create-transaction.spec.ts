@@ -1,11 +1,6 @@
-import { Member } from '../../enterprise/entites/member.ts'
 import { IMembersRepository } from '../repositories/members-repository.ts'
 import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository.ts'
-import { AuthenticateMemberUseCase } from './authenticate-member.ts'
-import { Hash } from '@/domain/enterprise/entites/value-objects/hash.ts'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 import { ResourceNotFoundError } from './errors/resource-not-found-error.ts'
-import { InvalidCredentialsError } from './errors/invalid-credentials-error.ts'
 import { makeMember } from 'tests/factories/make-member.ts'
 import { IAccountsRepository } from '../repositories/accounts-repository.ts'
 import { ITransactionsRepository } from '../repositories/transactions-repository.ts'
@@ -14,11 +9,16 @@ import { InMemoryAccountsRepository } from 'tests/repositories/in-memory-account
 import { InMemoryTransactionsRepository } from 'tests/repositories/in-memory-transactions-repository.ts'
 import { makeAccount } from 'tests/factories/make-account.ts'
 import { Transaction } from '@/domain/enterprise/entites/transaction.ts'
-import { MemberNotAllowedError } from './errors/member-not-allowed-error.ts'
+import { InMemoryCategoriesRepository } from 'tests/repositories/in-memory-category-repository.ts'
+import { ICategoriesRepository } from '../repositories/categories-repository.ts'
+import { MemberAccountNotFoundError } from './errors/member-account-not-found-error.ts'
+import { makeCategory } from 'tests/factories/make-category.ts'
+import { InvalidCategoryAccountRelationError } from './errors/invalid-category-account-relation-error.ts'
 
 let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
 let transactionsRepository: ITransactionsRepository
+let categoriesRepository: ICategoriesRepository
 
 let sut: CreateTransactionUseCase
 
@@ -27,11 +27,13 @@ describe('Create transaction use case', () => {
     membersRepository = new InMemoryMembersRepository()
     accountsRepository = new InMemoryAccountsRepository()
     transactionsRepository = new InMemoryTransactionsRepository()
+    categoriesRepository = new InMemoryCategoriesRepository()
 
     sut = new CreateTransactionUseCase(
         membersRepository,
         accountsRepository,
-        transactionsRepository
+        transactionsRepository,
+        categoriesRepository
     )
   })
 
@@ -47,7 +49,6 @@ describe('Create transaction use case', () => {
 
     const result = await sut.execute({
         memberId: member.id.toString(),
-        accountId: account.id.toString(),
         title: 'Month Salary',
         description: 'month salary of January',
         amount: 2000,
@@ -78,7 +79,6 @@ describe('Create transaction use case', () => {
 
     const result = await sut.execute({
         memberId: member.id.toString(),
-        accountId: account.id.toString(),
         title: 'Pay debt',
         amount: 400,
         operation: 'EXPENSE',
@@ -108,7 +108,6 @@ describe('Create transaction use case', () => {
 
     const incomeResult = await sut.execute({
         memberId: member.id.toString(),
-        accountId: account.id.toString(),
         title: 'Month Salary',
         amount: 2000,
         operation: 'INCOME',
@@ -119,7 +118,6 @@ describe('Create transaction use case', () => {
 
     const expenseResult = await sut.execute({
         memberId: member.id.toString(),
-        accountId: account.id.toString(),
         title: 'Pay Account Debt',
         amount: 450.55,
         operation: 'EXPENSE',
@@ -145,7 +143,6 @@ describe('Create transaction use case', () => {
   it('should not be able to create transactions from a member does not exists', async () => {
     const result = await sut.execute({
         memberId: 'non-existing-member',
-        accountId: 'non-existing-account',
         title: 'Pay Account Debt',
         amount: 450.55,
         operation: 'EXPENSE',
@@ -155,40 +152,76 @@ describe('Create transaction use case', () => {
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
-  it('should not be able to create transactions from a account does not exists', async () => {
+  it('should not be able to create transactions from a member does not have account', async () => {
     const member = await makeMember()
     await membersRepository.create(member)
 
     const result = await sut.execute({
         memberId: member.id.toString(),
-        accountId: 'non-existing-account',
         title: 'Pay Account Debt',
         amount: 450.55,
         operation: 'EXPENSE'
     })
 
     expect(result.isLeft()).toBe(true)
-    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+    expect(result.value).toBeInstanceOf(MemberAccountNotFoundError)
   })
 
-  it('should not be able to create transactions from a different member to the account informed', async () => {
+  it('should be able to create transactions from a category', async () => {
     const member = await makeMember()
     await membersRepository.create(member)
 
-    const account = await makeAccount({
-        holderId: new UniqueEntityID('other-member'),
+    const account = await makeAccount({ 
+      holderId: member.id,
+      balance: 100
     })
     await accountsRepository.create(account)
 
+    const category = await makeCategory({
+      accountId: account.id,
+      name: 'Transport'
+    })
+    await categoriesRepository.create(category)
+
     const result = await sut.execute({
         memberId: member.id.toString(),
-        accountId: account.id.toString(),
-        title: 'Pay Account Debt',
-        amount: 450.55,
+        categoryId: category.id.toString(),
+        title: 'Uber',
+        amount: 25.90,
+        operation: 'EXPENSE'
+    })
+
+    expect(result.isRight()).toBe(true)
+
+    if (result.isRight()) {
+      expect(result.value.transaction.isExpense()).toBe(true)
+      expect(result.value.transaction.amount).toBe(25.90)
+      expect(account.balance).toBe(74.1)
+      expect(result.value.transaction.categoryId).toStrictEqual(category.id)
+    }
+  })
+
+  it('should not be able to create transactions from a category of another account', async () => {
+    const member = await makeMember()
+    await membersRepository.create(member)
+
+    const account = await makeAccount({ 
+      holderId: member.id,
+    })
+    await accountsRepository.create(account)
+
+    const category = await makeCategory()
+    await categoriesRepository.create(category)
+
+    const result = await sut.execute({
+        memberId: member.id.toString(),
+        categoryId: category.id.toString(),
+        title: 'Uber',
+        amount: 25.90,
         operation: 'EXPENSE'
     })
 
     expect(result.isLeft()).toBe(true)
-    expect(result.value).toBeInstanceOf(MemberNotAllowedError)
+    expect(result.value).toBeInstanceOf(InvalidCategoryAccountRelationError)
   })
 })
