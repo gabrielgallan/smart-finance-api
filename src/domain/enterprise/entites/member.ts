@@ -44,10 +44,10 @@ export class Member extends Entity<MemberProps> {
 
   // => SETTERS
   set email(email: string) {
-    this.email = email
+    this.props.email = email
   }
 
   set password(passwordHash: Hash) {
-    this.password = passwordHash
+    this.props.password = passwordHash
   }
 }

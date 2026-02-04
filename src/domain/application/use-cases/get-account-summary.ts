@@ -3,30 +3,28 @@ import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { Either, left, right } from '@/core/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
-import { Transaction } from '@/domain/enterprise/entites/transaction'
-import { ITransactionsRepository } from '../repositories/transactions-repository'
 
-interface GetAccountTransactionsUseCaseRequest {
+interface GetAccountSummaryUseCaseRequest {
   memberId: string
 }
 
-type GetAccountTransactionsUseCaseResponse = Either<
+type GetAccountSummaryUseCaseResponse = Either<
   ResourceNotFoundError | MemberAccountNotFoundError,
   {
-    transactions: Transaction[]
+    balance: number
+    lastUpdate: Date
   }
 >
 
-export class GetAccountTransactionsUseCase {
+export class GetAccountSummaryUseCase {
   constructor(
     private membersRepository: IMembersRepository,
     private accountsRepository: IAccountsRepository,
-    private transactionsRepository: ITransactionsRepository,
   ) {}
 
   async execute({
     memberId,
-  }: GetAccountTransactionsUseCaseRequest): Promise<GetAccountTransactionsUseCaseResponse> {
+  }: GetAccountSummaryUseCaseRequest): Promise<GetAccountSummaryUseCaseResponse> {
     const member = await this.membersRepository.findById(memberId)
 
     if (!member) {
@@ -39,12 +37,9 @@ export class GetAccountTransactionsUseCase {
       return left(new MemberAccountNotFoundError())
     }
 
-    const transactions = await this.transactionsRepository.findManyByAccountId(
-      account.id.toString(),
-    )
-
     return right({
-      transactions,
+      balance: account.balance,
+      lastUpdate: account.updatedAt,
     })
   }
 }

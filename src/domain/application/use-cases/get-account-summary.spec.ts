@@ -2,24 +2,24 @@ import { IMembersRepository } from '../repositories/members-repository.ts'
 import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository.ts'
 import { makeMember } from 'tests/factories/make-member.ts'
 import { IAccountsRepository } from '../repositories/accounts-repository.ts'
-import { FetchAccountSummaryUseCase } from './fetch-account-summary.ts'
+import { GetAccountSummaryUseCase } from './get-account-summary.ts'
 import { InMemoryAccountsRepository } from 'tests/repositories/in-memory-accounts-repository.ts'
 import { makeAccount } from 'tests/factories/make-account.ts'
 
 let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
 
-let sut: FetchAccountSummaryUseCase
+let sut: GetAccountSummaryUseCase
 
 describe('Fetch account summary use case', () => {
   beforeEach(() => {
     membersRepository = new InMemoryMembersRepository()
     accountsRepository = new InMemoryAccountsRepository()
 
-    sut = new FetchAccountSummaryUseCase(membersRepository, accountsRepository)
+    sut = new GetAccountSummaryUseCase(membersRepository, accountsRepository)
   })
 
-  it('should be able to fetch account summary', async () => {
+  it('should be able to get account summary', async () => {
     const member = await makeMember()
     await membersRepository.create(member)
 

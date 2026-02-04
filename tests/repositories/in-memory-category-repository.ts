@@ -22,4 +22,20 @@ export class InMemoryCategoriesRepository implements ICategoriesRepository {
 
         return category ?? null
     }
+
+    async findManyByAccountId(accountId: string) {
+        const categories = this.items.filter(c => c.accountId.toString() === accountId)
+
+        return categories
+    }
+
+    async save(category: Category) {
+        const categoryIndex = this.items.findIndex(c => c.id.toString() === category.id.toString())
+
+        if (categoryIndex >= 0) {
+            this.items[categoryIndex] = category
+        }
+
+        return category
+    }
 }

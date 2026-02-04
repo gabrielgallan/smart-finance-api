@@ -1,3 +1,4 @@
+import { Pagination } from "@/core/repositories/pagination";
 import { ITransactionsRepository } from "@/domain/application/repositories/transactions-repository";
 import { Transaction } from "@/domain/enterprise/entites/transaction";
 
@@ -16,9 +17,22 @@ export class InMemoryTransactionsRepository implements ITransactionsRepository {
         return transaction ?? null
     }
 
-    async findManyByAccountId(accountId: string) {
-        const transactions = this.items.filter(t => t.accountId.toString() === accountId)
+    async findManyRecentByAccountId({ page }: Pagination, accountId: string) {
+        const transactions = this.items
+            .filter(t => t.accountId.toString() === accountId)
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+            .slice((page - 1) * 10, page * 10)
 
         return transactions
+    }
+
+    async save(transaction: Transaction) {
+        const transactionIndex = this.items.findIndex(t => t.id.toString() === transaction.id.toString())
+
+        if (transactionIndex >= 0) {
+            this.items[transactionIndex] = transaction
+        }
+
+        return transaction
     }
 }

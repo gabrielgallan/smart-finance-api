@@ -12,7 +12,7 @@ export async function makeMember(
       age: faker.number.int({ min: 14, max: 90 }),
       document: faker.string.numeric(11),
       email: faker.internet.email(),
-      password: await Hash.crate(faker.string.hexadecimal({
+      password: await Hash.create(faker.string.hexadecimal({
         length: 10
       })),
       ...override
