@@ -10,7 +10,15 @@ export class InMemoryTransactionsRepository implements ITransactionsRepository {
         return
     }
 
-    // findById(id: string): Promise<Transaction | null> {
-    //     throw new Error("Method not implemented.");
-    // }
+    async findById(id: string): Promise<Transaction | null> {
+        const transaction = this.items.find(t => t.id.toString() === id)
+
+        return transaction ?? null
+    }
+
+    async findManyByAccountId(accountId: string) {
+        const transactions = this.items.filter(t => t.accountId.toString() === accountId)
+
+        return transactions
+    }
 }

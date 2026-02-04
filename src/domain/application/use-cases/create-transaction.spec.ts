@@ -14,6 +14,7 @@ import { ICategoriesRepository } from '../repositories/categories-repository.ts'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error.ts'
 import { makeCategory } from 'tests/factories/make-category.ts'
 import { InvalidCategoryAccountRelationError } from './errors/invalid-category-account-relation-error.ts'
+import { Method } from '@/domain/enterprise/entites/value-objects/transaction-method.ts'
 
 let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
@@ -52,8 +53,8 @@ describe('Create transaction use case', () => {
         title: 'Month Salary',
         description: 'month salary of January',
         amount: 2000,
-        operation: 'INCOME',
-        method: 'CREDIT_CARD'
+        operation: 'income',
+        method: 'credit'
     })
 
     expect(result.isRight()).toBe(true)
@@ -62,7 +63,7 @@ describe('Create transaction use case', () => {
       expect(result.value.transaction).toBeInstanceOf(Transaction)
       expect(result.value.transaction.isIncome()).toBe(true)
       expect(result.value.transaction.amount).toBe(2000)
-      expect(result.value.transaction.method.value).toBe('CREDIT_CARD')
+      expect(result.value.transaction.method.value).toBe(Method.CREDIT)
       expect(account.balance).toBe(2000)
     }
   })
@@ -81,8 +82,8 @@ describe('Create transaction use case', () => {
         memberId: member.id.toString(),
         title: 'Pay debt',
         amount: 400,
-        operation: 'EXPENSE',
-        method: 'DEBIT_CARD'
+        operation: 'expense',
+        method: 'debit'
     })
 
     expect(result.isRight()).toBe(true)
@@ -91,7 +92,7 @@ describe('Create transaction use case', () => {
       expect(result.value.transaction).toBeInstanceOf(Transaction)
       expect(result.value.transaction.isExpense()).toBe(true)
       expect(result.value.transaction.amount).toBe(400)
-      expect(result.value.transaction.method.value).toBe('DEBIT_CARD')
+      expect(result.value.transaction.method.value).toBe(Method.DEBIT)
       expect(account.balance).toBe(-400)
     }
   })
@@ -110,8 +111,8 @@ describe('Create transaction use case', () => {
         memberId: member.id.toString(),
         title: 'Month Salary',
         amount: 2000,
-        operation: 'INCOME',
-        method: 'PIX'
+        operation: 'income',
+        method: 'pix'
     })
 
     expect(account.balance).toBe(2000)
@@ -120,7 +121,7 @@ describe('Create transaction use case', () => {
         memberId: member.id.toString(),
         title: 'Pay Account Debt',
         amount: 450.55,
-        operation: 'EXPENSE',
+        operation: 'expense',
     })
 
     expect(incomeResult.isRight()).toBe(true)
@@ -133,8 +134,8 @@ describe('Create transaction use case', () => {
       expect(incomeResult.value.transaction.amount).toBe(2000)
       expect(expenseResult.value.transaction.amount).toBe(450.55)
 
-      expect(incomeResult.value.transaction.method.value).toBe('PIX')
-      expect(expenseResult.value.transaction.method.value).toBe('UNKNOWN')
+      expect(incomeResult.value.transaction.method.value).toBe(Method.PIX)
+      expect(expenseResult.value.transaction.method.value).toBe(Method.UNKNOWN)
 
       expect(account.balance).toBe(1549.45)
     }
@@ -145,7 +146,7 @@ describe('Create transaction use case', () => {
         memberId: 'non-existing-member',
         title: 'Pay Account Debt',
         amount: 450.55,
-        operation: 'EXPENSE',
+        operation: 'expense',
     })
 
     expect(result.isLeft()).toBe(true)
@@ -160,7 +161,7 @@ describe('Create transaction use case', () => {
         memberId: member.id.toString(),
         title: 'Pay Account Debt',
         amount: 450.55,
-        operation: 'EXPENSE'
+        operation: 'expense'
     })
 
     expect(result.isLeft()).toBe(true)
@@ -188,7 +189,7 @@ describe('Create transaction use case', () => {
         categoryId: category.id.toString(),
         title: 'Uber',
         amount: 25.90,
-        operation: 'EXPENSE'
+        operation: 'expense'
     })
 
     expect(result.isRight()).toBe(true)
@@ -218,7 +219,7 @@ describe('Create transaction use case', () => {
         categoryId: category.id.toString(),
         title: 'Uber',
         amount: 25.90,
-        operation: 'EXPENSE'
+        operation: 'expense'
     })
 
     expect(result.isLeft()).toBe(true)
