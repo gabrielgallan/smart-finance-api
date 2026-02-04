@@ -1,8 +1,8 @@
 export enum Method {
-    DEBIT_CARD = "DEBIT_CARD",
-    CREDIT_CARD = "CREDIT_CARD",
-    PIX = "PIX",
-    UNKNOWN = "UNKNOWN"
+    DEBIT = 'debit',
+    CREDIT = 'credit',
+    PIX = 'pix',
+    UNKNOWN = 'unknown'
 }
 
 /**
@@ -12,9 +12,9 @@ export enum Method {
  * 
  * @example
  * 
- * method: TransactionMethod.debit() => Method.DEBIT_CARD
+ * method: TransactionMethod.debit() => Method.DEBIT
  *  or
- * method: TransactionMethod.from('CREDIT_CARD') => Method.CREDIT_CARD
+ * method: TransactionMethod.from('credit') => Method.CREDIT
  */
 export class TransactionMethod {
   private constructor(
@@ -22,11 +22,11 @@ export class TransactionMethod {
   ) {}
 
   static debit() {
-    return new TransactionMethod(Method.DEBIT_CARD)
+    return new TransactionMethod(Method.DEBIT)
   }
 
   static credit() {
-    return new TransactionMethod(Method.CREDIT_CARD)
+    return new TransactionMethod(Method.CREDIT)
   }
 
   static pix() {
@@ -39,11 +39,11 @@ export class TransactionMethod {
 
   static from(input?: string) {
     switch (input) {
-      case 'DEBIT_CARD':
+      case 'debit':
         return this.debit()
-      case 'CREDIT_CARD':
+      case 'credit':
         return this.credit()
-      case 'PIX':
+      case 'pix':
         return this.pix()
       default:
         return this.unknown()

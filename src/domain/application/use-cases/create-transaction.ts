@@ -17,8 +17,8 @@ interface CreateTransactionUseCaseRequest {
     title: string
     description?: string
     amount: number
-    operation: "EXPENSE" | "INCOME"
-    method?: "CREDIT_CARD" | "DEBIT_CARD" | "PIX"
+    operation: 'expense' | 'income'
+    method?: 'credit' | 'debit' | 'pix'
 }
 
 type CreateTransactionUseCaseResponse = Either<
@@ -70,13 +70,13 @@ export class CreateTransactionUseCase {
         let transactionOperation: TransactionOperation
 
         switch (operation) {
-            case 'EXPENSE':
+            case 'expense':
                 transactionOperation = TransactionOperation.EXPENSE
 
                 account.withdraw(amount)
 
                 break
-            case 'INCOME':
+            case 'income':
                 transactionOperation = TransactionOperation.INCOME
 
                 account.deposit(amount)

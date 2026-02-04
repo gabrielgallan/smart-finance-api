@@ -4,11 +4,11 @@ import { TransactionMethod } from './value-objects/transaction-method'
 import { AggregateRoot } from '@/core/entities/aggregate-root'
 
 export enum TransactionOperation {
-  INCOME = 'INCOME',
-  EXPENSE = 'EXPENSE'
+  INCOME = 'income',
+  EXPENSE = 'expense'
 }
 
-interface TransactionProps {
+export interface TransactionProps {
   accountId: UniqueEntityID
   categoryId?: UniqueEntityID
   title: string
@@ -45,6 +45,10 @@ export class Transaction extends AggregateRoot<TransactionProps> {
 
   get categoryId() {
     return this.props.categoryId
+  }
+
+  get accountId() {
+    return this.props.accountId
   }
 
   // => Setters
