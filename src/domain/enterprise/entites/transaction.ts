@@ -38,6 +38,14 @@ export class Transaction extends AggregateRoot<TransactionProps> {
   }
 
   // => Getters
+  get accountId() {
+    return this.props.accountId
+  }
+
+  get categoryId(): UniqueEntityID | undefined {
+    return this.props.categoryId
+  }
+
   get title() {
     return this.props.title
   }
@@ -50,17 +58,25 @@ export class Transaction extends AggregateRoot<TransactionProps> {
     return this.props.method
   }
 
-  get categoryId() {
-    return this.props.categoryId
-  }
-
-  get accountId() {
-    return this.props.accountId
+  get createdAt() {
+    return this.props.createdAt
   }
 
   // => Setters
   set title(title: string) {
     this.props.title = title
+
+    this.touch()
+  }
+
+  set categoryId(categoryId: UniqueEntityID) {
+    this.props.categoryId = categoryId
+
+    this.touch()
+  }
+
+  set method(method: TransactionMethod) {
+    this.props.method = method
 
     this.touch()
   }

@@ -25,11 +25,21 @@ export class InMemoryMembersRepository implements IMembersRepository {
 
         return member
     }
-    
+
     async findByEmail(email: string) {
         const member = this.items.find(m => m.email === email)
 
         if (!member) return null
+
+        return member
+    }
+
+    async save(member: Member) {
+        const memberIndex = this.items.findIndex(m => m.id.toString() === member.id.toString())
+
+        if (memberIndex >= 0) {
+            this.items[memberIndex] = member
+        }
 
         return member
     }

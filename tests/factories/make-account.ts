@@ -1,13 +1,14 @@
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Account, AccountProps } from "@/domain/enterprise/entites/account";
+import { faker } from "@faker-js/faker";
 
-export async function makeAccount(
+export function makeAccount(
     override: Partial<AccountProps> = {},
     id?: UniqueEntityID
 ) {
     const account = Account.create({
         holderId: new UniqueEntityID(),
-        balance: 0,
+        balance: faker.number.int({ min: 0, max: 99999 }),
         ...override
     }, id)
 

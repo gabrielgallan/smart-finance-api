@@ -7,4 +7,6 @@ export interface ICategoriesRepository {
     accountId: string,
     slug: string,
   ): Promise<Category | null>
+  findManyByAccountId(accountId: string): Promise<Category[]>
+  save(category: Category): Promise<Category>
 }

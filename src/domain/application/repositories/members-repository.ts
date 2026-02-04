@@ -5,4 +5,5 @@ export interface IMembersRepository {
   findById(id: string): Promise<Member | null>
   findByDocument(document: string): Promise<Member | null>
   findByEmail(email: string): Promise<Member | null>
+  save(member: Member): Promise<Member>
 }

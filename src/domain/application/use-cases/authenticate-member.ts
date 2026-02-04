@@ -1,7 +1,6 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { IMembersRepository } from '../repositories/members-repository'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
-import { compare } from 'bcryptjs'
 import { InvalidCredentialsError } from './errors/invalid-credentials-error'
 import { Either, left, right } from '@/core/either'
 
@@ -28,10 +27,7 @@ export class AuthenticateMemberUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    const isPasswordCorrect = await compare(
-      password,
-      memberWithEmail.password.value,
-    )
+    const isPasswordCorrect = await memberWithEmail.password.compare(password)
 
     if (!isPasswordCorrect) {
       return left(new InvalidCredentialsError())

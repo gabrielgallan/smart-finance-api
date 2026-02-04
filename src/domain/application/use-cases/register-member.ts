@@ -56,7 +56,7 @@ export class RegisterMemberUseCase {
       age: memberAge,
       document,
       email,
-      password: await Hash.crate(password),
+      password: await Hash.create(password),
     })
 
     await this.membersRepository.create(member)

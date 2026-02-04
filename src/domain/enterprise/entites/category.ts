@@ -35,6 +35,10 @@ export class Category extends Entity<CategoryProps> {
     return this.props.name
   }
 
+  get description(): string | undefined {
+    return this.props.description
+  }
+
   get slug() {
     return this.props.slug
   }

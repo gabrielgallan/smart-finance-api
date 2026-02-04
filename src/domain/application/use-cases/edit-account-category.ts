@@ -1,0 +1,78 @@
+import { IMembersRepository } from '../repositories/members-repository'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { Either, left, right } from '@/core/either'
+import { IAccountsRepository } from '../repositories/accounts-repository'
+import { ICategoriesRepository } from '../repositories/categories-repository'
+import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
+import { Category } from '@/domain/enterprise/entites/category'
+import { Slug } from '@/domain/enterprise/entites/value-objects/slug'
+import { CategoryAlreadyExistsError } from './errors/category-already-exists-error'
+
+interface EditAccountCategoryUseCaseRequest {
+  memberId: string
+  categoryId: string
+  name?: string
+}
+
+type EditAccountCategoryUseCaseResponse = Either<
+  | ResourceNotFoundError
+  | MemberAccountNotFoundError
+  | CategoryAlreadyExistsError,
+  {
+    category: Category
+  }
+>
+
+export class EditAccountCategoryUseCase {
+  constructor(
+    private membersRepository: IMembersRepository,
+    private accountsRepository: IAccountsRepository,
+    private categoriesRepository: ICategoriesRepository,
+  ) {}
+
+  async execute({
+    memberId,
+    categoryId,
+    name,
+  }: EditAccountCategoryUseCaseRequest): Promise<EditAccountCategoryUseCaseResponse> {
+    const member = await this.membersRepository.findById(memberId)
+
+    if (!member) {
+      return left(new ResourceNotFoundError())
+    }
+
+    const account = await this.accountsRepository.findByHolderId(memberId)
+
+    if (!account) {
+      return left(new MemberAccountNotFoundError())
+    }
+
+    const category = await this.categoriesRepository.findById(categoryId)
+
+    if (!category) {
+      return left(new ResourceNotFoundError())
+    }
+
+    if (name) {
+      const nameSlug = Slug.createFromText(name)
+
+      const categoryWithSameName =
+        await this.categoriesRepository.findByAccountIdAndSlug(
+          account.id.toString(),
+          nameSlug.value,
+        )
+
+      if (categoryWithSameName) {
+        return left(new CategoryAlreadyExistsError())
+      }
+
+      category.name = name
+    }
+
+    await this.categoriesRepository.save(category)
+
+    return right({
+      category,
+    })
+  }
+}

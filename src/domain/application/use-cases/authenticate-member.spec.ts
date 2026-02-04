@@ -19,7 +19,7 @@ describe('Authenticate member use case', () => {
   it('should be able to authenticate a member', async () => {
     const member = await makeMember({
       email: 'johndoe@email.com',
-      password: await Hash.crate('johnDoe123'),
+      password: await Hash.create('johnDoe123'),
     })
 
     await membersRepository.create(member)
@@ -50,7 +50,7 @@ describe('Authenticate member use case', () => {
   it('should not be able to authenticate a member with incorrect credentials', async () => {
     const member = await makeMember({
       email: 'johndoe@email.com',
-      password: await Hash.crate('johnDoe123'),
+      password: await Hash.create('johnDoe123'),
     })
 
     await membersRepository.create(member)
