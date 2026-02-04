@@ -9,60 +9,60 @@ import { InvalidPeriodError } from './errors/invalid-period-error'
 import dayjs from 'dayjs'
 
 interface FetchAccountTransactionsByIntervalUseCaseRequest {
-    memberId: string
-    startDate: Date
-    endDate: Date
+  memberId: string
+  startDate: Date
+  endDate: Date
 }
 
 type FetchAccountTransactionsByIntervalUseCaseResponse = Either<
-    ResourceNotFoundError | MemberAccountNotFoundError | InvalidPeriodError,
-    {
-        transactions: Transaction[]
-    }
+  ResourceNotFoundError | MemberAccountNotFoundError | InvalidPeriodError,
+  {
+    transactions: Transaction[]
+  }
 >
 
 export class FetchAccountTransactionsByIntervalUseCase {
-    constructor(
-        private membersRepository: IMembersRepository,
-        private accountsRepository: IAccountsRepository,
-        private transactionsRepository: ITransactionsRepository,
-    ) { }
+  constructor(
+    private membersRepository: IMembersRepository,
+    private accountsRepository: IAccountsRepository,
+    private transactionsRepository: ITransactionsRepository,
+  ) {}
 
-    async execute({
-        memberId,
-        startDate,
-        endDate
-    }: FetchAccountTransactionsByIntervalUseCaseRequest): Promise<FetchAccountTransactionsByIntervalUseCaseResponse> {
-        const startDateJs = dayjs(startDate)
-        const endDateJs = dayjs(endDate)
+  async execute({
+    memberId,
+    startDate,
+    endDate,
+  }: FetchAccountTransactionsByIntervalUseCaseRequest): Promise<FetchAccountTransactionsByIntervalUseCaseResponse> {
+    const startDateJs = dayjs(startDate)
+    const endDateJs = dayjs(endDate)
 
-        if (endDateJs.isBefore(startDateJs)) {
-            return left(new InvalidPeriodError())
-        }
-
-        const member = await this.membersRepository.findById(memberId)
-
-        if (!member) {
-            return left(new ResourceNotFoundError())
-        }
-
-        const account = await this.accountsRepository.findByHolderId(memberId)
-
-        if (!account) {
-            return left(new MemberAccountNotFoundError())
-        }
-
-        const transactions =
-            await this.transactionsRepository.findManyByAccountIdAndDatetime(
-                account.id.toString(),
-                {
-                    startDate,
-                    endDate
-                }
-            )
-
-        return right({
-            transactions,
-        })
+    if (endDateJs.isBefore(startDateJs)) {
+      return left(new InvalidPeriodError())
     }
+
+    const member = await this.membersRepository.findById(memberId)
+
+    if (!member) {
+      return left(new ResourceNotFoundError())
+    }
+
+    const account = await this.accountsRepository.findByHolderId(memberId)
+
+    if (!account) {
+      return left(new MemberAccountNotFoundError())
+    }
+
+    const transactions =
+      await this.transactionsRepository.findManyByAccountIdAndDatetime(
+        account.id.toString(),
+        {
+          startDate,
+          endDate,
+        },
+      )
+
+    return right({
+      transactions,
+    })
+  }
 }

@@ -20,70 +20,70 @@ let categoriesRepository: ICategoriesRepository
 let sut: FetchAccountTransactionsByIntervalUseCase
 
 describe('Fetch account summary use case', () => {
-    beforeEach(() => {
-        membersRepository = new InMemoryMembersRepository()
-        accountsRepository = new InMemoryAccountsRepository()
-        transactionsRepository = new InMemoryTransactionsRepository()
-        categoriesRepository = new InMemoryCategoriesRepository()
+  beforeEach(() => {
+    membersRepository = new InMemoryMembersRepository()
+    accountsRepository = new InMemoryAccountsRepository()
+    transactionsRepository = new InMemoryTransactionsRepository()
+    categoriesRepository = new InMemoryCategoriesRepository()
 
-        sut = new FetchAccountTransactionsByIntervalUseCase(
-            membersRepository,
-            accountsRepository,
-            transactionsRepository,
-        )
+    sut = new FetchAccountTransactionsByIntervalUseCase(
+      membersRepository,
+      accountsRepository,
+      transactionsRepository,
+    )
 
-        vi.useFakeTimers()
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('should be able to get account summary by time interval', async () => {
+    vi.setSystemTime(new Date(2025, 0, 13))
+
+    await membersRepository.create(
+      await makeMember({}, new UniqueEntityID('member-1')),
+    )
+
+    await accountsRepository.create(
+      makeAccount(
+        {
+          holderId: new UniqueEntityID('member-1'),
+          balance: 250,
+        },
+        new UniqueEntityID('account-1'),
+      ),
+    )
+
+    const createTransactionUseCase = new CreateTransactionUseCase(
+      membersRepository,
+      accountsRepository,
+      transactionsRepository,
+      categoriesRepository,
+    )
+
+    await Promise.all(
+      Array.from({ length: 6 }, () =>
+        createTransactionUseCase.execute({
+          memberId: 'member-1',
+          title: 'transaction-1',
+          amount: 45,
+          operation: 'expense',
+        }),
+      ),
+    )
+
+    const result = await sut.execute({
+      memberId: 'member-1',
+      startDate: new Date(2025, 0, 12),
+      endDate: new Date(2025, 0, 14),
     })
 
-    afterEach(() => {
-        vi.useRealTimers()
-    })
+    expect(result.isRight()).toBe(true)
 
-    it('should be able to get account summary by time interval', async () => {
-        vi.setSystemTime(new Date(2025, 0, 13))
-
-        await membersRepository.create(
-            await makeMember({}, new UniqueEntityID('member-1')),
-        )
-
-        await accountsRepository.create(
-            makeAccount(
-                {
-                    holderId: new UniqueEntityID('member-1'),
-                    balance: 250,
-                },
-                new UniqueEntityID('account-1'),
-            ),
-        )
-
-        const createTransactionUseCase = new CreateTransactionUseCase(
-            membersRepository,
-            accountsRepository,
-            transactionsRepository,
-            categoriesRepository,
-        )
-
-        await Promise.all(
-            Array.from({ length: 6 }, () =>
-                createTransactionUseCase.execute({
-                    memberId: 'member-1',
-                    title: 'transaction-1',
-                    amount: 45,
-                    operation: 'expense',
-                })
-            )
-        )
-
-        const result = await sut.execute({
-            memberId: 'member-1',
-            startDate: new Date(2025, 0, 12),
-            endDate: new Date(2025, 0, 14),
-        })
-
-        expect(result.isRight()).toBe(true)
-
-        if (result.isRight()) {
-            expect(result.value.transactions).toHaveLength(6)
-        }
-    })
+    if (result.isRight()) {
+      expect(result.value.transactions).toHaveLength(6)
+    }
+  })
 })
