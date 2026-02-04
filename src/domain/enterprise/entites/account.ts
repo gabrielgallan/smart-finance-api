@@ -6,19 +6,19 @@ export interface AccountProps {
   holderId: UniqueEntityID
   balance: number
   createdAt: Date
-  updatedAt?: Date
+  updatedAt: Date
 }
 
 export class Account extends Entity<AccountProps> {
   static create(
-    props: Optional<AccountProps, 'createdAt'>,
+    props: Optional<AccountProps, 'createdAt' | 'updatedAt'>,
     id?: UniqueEntityID,
   ) {
     const account = new Account(
       {
         ...props,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: props.createdAt ?? new Date(),
+        updatedAt: props.updatedAt ?? new Date(),
       },
       id,
     )

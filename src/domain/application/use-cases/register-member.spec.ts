@@ -60,7 +60,7 @@ describe('Register new member use case', () => {
     vi.setSystemTime(new Date(2026, 0, 31, 20, 0, 0))
 
     const member = await makeMember({
-      email: 'johndoe@email.com'
+      email: 'johndoe@email.com',
     })
 
     await membersRepository.create(member)
@@ -81,7 +81,7 @@ describe('Register new member use case', () => {
     vi.setSystemTime(new Date(2026, 0, 31, 20, 0, 0))
 
     const member = await makeMember({
-      document: '0123456789'
+      document: '0123456789',
     })
 
     await membersRepository.create(member)

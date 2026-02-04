@@ -21,7 +21,7 @@ export class Member extends Entity<MemberProps> {
     const member = new Member(
       {
         ...props,
-        createdAt: new Date(),
+        createdAt: props.createdAt ?? new Date(),
       },
       id,
     )

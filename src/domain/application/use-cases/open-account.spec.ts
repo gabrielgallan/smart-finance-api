@@ -1,7 +1,5 @@
-import { Member } from '../../enterprise/entites/member.ts'
 import { IMembersRepository } from '../repositories/members-repository.ts'
 import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository.ts'
-import { Hash } from '@/domain/enterprise/entites/value-objects/hash.ts'
 import { ResourceNotFoundError } from './errors/resource-not-found-error.ts'
 import { OpenAccountUseCase } from './open-account.ts'
 import { IAccountsRepository } from '../repositories/accounts-repository.ts'
@@ -19,10 +17,7 @@ describe('Open member account use case', () => {
     membersRepository = new InMemoryMembersRepository()
     accountRepository = new InMemoryAccountsRepository()
 
-    sut = new OpenAccountUseCase(
-        membersRepository,
-        accountRepository
-    )
+    sut = new OpenAccountUseCase(membersRepository, accountRepository)
   })
 
   it('should be able to open a member account', async () => {
@@ -38,7 +33,9 @@ describe('Open member account use case', () => {
     if (result.isRight()) {
       expect(result.value.account).toBeInstanceOf(Account)
       expect(result.value.account.balance).toBe(0)
-      expect(result.value.account.holderId.toString()).toBe(member.id.toString())
+      expect(result.value.account.holderId.toString()).toBe(
+        member.id.toString(),
+      )
     }
   })
 
@@ -48,7 +45,7 @@ describe('Open member account use case', () => {
 
     const result = await sut.execute({
       memberId: member.id.toString(),
-      initialBalance: 250
+      initialBalance: 250,
     })
 
     expect(result.isRight()).toBe(true)
@@ -56,7 +53,9 @@ describe('Open member account use case', () => {
     if (result.isRight()) {
       expect(result.value.account).toBeInstanceOf(Account)
       expect(result.value.account.balance).toBe(250)
-      expect(result.value.account.holderId.toString()).toBe(member.id.toString())
+      expect(result.value.account.holderId.toString()).toBe(
+        member.id.toString(),
+      )
     }
   })
 

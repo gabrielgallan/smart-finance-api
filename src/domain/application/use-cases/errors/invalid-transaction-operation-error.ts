@@ -1,6 +1,9 @@
 import { UseCaseError } from '@/core/errors/use-case-error'
 
-export class InvalidTransactionOperationError extends Error implements UseCaseError {
+export class InvalidTransactionOperationError
+  extends Error
+  implements UseCaseError
+{
   constructor() {
     super('Invalid transaction operation. Must be EXPENSE or INCOME')
   }

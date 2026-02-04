@@ -1,4 +1,3 @@
-import { Member } from '../../enterprise/entites/member.ts'
 import { IMembersRepository } from '../repositories/members-repository.ts'
 import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository.ts'
 import { AuthenticateMemberUseCase } from './authenticate-member.ts'
@@ -20,7 +19,7 @@ describe('Authenticate member use case', () => {
   it('should be able to authenticate a member', async () => {
     const member = await makeMember({
       email: 'johndoe@email.com',
-      password: await Hash.crate('johnDoe123')
+      password: await Hash.crate('johnDoe123'),
     })
 
     await membersRepository.create(member)
@@ -51,9 +50,9 @@ describe('Authenticate member use case', () => {
   it('should not be able to authenticate a member with incorrect credentials', async () => {
     const member = await makeMember({
       email: 'johndoe@email.com',
-      password: await Hash.crate('johnDoe123')
+      password: await Hash.crate('johnDoe123'),
     })
-    
+
     await membersRepository.create(member)
 
     const result = await sut.execute({

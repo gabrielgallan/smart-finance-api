@@ -1,12 +1,12 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
-  entry: ['src/infra/http/server.ts'],   // Arquivo principal da sua aplicação
-  outDir: 'dist',          // build/main.cjs
+  entry: ['src/infra/http/server.ts'],
+  outDir: 'dist',
 
   format: ['esm'],
-  clean: true,              // Limpa build/ antes de compilar
-  minify: false,            // Mantém legível
+  clean: true,
+  minify: false, 
 
-  dts: false                // não gera .d.ts (produção não precisa)
+  dts: false
 })

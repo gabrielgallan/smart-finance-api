@@ -4,7 +4,7 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 export default defineConfig({
   test: {
     projects: [
-      // 🧩 Project 1: Unit tests
+      // 🧩 Project 1: Unit tests (use cases)
       defineProject({
         plugins: [tsconfigPaths()],
         test: {
@@ -15,6 +15,7 @@ export default defineConfig({
         },
       }),
 
+      // 🧩 Project 2: All tests files
       defineProject({
         plugins: [tsconfigPaths()],
         test: {
@@ -25,7 +26,7 @@ export default defineConfig({
         },
       }),
 
-      // 🧩 Project 2: E2E tests with Prisma
+      // 🧩 Project 3: E2E tests with Prisma
       //   defineProject({
       //     // plugins: [tsconfigPaths()],
       //     test: {

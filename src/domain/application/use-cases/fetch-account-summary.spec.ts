@@ -16,10 +16,7 @@ describe('Fetch account summary use case', () => {
     membersRepository = new InMemoryMembersRepository()
     accountsRepository = new InMemoryAccountsRepository()
 
-    sut = new FetchAccountSummaryUseCase(
-        membersRepository,
-        accountsRepository
-    )
+    sut = new FetchAccountSummaryUseCase(membersRepository, accountsRepository)
   })
 
   it('should be able to fetch account summary', async () => {
@@ -27,13 +24,13 @@ describe('Fetch account summary use case', () => {
     await membersRepository.create(member)
 
     const account = await makeAccount({
-        holderId: member.id,
-        balance: 250
+      holderId: member.id,
+      balance: 250,
     })
     await accountsRepository.create(account)
 
     const result = await sut.execute({
-        memberId: member.id.toString()
+      memberId: member.id.toString(),
     })
 
     expect(result.isRight()).toBe(true)

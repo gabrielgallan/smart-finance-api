@@ -21,7 +21,7 @@ export class GetAccountTransactionsUseCase {
   constructor(
     private membersRepository: IMembersRepository,
     private accountsRepository: IAccountsRepository,
-    private transactionsRepository: ITransactionsRepository
+    private transactionsRepository: ITransactionsRepository,
   ) {}
 
   async execute({
@@ -39,10 +39,12 @@ export class GetAccountTransactionsUseCase {
       return left(new MemberAccountNotFoundError())
     }
 
-    const transactions = await this.transactionsRepository.findManyByAccountId(account.id.toString())
+    const transactions = await this.transactionsRepository.findManyByAccountId(
+      account.id.toString(),
+    )
 
     return right({
-        transactions,
+      transactions,
     })
   }
 }

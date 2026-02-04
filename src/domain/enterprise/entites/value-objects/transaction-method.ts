@@ -1,25 +1,23 @@
 export enum Method {
-    DEBIT = 'debit',
-    CREDIT = 'credit',
-    PIX = 'pix',
-    UNKNOWN = 'unknown'
+  DEBIT = 'debit',
+  CREDIT = 'credit',
+  PIX = 'pix',
+  UNKNOWN = 'unknown',
 }
 
 /**
  * Manage property method from entity {Transaction}
- * 
+ *
  * Receive a input string and it returns a Method of payment
- * 
+ *
  * @example
- * 
+ *
  * method: TransactionMethod.debit() => Method.DEBIT
  *  or
  * method: TransactionMethod.from('credit') => Method.CREDIT
  */
 export class TransactionMethod {
-  private constructor(
-    public readonly value: Method
-  ) {}
+  private constructor(public readonly value: Method) {}
 
   static debit() {
     return new TransactionMethod(Method.DEBIT)

@@ -5,7 +5,7 @@ import { AggregateRoot } from '@/core/entities/aggregate-root'
 
 export enum TransactionOperation {
   INCOME = 'income',
-  EXPENSE = 'expense'
+  EXPENSE = 'expense',
 }
 
 export interface TransactionProps {
@@ -17,24 +17,31 @@ export interface TransactionProps {
   operation: TransactionOperation
   method: TransactionMethod
   createdAt: Date
-  updatedAt?: Date
+  updatedAt: Date
 }
 
 export class Transaction extends AggregateRoot<TransactionProps> {
   static create(
-    props: Optional<TransactionProps, 'createdAt'>,
-    id?: UniqueEntityID
+    props: Optional<TransactionProps, 'createdAt' | 'updatedAt'>,
+    id?: UniqueEntityID,
   ) {
-    const transaction = new Transaction({
-      ...props,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }, id)
+    const transaction = new Transaction(
+      {
+        ...props,
+        createdAt: props.createdAt ?? new Date(),
+        updatedAt: props.updatedAt ?? new Date(),
+      },
+      id,
+    )
 
     return transaction
   }
 
   // => Getters
+  get title() {
+    return this.props.title
+  }
+
   get amount() {
     return this.props.amount
   }
@@ -54,12 +61,6 @@ export class Transaction extends AggregateRoot<TransactionProps> {
   // => Setters
   set title(title: string) {
     this.props.title = title
-
-    this.touch()
-  }
-
-  set description(description: string) {
-    this.props.description = description
 
     this.touch()
   }

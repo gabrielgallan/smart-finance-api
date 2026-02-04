@@ -1,7 +1,6 @@
 {
-  "name": "backend",
+  "name": "smart-finance",
   "version": "1.0.0",
-  "main": "index.js",
   "type": "module",
   "scripts": {
     "dev": "npx tsx watch ./src/infra/http/server.ts",
@@ -11,6 +10,7 @@
     "test:watch": "vitest run --watch --project all",
     "test:unit": "vitest run --project unit",
     "test:watch:unit": "vitest run --watch --project unit",
+    "test:index": "npx tsx ./tests/index.ts",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "knex": "npx tsx ./node_modules/knex/bin/cli.js"
@@ -34,6 +34,7 @@
     "@rocketseat/eslint-config": "2.2.2",
     "@types/node": "24.0.4",
     "@typescript-eslint/eslint-plugin": "8.54.0",
+    "@typescript-eslint/parser": "8.54.0",
     "eslint": "8.57.1",
     "eslint-plugin-vitest-globals": "1.5.0",
     "supertest": "7.2.2",

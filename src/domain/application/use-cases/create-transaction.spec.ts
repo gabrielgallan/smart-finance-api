@@ -31,10 +31,10 @@ describe('Create transaction use case', () => {
     categoriesRepository = new InMemoryCategoriesRepository()
 
     sut = new CreateTransactionUseCase(
-        membersRepository,
-        accountsRepository,
-        transactionsRepository,
-        categoriesRepository
+      membersRepository,
+      accountsRepository,
+      transactionsRepository,
+      categoriesRepository,
     )
   })
 
@@ -43,18 +43,18 @@ describe('Create transaction use case', () => {
     await membersRepository.create(member)
 
     const account = await makeAccount({
-        holderId: member.id,
-        balance: 0
+      holderId: member.id,
+      balance: 0,
     })
     await accountsRepository.create(account)
 
     const result = await sut.execute({
-        memberId: member.id.toString(),
-        title: 'Month Salary',
-        description: 'month salary of January',
-        amount: 2000,
-        operation: 'income',
-        method: 'credit'
+      memberId: member.id.toString(),
+      title: 'Month Salary',
+      description: 'month salary of January',
+      amount: 2000,
+      operation: 'income',
+      method: 'credit',
     })
 
     expect(result.isRight()).toBe(true)
@@ -73,17 +73,17 @@ describe('Create transaction use case', () => {
     await membersRepository.create(member)
 
     const account = await makeAccount({
-        holderId: member.id,
-        balance: 0
+      holderId: member.id,
+      balance: 0,
     })
     await accountsRepository.create(account)
 
     const result = await sut.execute({
-        memberId: member.id.toString(),
-        title: 'Pay debt',
-        amount: 400,
-        operation: 'expense',
-        method: 'debit'
+      memberId: member.id.toString(),
+      title: 'Pay debt',
+      amount: 400,
+      operation: 'expense',
+      method: 'debit',
     })
 
     expect(result.isRight()).toBe(true)
@@ -102,26 +102,26 @@ describe('Create transaction use case', () => {
     await membersRepository.create(member)
 
     const account = await makeAccount({
-        holderId: member.id,
-        balance: 0
+      holderId: member.id,
+      balance: 0,
     })
     await accountsRepository.create(account)
 
     const incomeResult = await sut.execute({
-        memberId: member.id.toString(),
-        title: 'Month Salary',
-        amount: 2000,
-        operation: 'income',
-        method: 'pix'
+      memberId: member.id.toString(),
+      title: 'Month Salary',
+      amount: 2000,
+      operation: 'income',
+      method: 'pix',
     })
 
     expect(account.balance).toBe(2000)
 
     const expenseResult = await sut.execute({
-        memberId: member.id.toString(),
-        title: 'Pay Account Debt',
-        amount: 450.55,
-        operation: 'expense',
+      memberId: member.id.toString(),
+      title: 'Pay Account Debt',
+      amount: 450.55,
+      operation: 'expense',
     })
 
     expect(incomeResult.isRight()).toBe(true)
@@ -143,10 +143,10 @@ describe('Create transaction use case', () => {
 
   it('should not be able to create transactions from a member does not exists', async () => {
     const result = await sut.execute({
-        memberId: 'non-existing-member',
-        title: 'Pay Account Debt',
-        amount: 450.55,
-        operation: 'expense',
+      memberId: 'non-existing-member',
+      title: 'Pay Account Debt',
+      amount: 450.55,
+      operation: 'expense',
     })
 
     expect(result.isLeft()).toBe(true)
@@ -158,10 +158,10 @@ describe('Create transaction use case', () => {
     await membersRepository.create(member)
 
     const result = await sut.execute({
-        memberId: member.id.toString(),
-        title: 'Pay Account Debt',
-        amount: 450.55,
-        operation: 'expense'
+      memberId: member.id.toString(),
+      title: 'Pay Account Debt',
+      amount: 450.55,
+      operation: 'expense',
     })
 
     expect(result.isLeft()).toBe(true)
@@ -172,31 +172,31 @@ describe('Create transaction use case', () => {
     const member = await makeMember()
     await membersRepository.create(member)
 
-    const account = await makeAccount({ 
+    const account = await makeAccount({
       holderId: member.id,
-      balance: 100
+      balance: 100,
     })
     await accountsRepository.create(account)
 
     const category = await makeCategory({
       accountId: account.id,
-      name: 'Transport'
+      name: 'Transport',
     })
     await categoriesRepository.create(category)
 
     const result = await sut.execute({
-        memberId: member.id.toString(),
-        categoryId: category.id.toString(),
-        title: 'Uber',
-        amount: 25.90,
-        operation: 'expense'
+      memberId: member.id.toString(),
+      categoryId: category.id.toString(),
+      title: 'Uber',
+      amount: 25.9,
+      operation: 'expense',
     })
 
     expect(result.isRight()).toBe(true)
 
     if (result.isRight()) {
       expect(result.value.transaction.isExpense()).toBe(true)
-      expect(result.value.transaction.amount).toBe(25.90)
+      expect(result.value.transaction.amount).toBe(25.9)
       expect(account.balance).toBe(74.1)
       expect(result.value.transaction.categoryId).toStrictEqual(category.id)
     }
@@ -206,7 +206,7 @@ describe('Create transaction use case', () => {
     const member = await makeMember()
     await membersRepository.create(member)
 
-    const account = await makeAccount({ 
+    const account = await makeAccount({
       holderId: member.id,
     })
     await accountsRepository.create(account)
@@ -215,11 +215,11 @@ describe('Create transaction use case', () => {
     await categoriesRepository.create(category)
 
     const result = await sut.execute({
-        memberId: member.id.toString(),
-        categoryId: category.id.toString(),
-        title: 'Uber',
-        amount: 25.90,
-        operation: 'expense'
+      memberId: member.id.toString(),
+      categoryId: category.id.toString(),
+      title: 'Uber',
+      amount: 25.9,
+      operation: 'expense',
     })
 
     expect(result.isLeft()).toBe(true)

@@ -14,7 +14,9 @@ interface CreateAccountCategoryUseCaseRequest {
 }
 
 type CreateAccountCategoryUseCaseResponse = Either<
-  ResourceNotFoundError | MemberAccountNotFoundError | CategoryAlreadyExistsError,
+  | ResourceNotFoundError
+  | MemberAccountNotFoundError
+  | CategoryAlreadyExistsError,
   {
     category: Category
   }
@@ -24,12 +26,12 @@ export class CreateAccountCategoryUseCase {
   constructor(
     private membersRepository: IMembersRepository,
     private accountsRepository: IAccountsRepository,
-    private categoriesRepository: ICategoriesRepository
+    private categoriesRepository: ICategoriesRepository,
   ) {}
 
   async execute({
     memberId,
-    categoryName
+    categoryName,
   }: CreateAccountCategoryUseCaseRequest): Promise<CreateAccountCategoryUseCaseResponse> {
     const member = await this.membersRepository.findById(memberId)
 
@@ -45,25 +47,26 @@ export class CreateAccountCategoryUseCase {
 
     const categorySlug = Slug.createFromText(categoryName)
 
-    const accountCategoryWithSameSlug = await this.categoriesRepository.findByAccountIdAndSlug(
-      account.id.toString(),
-      categorySlug.value
-    )
+    const accountCategoryWithSameSlug =
+      await this.categoriesRepository.findByAccountIdAndSlug(
+        account.id.toString(),
+        categorySlug.value,
+      )
 
     if (accountCategoryWithSameSlug) {
       return left(new CategoryAlreadyExistsError())
     }
 
     const category = Category.create({
-        accountId: account.id,
-        name: categoryName,
-        slug: categorySlug
+      accountId: account.id,
+      name: categoryName,
+      slug: categorySlug,
     })
 
     await this.categoriesRepository.create(category)
 
     return right({
-        category
+      category,
     })
   }
 }

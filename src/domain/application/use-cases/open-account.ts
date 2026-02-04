@@ -6,7 +6,7 @@ import { MemberAlreadyHasAccountError } from './errors/member-alredy-has-account
 import { Either, left, right } from '@/core/either'
 
 interface OpenAccountUseCaseRequest {
-  memberId: string,
+  memberId: string
   initialBalance?: number
 }
 
@@ -23,7 +23,7 @@ export class OpenAccountUseCase {
 
   async execute({
     memberId,
-    initialBalance
+    initialBalance,
   }: OpenAccountUseCaseRequest): Promise<OpenAccountUseCaseResponse> {
     const member = await this.membersRepository.findById(memberId)
 

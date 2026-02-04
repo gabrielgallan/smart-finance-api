@@ -11,15 +11,15 @@ interface FetchAccountSummaryUseCaseRequest {
 type FetchAccountSummaryUseCaseResponse = Either<
   ResourceNotFoundError | MemberAccountNotFoundError,
   {
-    balance: number,
-    lastUpdate: Date | null
+    balance: number
+    lastUpdate: Date
   }
 >
 
 export class FetchAccountSummaryUseCase {
   constructor(
     private membersRepository: IMembersRepository,
-    private accountsRepository: IAccountsRepository
+    private accountsRepository: IAccountsRepository,
   ) {}
 
   async execute({
@@ -38,8 +38,8 @@ export class FetchAccountSummaryUseCase {
     }
 
     return right({
-        balance: account.balance,
-        lastUpdate: account.updatedAt ?? null
+      balance: account.balance,
+      lastUpdate: account.updatedAt,
     })
   }
 }

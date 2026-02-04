@@ -9,20 +9,23 @@ export interface CategoryProps {
   slug: Slug
   description?: string
   createdAt: Date
-  updatedAt?: Date
+  updatedAt: Date
 }
 
 export class Category extends Entity<CategoryProps> {
   static create(
-    props: Optional<CategoryProps, 'createdAt' | 'slug'>,
-    id?: UniqueEntityID
+    props: Optional<CategoryProps, 'createdAt' | 'slug' | 'updatedAt'>,
+    id?: UniqueEntityID,
   ) {
-    const category = new Category({
-      ...props,
-      slug: props.slug ?? Slug.createFromText(props.name),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }, id)
+    const category = new Category(
+      {
+        ...props,
+        slug: props.slug ?? Slug.createFromText(props.name),
+        createdAt: props.createdAt ?? new Date(),
+        updatedAt: props.updatedAt ?? new Date(),
+      },
+      id,
+    )
 
     return category
   }
@@ -39,6 +42,7 @@ export class Category extends Entity<CategoryProps> {
   get accountId() {
     return this.props.accountId
   }
+
   // => Setters
   set name(name: string) {
     this.props.name = name

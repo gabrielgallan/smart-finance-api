@@ -1,17 +1,21 @@
-import { Method, TransactionMethod } from "./transaction-method"
+import { Method, TransactionMethod } from './transaction-method'
 
 describe('Value object TransactionMethod', () => {
-    it('should be able to create a Method from class methods', async () => {
-        const method = TransactionMethod.debit()
+  it('should be able to create a Method from class methods', async () => {
+    const debitMethod = TransactionMethod.debit()
+    const creditMethod = TransactionMethod.credit()
 
-        expect(method).toBeInstanceOf(TransactionMethod)
-        expect(method.value).toBe(Method.DEBIT_CARD)
-    })
+    expect(debitMethod).toBeInstanceOf(TransactionMethod)
+    expect(creditMethod).toBeInstanceOf(TransactionMethod)
 
-    it('should be able to create a Method from inputs', async () => {
-        const method = TransactionMethod.from('PIX')
+    expect(debitMethod.value).toBe(Method.DEBIT)
+    expect(creditMethod.value).toBe(Method.CREDIT)
+  })
 
-        expect(method).toBeInstanceOf(TransactionMethod)
-        expect(method.value).toBe(Method.PIX)
-    })
+  it('should be able to create a Method from inputs', async () => {
+    const method = TransactionMethod.from('pix')
+
+    expect(method).toBeInstanceOf(TransactionMethod)
+    expect(method.value).toBe(Method.PIX)
+  })
 })

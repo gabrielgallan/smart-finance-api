@@ -1,7 +1,5 @@
-import { Member } from '../../enterprise/entites/member.ts'
 import { IMembersRepository } from '../repositories/members-repository.ts'
 import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository.ts'
-import { Hash } from '@/domain/enterprise/entites/value-objects/hash.ts'
 import { ResourceNotFoundError } from './errors/resource-not-found-error.ts'
 import { GetMemberProfileUseCase } from './get-member-profile.ts'
 import { makeMember } from 'tests/factories/make-member.ts'
@@ -17,7 +15,7 @@ describe('Get member profile use case', () => {
 
   it('should be able to get a member profile', async () => {
     const member = await makeMember({
-      email: 'johndoe@email.com'
+      email: 'johndoe@email.com',
     })
     await membersRepository.create(member)
 
