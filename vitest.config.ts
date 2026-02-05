@@ -24,21 +24,7 @@ export default defineConfig({
           include: ['**/*.spec.ts'],
           environment: 'node',
         },
-      }),
-
-      // 🧩 Project 3: E2E tests with Prisma
-      //   defineProject({
-      //     // plugins: [tsconfigPaths()],
-      //     test: {
-      //       name: 'e2e',
-      //       include: ['src/infra/http/controllers/**/*.spec.ts'],
-      //       environment: 'prisma',
-      //       testTimeout: 60000,
-      //       hookTimeout: 60000,
-      //       isolate: true,
-      //       sequence: { concurrent: false },
-      //     },
-      //   }),
+      })
     ],
   },
 })

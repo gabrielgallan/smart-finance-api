@@ -11,6 +11,7 @@ import { CategoryAlreadyExistsError } from './errors/category-already-exists-err
 interface CreateAccountCategoryUseCaseRequest {
   memberId: string
   categoryName: string
+  categoryDescription?: string
 }
 
 type CreateAccountCategoryUseCaseResponse = Either<
@@ -32,6 +33,7 @@ export class CreateAccountCategoryUseCase {
   async execute({
     memberId,
     categoryName,
+    categoryDescription,
   }: CreateAccountCategoryUseCaseRequest): Promise<CreateAccountCategoryUseCaseResponse> {
     const member = await this.membersRepository.findById(memberId)
 
@@ -61,6 +63,7 @@ export class CreateAccountCategoryUseCase {
       accountId: account.id,
       name: categoryName,
       slug: categorySlug,
+      description: categoryDescription ?? null,
     })
 
     await this.categoriesRepository.create(category)

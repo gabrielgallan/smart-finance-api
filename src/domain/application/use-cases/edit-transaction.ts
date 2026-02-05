@@ -7,7 +7,6 @@ import { Transaction } from '@/domain/enterprise/entites/transaction'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InvalidTransactionOperationError } from './errors/invalid-transaction-operation-error'
-import { TransactionMethod } from '@/domain/enterprise/entites/value-objects/transaction-method'
 import { ICategoriesRepository } from '../repositories/categories-repository'
 import { InvalidCategoryAccountRelationError } from './errors/invalid-category-account-relation-error'
 
@@ -16,6 +15,7 @@ interface EditTransactionUseCaseRequest {
   transactionId: string
   categoryId?: string
   title?: string
+  description?: string
   method?: 'credit' | 'debit' | 'pix'
 }
 
@@ -40,6 +40,7 @@ export class EditTransactionUseCase {
     transactionId,
     categoryId,
     title,
+    description,
     method,
   }: EditTransactionUseCaseRequest): Promise<EditTransactionUseCaseResponse> {
     const member = await this.membersRepository.findById(memberId)
@@ -84,7 +85,11 @@ export class EditTransactionUseCase {
     }
 
     if (method) {
-      transaction.method = TransactionMethod.from(method)
+      transaction.method = method
+    }
+
+    if (description) {
+      transaction.description = description
     }
 
     await this.transactionsRepository.save(transaction)

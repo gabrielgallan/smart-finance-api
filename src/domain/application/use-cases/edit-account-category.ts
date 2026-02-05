@@ -12,6 +12,7 @@ interface EditAccountCategoryUseCaseRequest {
   memberId: string
   categoryId: string
   name?: string
+  description?: string
 }
 
 type EditAccountCategoryUseCaseResponse = Either<
@@ -34,6 +35,7 @@ export class EditAccountCategoryUseCase {
     memberId,
     categoryId,
     name,
+    description,
   }: EditAccountCategoryUseCaseRequest): Promise<EditAccountCategoryUseCaseResponse> {
     const member = await this.membersRepository.findById(memberId)
 
@@ -67,6 +69,10 @@ export class EditAccountCategoryUseCase {
       }
 
       category.name = name
+    }
+
+    if (description) {
+      category.description = description
     }
 
     await this.categoriesRepository.save(category)

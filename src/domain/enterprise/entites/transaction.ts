@@ -1,6 +1,5 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
-import { TransactionMethod } from './value-objects/transaction-method'
 import { AggregateRoot } from '@/core/entities/aggregate-root'
 
 export enum TransactionOperation {
@@ -10,12 +9,12 @@ export enum TransactionOperation {
 
 export interface TransactionProps {
   accountId: UniqueEntityID
-  categoryId?: UniqueEntityID
+  categoryId: UniqueEntityID | null
   title: string
   amount: number
-  description?: string
+  description: string | null
   operation: TransactionOperation
-  method: TransactionMethod
+  method: string | null
   createdAt: Date
   updatedAt: Date
 }
@@ -42,7 +41,7 @@ export class Transaction extends AggregateRoot<TransactionProps> {
     return this.props.accountId
   }
 
-  get categoryId(): UniqueEntityID | undefined {
+  get categoryId(): UniqueEntityID | null {
     return this.props.categoryId
   }
 
@@ -50,11 +49,15 @@ export class Transaction extends AggregateRoot<TransactionProps> {
     return this.props.title
   }
 
+  get description(): string | null {
+    return this.props.description
+  }
+
   get amount() {
     return this.props.amount
   }
 
-  get method() {
+  get method(): string | null {
     return this.props.method
   }
 
@@ -75,7 +78,13 @@ export class Transaction extends AggregateRoot<TransactionProps> {
     this.touch()
   }
 
-  set method(method: TransactionMethod) {
+  set description(description: string) {
+    this.props.description = description
+
+    this.touch()
+  }
+
+  set method(method: string) {
     this.props.method = method
 
     this.touch()

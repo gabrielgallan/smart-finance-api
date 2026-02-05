@@ -4,7 +4,6 @@ import { Hash } from './value-objects/hash'
 import { Optional } from '@/core/types/optional'
 
 export interface MemberProps {
-  accountId?: UniqueEntityID
   name: string
   age: number
   document: string

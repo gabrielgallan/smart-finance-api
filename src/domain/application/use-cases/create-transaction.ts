@@ -10,7 +10,6 @@ import {
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InvalidTransactionOperationError } from './errors/invalid-transaction-operation-error'
-import { TransactionMethod } from '@/domain/enterprise/entites/value-objects/transaction-method'
 import { ICategoriesRepository } from '../repositories/categories-repository'
 import { InvalidCategoryAccountRelationError } from './errors/invalid-category-account-relation-error'
 
@@ -21,7 +20,7 @@ interface CreateTransactionUseCaseRequest {
   description?: string
   amount: number
   operation: 'expense' | 'income'
-  method?: 'credit' | 'debit' | 'pix'
+  method?: string
 }
 
 type CreateTransactionUseCaseResponse = Either<
@@ -96,12 +95,12 @@ export class CreateTransactionUseCase {
 
     const transaction = Transaction.create({
       accountId: account.id,
-      categoryId: categoryId ? new UniqueEntityID(categoryId) : undefined,
+      categoryId: categoryId ? new UniqueEntityID(categoryId) : null,
       title,
-      description,
+      description: description ?? null,
       amount,
       operation: transactionOperation,
-      method: TransactionMethod.from(method),
+      method: method ?? null,
     })
 
     await this.transactionsRepository.create(transaction)

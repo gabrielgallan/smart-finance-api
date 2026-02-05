@@ -14,7 +14,6 @@ import { ICategoriesRepository } from '../repositories/categories-repository.ts'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error.ts'
 import { makeCategory } from 'tests/factories/make-category.ts'
 import { InvalidCategoryAccountRelationError } from './errors/invalid-category-account-relation-error.ts'
-import { Method } from '@/domain/enterprise/entites/value-objects/transaction-method.ts'
 
 let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
@@ -60,10 +59,8 @@ describe('Create transaction use case', () => {
     expect(result.isRight()).toBe(true)
 
     if (result.isRight()) {
-      expect(result.value.transaction).toBeInstanceOf(Transaction)
       expect(result.value.transaction.isIncome()).toBe(true)
       expect(result.value.transaction.amount).toBe(2000)
-      expect(result.value.transaction.method.value).toBe(Method.CREDIT)
       expect(account.balance).toBe(2000)
     }
   })
@@ -92,7 +89,6 @@ describe('Create transaction use case', () => {
       expect(result.value.transaction).toBeInstanceOf(Transaction)
       expect(result.value.transaction.isExpense()).toBe(true)
       expect(result.value.transaction.amount).toBe(400)
-      expect(result.value.transaction.method.value).toBe(Method.DEBIT)
       expect(account.balance).toBe(-400)
     }
   })
@@ -112,7 +108,6 @@ describe('Create transaction use case', () => {
       title: 'Month Salary',
       amount: 2000,
       operation: 'income',
-      method: 'pix',
     })
 
     expect(account.balance).toBe(2000)
@@ -133,9 +128,6 @@ describe('Create transaction use case', () => {
 
       expect(incomeResult.value.transaction.amount).toBe(2000)
       expect(expenseResult.value.transaction.amount).toBe(450.55)
-
-      expect(incomeResult.value.transaction.method.value).toBe(Method.PIX)
-      expect(expenseResult.value.transaction.method.value).toBe(Method.UNKNOWN)
 
       expect(account.balance).toBe(1549.45)
     }

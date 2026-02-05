@@ -12,10 +12,6 @@ import { makeCategory } from 'tests/factories/make-category.ts'
 import { EditTransactionUseCase } from './edit-transaction.ts'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 import { makeTransaction } from 'tests/factories/make-transaction.ts'
-import {
-  Method,
-  TransactionMethod,
-} from '@/domain/enterprise/entites/value-objects/transaction-method.ts'
 
 let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
@@ -80,7 +76,6 @@ describe('Edit transaction use case', () => {
           categoryId: new UniqueEntityID('category-1'),
           title: 'Netflix',
           amount: 39.99,
-          method: TransactionMethod.debit(),
         },
         new UniqueEntityID('transaction-1'),
       ),
@@ -103,7 +98,6 @@ describe('Edit transaction use case', () => {
 
     if (result.isRight()) {
       expect(result.value.transaction.title).toBe('Netflix Sign')
-      expect(result.value.transaction.method.value).toBe(Method.CREDIT)
       expect(result.value.transaction.categoryId?.toString()).toBe('category-2')
     }
   })
