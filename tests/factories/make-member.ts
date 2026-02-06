@@ -1,6 +1,6 @@
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { Member, MemberProps } from "@/domain/enterprise/entites/member";
-import { Hash } from "@/domain/enterprise/entites/value-objects/hash";
+import { Member, MemberProps } from "@/domain/finance-manager/enterprise/entites/member";
+import { Hash } from "@/domain/finance-manager/enterprise/entites/value-objects/hash";
 import { faker } from '@faker-js/faker'
 
 export async function makeMember(

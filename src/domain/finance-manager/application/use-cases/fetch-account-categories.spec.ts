@@ -9,7 +9,7 @@ import { InMemoryCategoriesRepository } from 'tests/repositories/in-memory-categ
 import { FetchAccountCategoriesUseCase } from './fetch-account-categories.ts'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 import { makeCategory } from 'tests/factories/make-category.ts'
-import { Slug } from '@/domain/enterprise/entites/value-objects/slug.ts'
+import { Slug } from '@/domain/finance-manager/enterprise/entites/value-objects/slug.ts'
 
 let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository

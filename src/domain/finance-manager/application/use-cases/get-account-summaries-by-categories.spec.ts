@@ -11,7 +11,7 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 import { ICategoriesRepository } from '../repositories/categories-repository.ts'
 import { InMemoryCategoriesRepository } from 'tests/repositories/in-memory-category-repository.ts'
 import { makeTransaction } from 'tests/factories/make-transaction.ts'
-import { TransactionOperation } from '@/domain/enterprise/entites/transaction.ts'
+import { TransactionOperation } from '@/domain/finance-manager/enterprise/entites/transaction.ts'
 import { makeCategory } from 'tests/factories/make-category.ts'
 
 let membersRepository: IMembersRepository

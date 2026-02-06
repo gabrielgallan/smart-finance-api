@@ -1,5 +1,5 @@
-import { IAccountsRepository } from "@/domain/application/repositories/accounts-repository";
-import { Account } from "@/domain/enterprise/entites/account";
+import { IAccountsRepository } from "@/domain/finance-manager/application/repositories/accounts-repository";
+import { Account } from "@/domain/finance-manager/enterprise/entites/account";
 
 export class InMemoryAccountsRepository implements IAccountsRepository {
     public items: Account[] = []

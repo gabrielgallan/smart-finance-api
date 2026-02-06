@@ -1,5 +1,5 @@
-import { Member } from "@/domain/enterprise/entites/member";
-import { IMembersRepository } from "@/domain/application/repositories/members-repository";
+import { Member } from "@/domain/finance-manager/enterprise/entites/member";
+import { IMembersRepository } from "@/domain/finance-manager/application/repositories/members-repository";
 
 export class InMemoryMembersRepository implements IMembersRepository {
     public items: Member[] = []

@@ -3,31 +3,26 @@ import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { Either, left, right } from '@/core/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
-import { Transaction } from '@/domain/enterprise/entites/transaction'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
-import { InvalidPeriodError } from './errors/invalid-period-error'
 import dayjs from 'dayjs'
-import { Pagination } from '@/core/repositories/pagination'
-import { DateInterval } from '@/core/repositories/date-interval'
+import { InvalidPeriodError } from './errors/invalid-period-error'
+import { AccountSummary } from '@/domain/finance-manager/enterprise/entites/account-summary'
 
-interface FetchAccountTransactionsByIntervalUseCaseRequest {
+interface GetAccountSummaryByIntervalUseCaseRequest {
   memberId: string
   startDate: Date
   endDate: Date
-  limit: number
-  page: number
 }
 
-type FetchAccountTransactionsByIntervalUseCaseResponse = Either<
-  ResourceNotFoundError | MemberAccountNotFoundError | InvalidPeriodError,
+type GetAccountSummaryByIntervalUseCaseResponse = Either<
+  ResourceNotFoundError | MemberAccountNotFoundError,
   {
-    transactions: Transaction[]
-    interval: DateInterval
-    pagination: Pagination
+    currentBalance: number
+    accountSummary: AccountSummary
   }
 >
 
-export class FetchAccountTransactionsByIntervalUseCase {
+export class GetAccountSummaryByIntervalUseCase {
   constructor(
     private membersRepository: IMembersRepository,
     private accountsRepository: IAccountsRepository,
@@ -38,9 +33,7 @@ export class FetchAccountTransactionsByIntervalUseCase {
     memberId,
     startDate,
     endDate,
-    limit = 10,
-    page,
-  }: FetchAccountTransactionsByIntervalUseCaseRequest): Promise<FetchAccountTransactionsByIntervalUseCaseResponse> {
+  }: GetAccountSummaryByIntervalUseCaseRequest): Promise<GetAccountSummaryByIntervalUseCaseResponse> {
     const startDateJs = dayjs(startDate)
     const endDateJs = dayjs(endDate)
 
@@ -60,21 +53,39 @@ export class FetchAccountTransactionsByIntervalUseCase {
       return left(new MemberAccountNotFoundError())
     }
 
-    const interval = { startDate, endDate }
-
-    const pagination = { limit, page }
-
     const transactions =
-      await this.transactionsRepository.listByIntervalAndAccountId(
+      await this.transactionsRepository.findManyByAccountIdAndInterval(
         account.id.toString(),
-        interval,
-        pagination,
+        {
+          startDate,
+          endDate,
+        },
       )
 
+    // => Income
+    const incomeTransactions = transactions.filter((t) => t.isIncome())
+
+    const totalIncome = incomeTransactions
+      .map((t) => t.amount)
+      .reduce((at, acc) => at + acc, 0)
+
+    // => Expenses
+    const expenseTransactions = transactions.filter((t) => t.isExpense())
+
+    const totalExpense = expenseTransactions
+      .map((t) => t.amount)
+      .reduce((at, acc) => at + acc, 0)
+
+    const accountSummary = AccountSummary.create({
+      accountId: account.id,
+      totalIncome,
+      totalExpense,
+      transactionsCount: transactions.length,
+    })
+
     return right({
-      transactions,
-      interval,
-      pagination,
+      currentBalance: account.balance,
+      accountSummary,
     })
   }
 }

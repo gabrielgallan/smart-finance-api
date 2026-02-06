@@ -1,5 +1,5 @@
-import { ICategoriesRepository } from "@/domain/application/repositories/categories-repository";
-import { Category } from "@/domain/enterprise/entites/category";
+import { ICategoriesRepository } from "@/domain/finance-manager/application/repositories/categories-repository";
+import { Category } from "@/domain/finance-manager/enterprise/entites/category";
 
 export class InMemoryCategoriesRepository implements ICategoriesRepository {
     public items: Category[] = []

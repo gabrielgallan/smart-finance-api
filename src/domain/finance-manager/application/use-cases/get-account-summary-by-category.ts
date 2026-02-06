@@ -6,8 +6,8 @@ import { MemberAccountNotFoundError } from './errors/member-account-not-found-er
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import dayjs from 'dayjs'
 import { InvalidPeriodError } from './errors/invalid-period-error'
-import { AccountSummary } from '@/domain/enterprise/entites/account-summary'
-import { Category } from '@/domain/enterprise/entites/category'
+import { AccountSummary } from '@/domain/finance-manager/enterprise/entites/account-summary'
+import { Category } from '@/domain/finance-manager/enterprise/entites/category'
 import { InvalidCategoryAccountRelationError } from './errors/invalid-category-account-relation-error'
 import { ICategoriesRepository } from '../repositories/categories-repository'
 

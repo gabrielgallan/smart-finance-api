@@ -1,7 +1,7 @@
 import { IMembersRepository } from '../repositories/members-repository.ts'
 import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository.ts'
 import { AuthenticateMemberUseCase } from './authenticate-member.ts'
-import { Hash } from '@/domain/enterprise/entites/value-objects/hash.ts'
+import { Hash } from '@/domain/finance-manager/enterprise/entites/value-objects/hash.ts'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 import { ResourceNotFoundError } from './errors/resource-not-found-error.ts'
 import { InvalidCredentialsError } from './errors/invalid-credentials-error.ts'

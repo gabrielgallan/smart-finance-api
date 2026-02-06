@@ -9,7 +9,7 @@ import { InMemoryTransactionsRepository } from 'tests/repositories/in-memory-tra
 import { ITransactionsRepository } from '../repositories/transactions-repository.ts'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 import { makeTransaction } from 'tests/factories/make-transaction.ts'
-import { TransactionOperation } from '@/domain/enterprise/entites/transaction.ts'
+import { TransactionOperation } from '@/domain/finance-manager/enterprise/entites/transaction.ts'
 
 let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository

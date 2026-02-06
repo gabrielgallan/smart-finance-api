@@ -6,9 +6,9 @@ import { MemberAccountNotFoundError } from './errors/member-account-not-found-er
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import dayjs from 'dayjs'
 import { InvalidPeriodError } from './errors/invalid-period-error'
-import { AccountSummary } from '@/domain/enterprise/entites/account-summary'
+import { AccountSummary } from '@/domain/finance-manager/enterprise/entites/account-summary'
 import { ICategoriesRepository } from '../repositories/categories-repository'
-import { Category } from '@/domain/enterprise/entites/category'
+import { Category } from '@/domain/finance-manager/enterprise/entites/category'
 import { AnyCategoryFoundForAccountError } from './errors/any-category-found-for-account-error'
 
 interface GetAccountSummariesByCategoriesUseCaseRequest {
@@ -102,6 +102,7 @@ export class GetAccountSummariesByCategoriesUseCase {
 
       const accountSummary = AccountSummary.create({
         accountId: account.id,
+        categoryId: category.id,
         totalIncome,
         totalExpense,
         transactionsCount: transactions.length,

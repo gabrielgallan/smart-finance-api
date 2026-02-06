@@ -1,11 +1,15 @@
-import { RegisterMemberUseCase } from "@/domain/application/use-cases/register-member"
+import { RegisterMemberUseCase } from "@/domain/finance-manager/application/use-cases/register-member"
 import { InMemoryAccountsRepository } from "./repositories/in-memory-accounts-repository"
 import { InMemoryCategoriesRepository } from "./repositories/in-memory-category-repository"
 import { InMemoryMembersRepository } from "./repositories/in-memory-members-repository"
 import { InMemoryTransactionsRepository } from "./repositories/in-memory-transactions-repository"
-import { OpenAccountUseCase } from "@/domain/application/use-cases/open-account"
-import { CreateAccountCategoryUseCase } from "@/domain/application/use-cases/create-account-category"
-import { CreateTransactionUseCase } from "@/domain/application/use-cases/create-transaction"
+import { OpenAccountUseCase } from "@/domain/finance-manager/application/use-cases/open-account"
+import { CreateAccountCategoryUseCase } from "@/domain/finance-manager/application/use-cases/create-account-category"
+import { CreateTransactionUseCase } from "@/domain/finance-manager/application/use-cases/create-transaction"
+import { GetAccountSummaryByIntervalUseCase } from "@/domain/finance-manager/application/use-cases/get-account-summary-by-interval"
+import { GetAccountSummariesByCategoriesUseCase } from "@/domain/finance-manager/application/use-cases/get-account-summaries-by-categories"
+import { FetchRecentAccountTransactionsUseCase } from "@/domain/finance-manager/application/use-cases/fetch-recent-account-transactions"
+import { FetchAccountTransactionsByCategoryUseCase } from "@/domain/finance-manager/application/use-cases/fetch-account-transactions-by-category"
 
 const membersRepository = new InMemoryMembersRepository()
 const accountsRepository = new InMemoryAccountsRepository()
@@ -35,6 +39,32 @@ const createTransaction = new CreateTransactionUseCase(
     categoriesRepository
 )
 
+const getSummaryByInterval = new GetAccountSummaryByIntervalUseCase(
+    membersRepository,
+    accountsRepository,
+    transactionsRepository
+)
+
+const getSummaryByCategories = new GetAccountSummariesByCategoriesUseCase(
+    membersRepository,
+    accountsRepository,
+    transactionsRepository,
+    categoriesRepository
+)
+
+const fetchRecentTransactions = new FetchRecentAccountTransactionsUseCase(
+    membersRepository,
+    accountsRepository,
+    transactionsRepository
+)
+
+const fetchTransactionsByCategory = new FetchAccountTransactionsByCategoryUseCase(
+    membersRepository,
+    accountsRepository,
+    transactionsRepository,
+    categoriesRepository
+)
+
 const member = await register.execute({
     name: 'John Doe',
     birthDate: new Date(2005, 9, 31),
@@ -47,7 +77,7 @@ if (member.isLeft()) {
     throw new Error()
 }
 
-console.log(member.value.member)
+// console.log(member.value.member)
 
 const account = await openAccount.execute({
     memberId: member.value.member.id.toString()
@@ -57,7 +87,7 @@ if (account.isLeft()) {
     throw new Error()
 }
 
-console.log(account.value.account)
+// console.log(account.value.account)
 
 const category1 = await createCategory.execute({
     memberId: member.value.member.id.toString(),
@@ -65,11 +95,16 @@ const category1 = await createCategory.execute({
     categoryDescription: 'my sports expenses'
 })
 
-if (category1.isLeft()) {
+const category2 = await createCategory.execute({
+    memberId: member.value.member.id.toString(),
+    categoryName: 'Transports',
+})
+
+if (category1.isLeft() || category2.isLeft()) {
     throw new Error()
 }
 
-console.log(category1.value.category)
+// console.log(category1.value.category)
 
 const transaction = await createTransaction.execute({
     memberId: member.value.member.id.toString(),
@@ -81,8 +116,81 @@ const transaction = await createTransaction.execute({
     method: 'credit'
 })
 
+await createTransaction.execute({
+    memberId: member.value.member.id.toString(),
+    categoryId: category1.value.category.id.toString(),
+    title: 'New transaction',
+    description: 'new transaction test',
+    amount: 35.50,
+    operation: 'expense',
+    method: 'credit'
+})
+
+await createTransaction.execute({
+    memberId: member.value.member.id.toString(),
+    categoryId: category2.value.category.id.toString(),
+    title: 'New transaction',
+    description: 'new transaction test',
+    amount: 159.90,
+    operation: 'income',
+    method: 'credit'
+})
+
 if (transaction.isLeft()) {
     throw new Error()
 }
 
-console.log(transaction.value.transaction)
+// console.log(transaction.value.transaction)
+
+const summary = await getSummaryByInterval.execute({
+    memberId: member.value.member.id.toString(),
+    startDate: new Date(2026, 1, 6),
+    endDate: new Date(2026, 1, 6, 23, 59, 59)
+})
+
+if (summary.isLeft()) {
+    throw new Error()
+}
+
+console.log(summary.value)
+
+const summaryByCategories = await getSummaryByCategories.execute({
+    memberId: member.value.member.id.toString(),
+    startDate: new Date(2026, 1, 6),
+    endDate: new Date(2026, 1, 6, 23, 59, 59)
+})
+
+if (summaryByCategories.isLeft()) {
+    throw new Error()
+}
+
+summaryByCategories.value.accountSummariesByCategories.forEach(sum => {
+    console.log(sum)
+})
+
+const listTransactions = await fetchRecentTransactions.execute({
+    memberId: member.value.member.id.toString(),
+    limit: 10,
+    page: 1
+})
+
+if (listTransactions.isLeft()) {
+    throw new Error()
+}
+
+// console.log(listTransactions.value.transactions)
+
+const listTransactionsCat = await fetchTransactionsByCategory.execute({
+    memberId: member.value.member.id.toString(),
+    categoryId: category2.value.category.id.toString(),
+    startDate: new Date(2026, 1, 6),
+    endDate: new Date(2026, 1, 6, 23, 59, 59),
+    limit: 10,
+    page: 1
+})
+
+if (listTransactionsCat.isLeft()) {
+    throw new Error()
+}
+
+// console.log(listTransactionsCat.value.transactions)

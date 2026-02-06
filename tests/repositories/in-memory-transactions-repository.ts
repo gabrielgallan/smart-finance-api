@@ -1,7 +1,7 @@
 import { DateInterval } from "@/core/repositories/date-interval";
 import { Pagination } from "@/core/repositories/pagination";
-import { ITransactionsRepository } from "@/domain/application/repositories/transactions-repository";
-import { Transaction } from "@/domain/enterprise/entites/transaction";
+import { ITransactionsRepository } from "@/domain/finance-manager/application/repositories/transactions-repository";
+import { Transaction } from "@/domain/finance-manager/enterprise/entites/transaction";
 
 export class InMemoryTransactionsRepository implements ITransactionsRepository {
     public items: Transaction[] = []
