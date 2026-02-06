@@ -1,6 +1,6 @@
 import { Pagination } from '@/core/repositories/pagination'
 import { Transaction } from '../../enterprise/entites/transaction'
-import { Datetime } from '@/core/repositories/datetime'
+import { DateInterval } from '@/core/repositories/date-interval'
 
 export interface ITransactionsRepository {
   create(Transaction: Transaction): Promise<void>
@@ -9,10 +9,14 @@ export interface ITransactionsRepository {
     pagination: Pagination,
     accountId: string,
   ): Promise<Transaction[]>
-  findManyByIntervalAndCategory(
+  findManyByAccountIdAndInterval(
     accountId: string,
-    datetime: Datetime,
-    categoryId?: string,
+    interval: DateInterval,
+  ): Promise<Transaction[]>
+  findManyByAccountIdAndIntervalAndCategory(
+    accountId: string,
+    categoryId: string,
+    interval: DateInterval,
   ): Promise<Transaction[]>
   save(transaction: Transaction): Promise<Transaction>
 }

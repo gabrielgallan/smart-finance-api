@@ -1,11 +1,10 @@
-import { Datetime } from "@/core/repositories/datetime";
+import { DateInterval } from "@/core/repositories/date-interval";
 import { Pagination } from "@/core/repositories/pagination";
 import { ITransactionsRepository } from "@/domain/application/repositories/transactions-repository";
 import { Transaction } from "@/domain/enterprise/entites/transaction";
-import { ac } from "@faker-js/faker/dist/airline-CWrCIUHH";
 
 export class InMemoryTransactionsRepository implements ITransactionsRepository {
-    private items: Transaction[] = []
+    public items: Transaction[] = []
     
     async create(Transaction: Transaction) {
         this.items.push(Transaction)
@@ -28,10 +27,23 @@ export class InMemoryTransactionsRepository implements ITransactionsRepository {
         return transactions
     }
     
-    async findManyByIntervalAndCategory(
+    async findManyByAccountIdAndInterval(
         accountId: string, 
-        { startDate, endDate }: Datetime,
-        catedoryId?: string
+        { startDate, endDate }: DateInterval
+    ) {
+        const transactionsByInterval = this.items.filter((t) => {
+            return  t.accountId.toString() === accountId &&
+                t.createdAt.getTime() >= startDate.getTime() &&
+                t.createdAt.getTime() <= endDate.getTime()
+        })
+
+        return transactionsByInterval
+    }
+
+    async findManyByAccountIdAndIntervalAndCategory(
+        accountId: string, 
+        catedoryId: string,
+        { startDate, endDate }: DateInterval,
     ) {
         const transactionsByInterval = this.items.filter((t) => {
             return  t.accountId.toString() === accountId &&

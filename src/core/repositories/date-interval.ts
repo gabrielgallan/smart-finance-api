@@ -1,4 +1,4 @@
-export interface Datetime {
+export interface DateInterval {
   startDate: Date
   endDate: Date
 }

@@ -2,7 +2,7 @@ import { ICategoriesRepository } from "@/domain/application/repositories/categor
 import { Category } from "@/domain/enterprise/entites/category";
 
 export class InMemoryCategoriesRepository implements ICategoriesRepository {
-    private items: Category[] = []
+    public items: Category[] = []
 
     async create(category: Category) {
         this.items.push(category)

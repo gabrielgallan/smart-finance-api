@@ -2,7 +2,7 @@ import { Member } from "@/domain/enterprise/entites/member";
 import { IMembersRepository } from "@/domain/application/repositories/members-repository";
 
 export class InMemoryMembersRepository implements IMembersRepository {
-    private items: Member[] = []
+    public items: Member[] = []
 
     async create(member: Member) {
         this.items.push(member)
