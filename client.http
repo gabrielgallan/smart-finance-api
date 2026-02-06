@@ -1,4 +1,5 @@
 @baseUrl = http://localhost:8001
+@authToken = {{authenticate.response.body.token}}
 
 # @name register
 POST {{baseUrl}}/api/users
@@ -20,3 +21,10 @@ Content-Type: application/json
     "email": "johndoe@email.com",
     "password": "john123"
 }
+
+###
+
+# @name get_profile
+GET {{baseUrl}}/api/profile
+Content-Type: application/json
+Authorization: Bearer {{authToken}}

@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service'
 import { JwtService } from '@nestjs/jwt'
 import z from 'zod'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
+import { compare } from 'bcryptjs'
 
 const authenticateBodySchema = z.object({
   email: z.string().email(),
@@ -29,10 +30,12 @@ export class AuthenticateController {
     })
 
     if (!userWithEmail) {
-      throw new NotFoundException()
+      throw new UnauthorizedException('Invalid credentials error')
     }
 
-    if (userWithEmail.password !== password) {
+    const isPasswordCorrect = await compare(password, userWithEmail.password)
+
+    if (!isPasswordCorrect) {
       throw new UnauthorizedException('Invalid credentials error')
     }
 
