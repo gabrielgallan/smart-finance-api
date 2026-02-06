@@ -12,7 +12,7 @@ export interface ITransactionsRepository {
   findManyByIntervalAndCategory(
     accountId: string,
     datetime: Datetime,
-    categoryId?: string
+    categoryId?: string,
   ): Promise<Transaction[]>
   save(transaction: Transaction): Promise<Transaction>
 }

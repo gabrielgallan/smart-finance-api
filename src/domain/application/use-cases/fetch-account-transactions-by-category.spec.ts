@@ -31,7 +31,7 @@ describe('Fetch account summary use case', () => {
       membersRepository,
       accountsRepository,
       transactionsRepository,
-      categoriesRepository
+      categoriesRepository,
     )
 
     vi.useFakeTimers()
@@ -59,13 +59,13 @@ describe('Fetch account summary use case', () => {
     )
 
     await categoriesRepository.create(
-        makeCategory(
-            {
-                accountId: new UniqueEntityID('account-1'),
-                name: 'Sports'
-            },
-            new UniqueEntityID('category-1')
-        )
+      makeCategory(
+        {
+          accountId: new UniqueEntityID('account-1'),
+          name: 'Sports',
+        },
+        new UniqueEntityID('category-1'),
+      ),
     )
 
     const createTransactionUseCase = new CreateTransactionUseCase(
@@ -108,8 +108,8 @@ describe('Fetch account summary use case', () => {
     expect(result.isRight()).toBe(true)
 
     if (result.isRight()) {
-        expect(transactionsRepository.items).toHaveLength(5)
-        expect(result.value.transactions).toHaveLength(2)
+      expect(transactionsRepository.items).toHaveLength(5)
+      expect(result.value.transactions).toHaveLength(2)
     }
   })
 })

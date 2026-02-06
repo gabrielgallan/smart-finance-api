@@ -19,12 +19,12 @@ interface FetchAccountTransactionsByCategoryUseCaseRequest {
 }
 
 type FetchAccountTransactionsByCategoryUseCaseResponse = Either<
-  ResourceNotFoundError |
-  MemberAccountNotFoundError |
-  InvalidPeriodError |
-  InvalidCategoryAccountRelationError,
+  | ResourceNotFoundError
+  | MemberAccountNotFoundError
+  | InvalidPeriodError
+  | InvalidCategoryAccountRelationError,
   {
-    transactions: Transaction[],
+    transactions: Transaction[]
     category: Category
   }
 >
@@ -65,11 +65,11 @@ export class FetchAccountTransactionsByCategoryUseCase {
     const category = await this.categoriesRepository.findById(categoryId)
 
     if (!category) {
-        return left(new ResourceNotFoundError())
+      return left(new ResourceNotFoundError())
     }
 
     if (category.accountId.toString() !== account.id.toString()) {
-        return left(new InvalidCategoryAccountRelationError())
+      return left(new InvalidCategoryAccountRelationError())
     }
 
     const transactions =
@@ -79,12 +79,12 @@ export class FetchAccountTransactionsByCategoryUseCase {
           startDate,
           endDate,
         },
-        category.id.toString()
+        category.id.toString(),
       )
 
     return right({
       transactions,
-      category
+      category,
     })
   }
 }
