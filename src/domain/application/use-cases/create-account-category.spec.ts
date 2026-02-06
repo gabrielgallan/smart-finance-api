@@ -10,6 +10,7 @@ import { InMemoryCategoriesRepository } from 'tests/repositories/in-memory-categ
 import { CreateAccountCategoryUseCase } from './create-account-category.ts'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error.ts'
 import { CategoryAlreadyExistsError } from './errors/category-already-exists-error.ts'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 
 let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
@@ -31,16 +32,21 @@ describe('Create category use case', () => {
   })
 
   it('should be able to create a category', async () => {
-    const member = await makeMember()
-    await membersRepository.create(member)
+    await membersRepository.create(
+      await makeMember({}, new UniqueEntityID('member-1')),
+    )
 
-    const account = await makeAccount({
-      holderId: member.id,
-    })
-    await accountsRepository.create(account)
+    await accountsRepository.create(
+      makeAccount(
+        {
+          holderId: new UniqueEntityID('member-1'),
+        },
+        new UniqueEntityID('account-1'),
+      ),
+    )
 
     const result = await sut.execute({
-      memberId: member.id.toString(),
+      memberId: 'member-1',
       categoryName: 'Expenses from School',
     })
 
@@ -62,11 +68,12 @@ describe('Create category use case', () => {
   })
 
   it('should not be able to create a category from a member does not have a account', async () => {
-    const member = await makeMember()
-    await membersRepository.create(member)
+    await membersRepository.create(
+      await makeMember({}, new UniqueEntityID('member-1')),
+    )
 
     const result = await sut.execute({
-      memberId: member.id.toString(),
+      memberId: 'member-1',
       categoryName: 'Expenses from School',
     })
 
@@ -75,22 +82,27 @@ describe('Create category use case', () => {
   })
 
   it('should not be able to create two category with same slug to one account', async () => {
-    const member = await makeMember()
-    await membersRepository.create(member)
+    await membersRepository.create(
+      await makeMember({}, new UniqueEntityID('member-1')),
+    )
 
-    const account = await makeAccount({
-      holderId: member.id,
-    })
-    await accountsRepository.create(account)
+    await accountsRepository.create(
+      makeAccount(
+        {
+          holderId: new UniqueEntityID('member-1'),
+        },
+        new UniqueEntityID('account-1'),
+      ),
+    )
 
     await sut.execute({
-      memberId: member.id.toString(),
-      categoryName: 'Expenses from School',
+      memberId: 'member-1',
+      categoryName: 'Sport expenses',
     })
 
     const result = await sut.execute({
-      memberId: member.id.toString(),
-      categoryName: 'Expenses from School',
+      memberId: 'member-1',
+      categoryName: 'Sport expenses',
     })
 
     expect(result.isLeft()).toBe(true)
@@ -98,21 +110,26 @@ describe('Create category use case', () => {
   })
 
   it('should be able to create two category with different slug to one account', async () => {
-    const member = await makeMember()
-    await membersRepository.create(member)
+    await membersRepository.create(
+      await makeMember({}, new UniqueEntityID('member-1')),
+    )
 
-    const account = await makeAccount({
-      holderId: member.id,
-    })
-    await accountsRepository.create(account)
+    await accountsRepository.create(
+      makeAccount(
+        {
+          holderId: new UniqueEntityID('member-1'),
+        },
+        new UniqueEntityID('account-1'),
+      ),
+    )
 
     const result1 = await sut.execute({
-      memberId: member.id.toString(),
+      memberId: 'member-1',
       categoryName: 'Sport expenses',
     })
 
     const result2 = await sut.execute({
-      memberId: member.id.toString(),
+      memberId: 'member-1',
       categoryName: 'Expenses from School',
     })
 
@@ -123,8 +140,8 @@ describe('Create category use case', () => {
       expect(result1.value.category.slug.value).toBe('sport-expenses')
       expect(result2.value.category.slug.value).toBe('expenses-from-school')
 
-      expect(result1.value.category.accountId).toBe(account.id)
-      expect(result2.value.category.accountId).toBe(account.id)
+      expect(result1.value.category.accountId.toString()).toBe('account-1')
+      expect(result2.value.category.accountId.toString()).toBe('account-1')
     }
   })
 })

@@ -20,7 +20,7 @@ let categoriesRepository: ICategoriesRepository
 
 let sut: FetchAccountTransactionsByCategoryUseCase
 
-describe('Fetch account summary use case', () => {
+describe('Fetch account trasanctions by interval and category use case', () => {
   beforeEach(() => {
     membersRepository = new InMemoryMembersRepository()
     accountsRepository = new InMemoryAccountsRepository()
@@ -41,7 +41,7 @@ describe('Fetch account summary use case', () => {
     vi.useRealTimers()
   })
 
-  it('should be able to get account summary by category', async () => {
+  it('should be able to fetch transactions by category and time interval', async () => {
     vi.setSystemTime(new Date(2025, 0, 13))
 
     await membersRepository.create(
@@ -52,7 +52,6 @@ describe('Fetch account summary use case', () => {
       makeAccount(
         {
           holderId: new UniqueEntityID('member-1'),
-          balance: 250,
         },
         new UniqueEntityID('account-1'),
       ),
@@ -79,8 +78,10 @@ describe('Fetch account summary use case', () => {
       ),
     )
 
+    vi.setSystemTime(new Date(2025, 1, 13))
+
     await Promise.all(
-      Array.from({ length: 7 }, () =>
+      Array.from({ length: 2 }, () =>
         transactionsRepository.create(
           makeTransaction({
             accountId: new UniqueEntityID('account-1'),
@@ -92,93 +93,17 @@ describe('Fetch account summary use case', () => {
     const result = await sut.execute({
       memberId: 'member-1',
       categoryId: 'category-1',
-      startDate: new Date(2025, 0, 12),
-      endDate: new Date(2025, 0, 14),
+      startDate: new Date(2025, 0, 1),
+      endDate: new Date(2025, 1, 28),
+      limit: 10,
+      page: 1,
     })
 
     expect(result.isRight()).toBe(true)
 
     if (result.isRight()) {
-      expect(transactionsRepository.items).toHaveLength(10)
+      expect(transactionsRepository.items).toHaveLength(5)
       expect(result.value.transactions).toHaveLength(3)
-    }
-  })
-
-  it('should be able to get account summary by time interval and category', async () => {
-    vi.setSystemTime(new Date(2025, 0, 13))
-
-    await membersRepository.create(
-      await makeMember({}, new UniqueEntityID('member-1')),
-    )
-
-    await accountsRepository.create(
-      makeAccount(
-        {
-          holderId: new UniqueEntityID('member-1'),
-          balance: 250,
-        },
-        new UniqueEntityID('account-1'),
-      ),
-    )
-
-    await categoriesRepository.create(
-      makeCategory(
-        {
-          accountId: new UniqueEntityID('account-1'),
-          name: 'Sports',
-        },
-        new UniqueEntityID('category-1'),
-      ),
-    )
-
-    await Promise.all(
-      Array.from({ length: 3 }, () =>
-        transactionsRepository.create(
-          makeTransaction({
-            accountId: new UniqueEntityID('account-1'),
-            categoryId: new UniqueEntityID('category-1'),
-          }),
-        ),
-      ),
-    )
-
-    vi.setSystemTime(new Date(2025, 0, 14))
-
-    await Promise.all(
-      Array.from({ length: 5 }, () =>
-        transactionsRepository.create(
-          makeTransaction({
-            accountId: new UniqueEntityID('account-1'),
-          }),
-        ),
-      ),
-    )
-
-    vi.setSystemTime(new Date(2025, 0, 15))
-
-    await Promise.all(
-      Array.from({ length: 4 }, () =>
-        transactionsRepository.create(
-          makeTransaction({
-            accountId: new UniqueEntityID('account-1'),
-            categoryId: new UniqueEntityID('category-1'),
-          }),
-        ),
-      ),
-    )
-
-    const resultByCategory1 = await sut.execute({
-      memberId: 'member-1',
-      categoryId: 'category-1',
-      startDate: new Date(2025, 0, 12),
-      endDate: new Date(2025, 0, 16),
-    })
-
-    expect(resultByCategory1.isRight()).toBe(true)
-
-    if (resultByCategory1.isRight()) {
-      expect(transactionsRepository.items).toHaveLength(12)
-      expect(resultByCategory1.value.transactions).toHaveLength(7)
     }
   })
 })

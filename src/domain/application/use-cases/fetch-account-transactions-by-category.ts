@@ -10,12 +10,16 @@ import dayjs from 'dayjs'
 import { ICategoriesRepository } from '../repositories/categories-repository'
 import { InvalidCategoryAccountRelationError } from './errors/invalid-category-account-relation-error'
 import { Category } from '@/domain/enterprise/entites/category'
+import { Pagination } from '@/core/repositories/pagination'
+import { DateInterval } from '@/core/repositories/date-interval'
 
 interface FetchAccountTransactionsByCategoryUseCaseRequest {
   memberId: string
   categoryId: string
   startDate: Date
   endDate: Date
+  limit: number
+  page: number
 }
 
 type FetchAccountTransactionsByCategoryUseCaseResponse = Either<
@@ -25,6 +29,8 @@ type FetchAccountTransactionsByCategoryUseCaseResponse = Either<
   | InvalidCategoryAccountRelationError,
   {
     transactions: Transaction[]
+    interval: DateInterval
+    pagination: Pagination
     category: Category
   }
 >
@@ -42,6 +48,8 @@ export class FetchAccountTransactionsByCategoryUseCase {
     categoryId,
     startDate,
     endDate,
+    limit = 10,
+    page,
   }: FetchAccountTransactionsByCategoryUseCaseRequest): Promise<FetchAccountTransactionsByCategoryUseCaseResponse> {
     const startDateJs = dayjs(startDate)
     const endDateJs = dayjs(endDate)
@@ -72,18 +80,22 @@ export class FetchAccountTransactionsByCategoryUseCase {
       return left(new InvalidCategoryAccountRelationError())
     }
 
+    const interval = { startDate, endDate }
+
+    const pagination = { limit, page }
+
     const transactions =
-      await this.transactionsRepository.findManyByAccountIdAndIntervalAndCategory(
+      await this.transactionsRepository.listByIntervalAndAccountIdAndCategory(
         account.id.toString(),
         category.id.toString(),
-        {
-          startDate,
-          endDate,
-        },
+        interval,
+        pagination,
       )
 
     return right({
       transactions,
+      interval,
+      pagination,
       category,
     })
   }

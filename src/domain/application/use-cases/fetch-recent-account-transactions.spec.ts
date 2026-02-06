@@ -66,9 +66,8 @@ describe('Fetch recent account transactions use case', () => {
 
     const result = await sut.execute({
       memberId: 'member-1',
-      pagination: {
-        page: 1,
-      },
+      limit: 10,
+      page: 1,
     })
 
     expect(result.isRight()).toBe(true)
@@ -108,9 +107,8 @@ describe('Fetch recent account transactions use case', () => {
 
     const result = await sut.execute({
       memberId: 'member-1',
-      pagination: {
-        page: 2,
-      },
+      limit: 10,
+      page: 2,
     })
 
     expect(result.isRight()).toBe(true)

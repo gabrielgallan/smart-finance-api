@@ -3,6 +3,7 @@ import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-mem
 import { Hash } from '@/domain/enterprise/entites/value-objects/hash.ts'
 import { makeMember } from 'tests/factories/make-member.ts'
 import { EditMemberProfileUseCase } from './edit-member-profile.ts'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 
 let membersRepository: IMembersRepository
 let sut: EditMemberProfileUseCase
@@ -13,16 +14,19 @@ describe('Edit member profile use case', () => {
     sut = new EditMemberProfileUseCase(membersRepository)
   })
 
-  it('should be able to authenticate a member', async () => {
-    const member = await makeMember({
-      email: 'johndoe@email.com',
-      password: await Hash.create('johnDoe123'),
-    })
-
-    await membersRepository.create(member)
+  it('should be able to edit a member profile', async () => {
+    await membersRepository.create(
+      await makeMember(
+        {
+          email: 'johndoe@email.com',
+          password: await Hash.create('johnDoe123'),
+        },
+        new UniqueEntityID('member-1'),
+      ),
+    )
 
     const result = await sut.execute({
-      memberId: member.id.toString(),
+      memberId: 'member-1',
       email: 'newjohn@email.com',
       password: 'newJohnPass',
     })
@@ -30,10 +34,10 @@ describe('Edit member profile use case', () => {
     expect(result.isRight()).toBe(true)
 
     if (result.isRight()) {
-      expect(result.value.member.email).toBe('newjohn@email.com')
+      expect(membersRepository.items[0].email).toBe('newjohn@email.com')
 
       const passCorrect =
-        await result.value.member.password.compare('newJohnPass')
+        await membersRepository.items[0].password.compare('newJohnPass')
       expect(passCorrect).toBe(true)
     }
   })

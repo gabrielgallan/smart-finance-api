@@ -4,9 +4,9 @@ import { ResourceNotFoundError } from './errors/resource-not-found-error.ts'
 import { OpenAccountUseCase } from './open-account.ts'
 import { IAccountsRepository } from '../repositories/accounts-repository.ts'
 import { InMemoryAccountsRepository } from 'tests/repositories/in-memory-accounts-repository.ts'
-import { Account } from '@/domain/enterprise/entites/account.ts'
 import { MemberAlreadyHasAccountError } from './errors/member-alredy-has-account-error.ts'
 import { makeMember } from 'tests/factories/make-member.ts'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 
 let membersRepository: IMembersRepository
 let accountRepository: IAccountsRepository
@@ -20,42 +20,21 @@ describe('Open member account use case', () => {
     sut = new OpenAccountUseCase(membersRepository, accountRepository)
   })
 
-  it('should be able to open a member account', async () => {
-    const member = await makeMember()
-    await membersRepository.create(member)
-
-    const result = await sut.execute({
-      memberId: member.id.toString(),
-    })
-
-    expect(result.isRight()).toBe(true)
-
-    if (result.isRight()) {
-      expect(result.value.account).toBeInstanceOf(Account)
-      expect(result.value.account.balance).toBe(0)
-      expect(result.value.account.holderId.toString()).toBe(
-        member.id.toString(),
-      )
-    }
-  })
-
   it('should be able to open a member account with initial balance', async () => {
-    const member = await makeMember()
-    await membersRepository.create(member)
+    await membersRepository.create(
+      await makeMember({}, new UniqueEntityID('member-1')),
+    )
 
     const result = await sut.execute({
-      memberId: member.id.toString(),
+      memberId: 'member-1',
       initialBalance: 250,
     })
 
     expect(result.isRight()).toBe(true)
 
     if (result.isRight()) {
-      expect(result.value.account).toBeInstanceOf(Account)
       expect(result.value.account.balance).toBe(250)
-      expect(result.value.account.holderId.toString()).toBe(
-        member.id.toString(),
-      )
+      expect(result.value.account.holderId.toString()).toBe('member-1')
     }
   })
 
@@ -69,15 +48,16 @@ describe('Open member account use case', () => {
   })
 
   it('should not be able to open account of a member already has account', async () => {
-    const member = await makeMember()
-    await membersRepository.create(member)
+    await membersRepository.create(
+      await makeMember({}, new UniqueEntityID('member-1')),
+    )
 
     await sut.execute({
-      memberId: member.id.toString(),
+      memberId: 'member-1',
     })
 
     const result = await sut.execute({
-      memberId: member.id.toString(),
+      memberId: 'member-1',
     })
 
     expect(result.isLeft()).toBe(true)

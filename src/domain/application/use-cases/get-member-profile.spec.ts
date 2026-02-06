@@ -3,6 +3,7 @@ import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-mem
 import { ResourceNotFoundError } from './errors/resource-not-found-error.ts'
 import { GetMemberProfileUseCase } from './get-member-profile.ts'
 import { makeMember } from 'tests/factories/make-member.ts'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 
 let membersRepository: IMembersRepository
 let sut: GetMemberProfileUseCase
@@ -14,13 +15,17 @@ describe('Get member profile use case', () => {
   })
 
   it('should be able to get a member profile', async () => {
-    const member = await makeMember({
-      email: 'johndoe@email.com',
-    })
-    await membersRepository.create(member)
+    await membersRepository.create(
+      await makeMember(
+        {
+          email: 'johndoe@email.com',
+        },
+        new UniqueEntityID('member-1'),
+      ),
+    )
 
     const result = await sut.execute({
-      memberId: member.id.toString(),
+      memberId: 'member-1',
     })
 
     expect(result.isRight()).toBe(true)

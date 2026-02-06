@@ -14,6 +14,7 @@ import { ICategoriesRepository } from '../repositories/categories-repository.ts'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error.ts'
 import { makeCategory } from 'tests/factories/make-category.ts'
 import { InvalidCategoryAccountRelationError } from './errors/invalid-category-account-relation-error.ts'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 
 let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
@@ -146,11 +147,12 @@ describe('Create transaction use case', () => {
   })
 
   it('should not be able to create transactions from a member does not have account', async () => {
-    const member = await makeMember()
-    await membersRepository.create(member)
+    await membersRepository.create(
+      await makeMember({}, new UniqueEntityID('member-1')),
+    )
 
     const result = await sut.execute({
-      memberId: member.id.toString(),
+      memberId: 'member-1',
       title: 'Pay Account Debt',
       amount: 450.55,
       operation: 'expense',
@@ -161,24 +163,33 @@ describe('Create transaction use case', () => {
   })
 
   it('should be able to create transactions from a category', async () => {
-    const member = await makeMember()
-    await membersRepository.create(member)
+    await membersRepository.create(
+      await makeMember({}, new UniqueEntityID('member-1')),
+    )
 
-    const account = await makeAccount({
-      holderId: member.id,
-      balance: 100,
-    })
+    const account = makeAccount(
+      {
+        holderId: new UniqueEntityID('member-1'),
+        balance: 100,
+      },
+      new UniqueEntityID('account-1'),
+    )
+
     await accountsRepository.create(account)
 
-    const category = await makeCategory({
-      accountId: account.id,
-      name: 'Transport',
-    })
-    await categoriesRepository.create(category)
+    await categoriesRepository.create(
+      makeCategory(
+        {
+          accountId: new UniqueEntityID('account-1'),
+          name: 'Transport',
+        },
+        new UniqueEntityID('category-1'),
+      ),
+    )
 
     const result = await sut.execute({
-      memberId: member.id.toString(),
-      categoryId: category.id.toString(),
+      memberId: 'member-1',
+      categoryId: 'category-1',
       title: 'Uber',
       amount: 25.9,
       operation: 'expense',
@@ -190,25 +201,31 @@ describe('Create transaction use case', () => {
       expect(result.value.transaction.isExpense()).toBe(true)
       expect(result.value.transaction.amount).toBe(25.9)
       expect(account.balance).toBe(74.1)
-      expect(result.value.transaction.categoryId).toStrictEqual(category.id)
+      expect(result.value.transaction.categoryId?.toString()).toBe('category-1')
     }
   })
 
   it('should not be able to create transactions from a category of another account', async () => {
-    const member = await makeMember()
-    await membersRepository.create(member)
+    await membersRepository.create(
+      await makeMember({}, new UniqueEntityID('member-1')),
+    )
 
-    const account = await makeAccount({
-      holderId: member.id,
-    })
-    await accountsRepository.create(account)
+    await accountsRepository.create(
+      makeAccount(
+        {
+          holderId: new UniqueEntityID('member-1'),
+        },
+        new UniqueEntityID('account-1'),
+      ),
+    )
 
-    const category = await makeCategory()
-    await categoriesRepository.create(category)
+    await categoriesRepository.create(
+      makeCategory({}, new UniqueEntityID('category-1')),
+    )
 
     const result = await sut.execute({
-      memberId: member.id.toString(),
-      categoryId: category.id.toString(),
+      memberId: 'member-1',
+      categoryId: 'category-1',
       title: 'Uber',
       amount: 25.9,
       operation: 'expense',

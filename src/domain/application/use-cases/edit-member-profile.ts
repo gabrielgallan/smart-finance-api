@@ -3,7 +3,6 @@ import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { Either, left, right } from '@/core/either'
 import { MemberAlreadyExistsError } from './errors/member-already-exists-error'
 import { Hash } from '@/domain/enterprise/entites/value-objects/hash'
-import { Member } from '@/domain/enterprise/entites/member'
 
 interface EditMemberProfileUseCaseRequest {
   memberId: string
@@ -13,7 +12,7 @@ interface EditMemberProfileUseCaseRequest {
 
 type EditMemberProfileUseCaseResponse = Either<
   ResourceNotFoundError | MemberAlreadyExistsError,
-  { member: Member }
+  null
 >
 
 export class EditMemberProfileUseCase {
@@ -50,8 +49,6 @@ export class EditMemberProfileUseCase {
 
     await this.membersRepository.save(member)
 
-    return right({
-      member,
-    })
+    return right(null)
   }
 }

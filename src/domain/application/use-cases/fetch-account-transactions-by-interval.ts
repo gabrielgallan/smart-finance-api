@@ -7,17 +7,23 @@ import { Transaction } from '@/domain/enterprise/entites/transaction'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import { InvalidPeriodError } from './errors/invalid-period-error'
 import dayjs from 'dayjs'
+import { Pagination } from '@/core/repositories/pagination'
+import { DateInterval } from '@/core/repositories/date-interval'
 
 interface FetchAccountTransactionsByIntervalUseCaseRequest {
   memberId: string
   startDate: Date
   endDate: Date
+  limit: number
+  page: number
 }
 
 type FetchAccountTransactionsByIntervalUseCaseResponse = Either<
   ResourceNotFoundError | MemberAccountNotFoundError | InvalidPeriodError,
   {
     transactions: Transaction[]
+    interval: DateInterval
+    pagination: Pagination
   }
 >
 
@@ -32,6 +38,8 @@ export class FetchAccountTransactionsByIntervalUseCase {
     memberId,
     startDate,
     endDate,
+    limit = 10,
+    page,
   }: FetchAccountTransactionsByIntervalUseCaseRequest): Promise<FetchAccountTransactionsByIntervalUseCaseResponse> {
     const startDateJs = dayjs(startDate)
     const endDateJs = dayjs(endDate)
@@ -52,17 +60,21 @@ export class FetchAccountTransactionsByIntervalUseCase {
       return left(new MemberAccountNotFoundError())
     }
 
+    const interval = { startDate, endDate }
+
+    const pagination = { limit, page }
+
     const transactions =
-      await this.transactionsRepository.findManyByAccountIdAndInterval(
+      await this.transactionsRepository.listByIntervalAndAccountId(
         account.id.toString(),
-        {
-          startDate,
-          endDate,
-        },
+        interval,
+        pagination,
       )
 
     return right({
       transactions,
+      interval,
+      pagination,
     })
   }
 }

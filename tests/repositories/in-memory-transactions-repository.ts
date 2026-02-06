@@ -18,13 +18,51 @@ export class InMemoryTransactionsRepository implements ITransactionsRepository {
         return transaction ?? null
     }
     
-    async findManyRecentByAccountId({ page }: Pagination, accountId: string) {
+    async listRecentByAccountId(accountId: string, { limit, page }: Pagination) {
         const transactions = this.items
-        .filter(t => t.accountId.toString() === accountId)
-        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-        .slice((page - 1) * 10, page * 10)
+            .filter(t => t.accountId.toString() === accountId)
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+            .slice((page - 1) * limit, page * limit)
         
         return transactions
+    }
+
+    async listByIntervalAndAccountId(
+        accountId: string,
+        { startDate, endDate }: DateInterval,
+        { limit, page }: Pagination
+    ) {
+        const transactionsByInterval = this.items.filter((t) => {
+            return  t.accountId.toString() === accountId &&
+                t.createdAt.getTime() >= startDate.getTime() &&
+                t.createdAt.getTime() <= endDate.getTime()
+        })
+
+        const transactionsPagineted = transactionsByInterval
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+            .slice((page - 1) * limit, page * limit)
+        
+        return transactionsPagineted
+    }
+
+    async listByIntervalAndAccountIdAndCategory(
+        accountId: string,
+        catedoryId: string,
+        { startDate, endDate }: DateInterval,
+        { limit, page }: Pagination
+    ) {
+        const transactionsByIntervalAndCategory = this.items.filter((t) => {
+            return  t.accountId.toString() === accountId &&
+                t.categoryId?.toString() === catedoryId &&
+                t.createdAt.getTime() >= startDate.getTime() &&
+                t.createdAt.getTime() <= endDate.getTime()
+        })
+
+        const transactionsPagineted = transactionsByIntervalAndCategory
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+            .slice((page - 1) * limit, page * limit)
+        
+        return transactionsPagineted
     }
     
     async findManyByAccountIdAndInterval(
@@ -45,13 +83,14 @@ export class InMemoryTransactionsRepository implements ITransactionsRepository {
         catedoryId: string,
         { startDate, endDate }: DateInterval,
     ) {
-        const transactionsByInterval = this.items.filter((t) => {
+        const transactionsByIntervalAndCategory = this.items.filter((t) => {
             return  t.accountId.toString() === accountId &&
+                t.categoryId?.toString() === catedoryId &&
                 t.createdAt.getTime() >= startDate.getTime() &&
                 t.createdAt.getTime() <= endDate.getTime()
         })
 
-        return catedoryId ? transactionsByInterval.filter(t => t.categoryId?.toString() === catedoryId) : transactionsByInterval
+        return transactionsByIntervalAndCategory
     }
 
     async save(transaction: Transaction) {

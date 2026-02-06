@@ -17,12 +17,15 @@ describe('Authenticate member use case', () => {
   })
 
   it('should be able to authenticate a member', async () => {
-    const member = await makeMember({
-      email: 'johndoe@email.com',
-      password: await Hash.create('johnDoe123'),
-    })
-
-    await membersRepository.create(member)
+    await membersRepository.create(
+      await makeMember(
+        {
+          email: 'johndoe@email.com',
+          password: await Hash.create('johnDoe123'),
+        },
+        new UniqueEntityID('member-1'),
+      ),
+    )
 
     const result = await sut.execute({
       email: 'johndoe@email.com',
@@ -33,7 +36,7 @@ describe('Authenticate member use case', () => {
 
     if (result.isRight()) {
       expect(result.value.memberId).toBeInstanceOf(UniqueEntityID)
-      expect(result.value.memberId.toString()).toBe(member.id.toString())
+      expect(result.value.memberId.toString()).toBe('member-1')
     }
   })
 
@@ -48,12 +51,12 @@ describe('Authenticate member use case', () => {
   })
 
   it('should not be able to authenticate a member with incorrect credentials', async () => {
-    const member = await makeMember({
-      email: 'johndoe@email.com',
-      password: await Hash.create('johnDoe123'),
-    })
-
-    await membersRepository.create(member)
+    await membersRepository.create(
+      await makeMember({
+        email: 'johndoe@email.com',
+        password: await Hash.create('johnDoe123'),
+      }),
+    )
 
     const result = await sut.execute({
       email: 'johndoe@email.com',

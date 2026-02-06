@@ -9,7 +9,8 @@ import { Pagination } from '@/core/repositories/pagination'
 
 interface FetchRecentAccountTransactionsUseCaseRequest {
   memberId: string
-  pagination: Pagination
+  limit: number
+  page: number
 }
 
 type FetchRecentAccountTransactionsUseCaseResponse = Either<
@@ -29,7 +30,8 @@ export class FetchRecentAccountTransactionsUseCase {
 
   async execute({
     memberId,
-    pagination,
+    limit = 10,
+    page,
   }: FetchRecentAccountTransactionsUseCaseRequest): Promise<FetchRecentAccountTransactionsUseCaseResponse> {
     const member = await this.membersRepository.findById(memberId)
 
@@ -43,10 +45,12 @@ export class FetchRecentAccountTransactionsUseCase {
       return left(new MemberAccountNotFoundError())
     }
 
+    const pagination = { limit, page }
+
     const transactions =
-      await this.transactionsRepository.findManyRecentByAccountId(
-        pagination,
+      await this.transactionsRepository.listRecentByAccountId(
         account.id.toString(),
+        pagination,
       )
 
     return right({

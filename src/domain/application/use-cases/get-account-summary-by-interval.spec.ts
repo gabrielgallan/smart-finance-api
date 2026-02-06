@@ -17,7 +17,7 @@ let transactionsRepository: ITransactionsRepository
 
 let sut: GetAccountSummaryByIntervalUseCase
 
-describe('Fetch account summary use case', () => {
+describe('Get account summary by interval use case', () => {
   beforeEach(() => {
     membersRepository = new InMemoryMembersRepository()
     accountsRepository = new InMemoryAccountsRepository()

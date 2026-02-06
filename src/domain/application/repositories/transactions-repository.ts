@@ -5,9 +5,20 @@ import { DateInterval } from '@/core/repositories/date-interval'
 export interface ITransactionsRepository {
   create(Transaction: Transaction): Promise<void>
   findById(id: string): Promise<Transaction | null>
-  findManyRecentByAccountId(
-    pagination: Pagination,
+  listRecentByAccountId(
     accountId: string,
+    pagination: Pagination,
+  ): Promise<Transaction[]>
+  listByIntervalAndAccountId(
+    accountId: string,
+    interval: DateInterval,
+    pagination: Pagination,
+  ): Promise<Transaction[]>
+  listByIntervalAndAccountIdAndCategory(
+    accountId: string,
+    categoryId: string,
+    interval: DateInterval,
+    pagination: Pagination,
   ): Promise<Transaction[]>
   findManyByAccountIdAndInterval(
     accountId: string,
