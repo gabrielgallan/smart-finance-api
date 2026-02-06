@@ -28,17 +28,18 @@ export class InMemoryTransactionsRepository implements ITransactionsRepository {
         return transactions
     }
     
-    async findManyByAccountIdAndDatetime(
+    async findManyByIntervalAndCategory(
         accountId: string, 
-        { startDate, endDate }: Datetime
+        { startDate, endDate }: Datetime,
+        catedoryId?: string
     ) {
-        const transactions = this.items.filter((t) => {
-            return t.accountId.toString() === accountId &&
+        const transactionsByInterval = this.items.filter((t) => {
+            return  t.accountId.toString() === accountId &&
                 t.createdAt.getTime() >= startDate.getTime() &&
                 t.createdAt.getTime() <= endDate.getTime()
         })
 
-        return transactions
+        return catedoryId ? transactionsByInterval.filter(t => t.categoryId?.toString() === catedoryId) : transactionsByInterval
     }
 
     async save(transaction: Transaction) {
