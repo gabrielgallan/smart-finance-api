@@ -9,9 +9,10 @@ export interface ITransactionsRepository {
     pagination: Pagination,
     accountId: string,
   ): Promise<Transaction[]>
-  findManyByAccountIdAndDatetime(
+  findManyByIntervalAndCategory(
     accountId: string,
     datetime: Datetime,
+    categoryId?: string,
   ): Promise<Transaction[]>
   save(transaction: Transaction): Promise<Transaction>
 }
