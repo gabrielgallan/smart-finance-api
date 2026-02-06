@@ -2,7 +2,7 @@ import { IAccountsRepository } from "@/domain/application/repositories/accounts-
 import { Account } from "@/domain/enterprise/entites/account";
 
 export class InMemoryAccountsRepository implements IAccountsRepository {
-    private items: Account[] = []
+    public items: Account[] = []
 
     async create(account: Account) {
         this.items.push(account)

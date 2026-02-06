@@ -6,6 +6,7 @@ import { MemberAccountNotFoundError } from './errors/member-account-not-found-er
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import dayjs from 'dayjs'
 import { InvalidPeriodError } from './errors/invalid-period-error'
+import { AccountSummary } from '@/domain/enterprise/entites/account-summary'
 
 interface GetAccountSummaryByIntervalUseCaseRequest {
   memberId: string
@@ -17,10 +18,7 @@ type GetAccountSummaryByIntervalUseCaseResponse = Either<
   ResourceNotFoundError | MemberAccountNotFoundError,
   {
     currentBalance: number
-    periodNetBalance: number
-    totalIncome: number
-    totalExpense: number
-    transactionsCount: number
+    accountSummary: AccountSummary
   }
 >
 
@@ -56,7 +54,7 @@ export class GetAccountSummaryByIntervalUseCase {
     }
 
     const transactions =
-      await this.transactionsRepository.findManyByIntervalAndCategory(
+      await this.transactionsRepository.findManyByAccountIdAndInterval(
         account.id.toString(),
         {
           startDate,
@@ -64,22 +62,30 @@ export class GetAccountSummaryByIntervalUseCase {
         },
       )
 
-    const totalIncome = transactions
-      .filter((t) => t.isIncome())
+    // => Income
+    const incomeTransactions = transactions.filter((t) => t.isIncome())
+
+    const totalIncome = incomeTransactions
       .map((t) => t.amount)
       .reduce((at, acc) => at + acc, 0)
 
-    const totalExpense = transactions
-      .filter((t) => t.isExpense())
+    // => Expenses
+    const expenseTransactions = transactions.filter((t) => t.isExpense())
+
+    const totalExpense = expenseTransactions
       .map((t) => t.amount)
       .reduce((at, acc) => at + acc, 0)
 
-    return right({
-      currentBalance: account.balance,
-      periodNetBalance: totalIncome - totalExpense,
+    const accountSummary = AccountSummary.create({
+      accountId: account.id,
       totalIncome,
       totalExpense,
       transactionsCount: transactions.length,
+    })
+
+    return right({
+      currentBalance: account.balance,
+      accountSummary,
     })
   }
 }

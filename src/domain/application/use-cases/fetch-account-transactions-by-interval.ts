@@ -53,7 +53,7 @@ export class FetchAccountTransactionsByIntervalUseCase {
     }
 
     const transactions =
-      await this.transactionsRepository.findManyByIntervalAndCategory(
+      await this.transactionsRepository.findManyByAccountIdAndInterval(
         account.id.toString(),
         {
           startDate,
