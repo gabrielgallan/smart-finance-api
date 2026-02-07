@@ -10,7 +10,7 @@ export default defineConfig({
         test: {
           name: 'unit',
           globals: true,
-          include: ['src/domain/application/use-cases/**/*.spec.ts'],
+          include: ['src/domain/finance-manager/application/use-cases/**/*.spec.ts'],
           environment: 'node',
         },
       }),
