@@ -6,7 +6,7 @@ import { Either, left, right } from '@/core/either'
 import {
   Transaction,
   TransactionOperation,
-} from '@/domain/finance-manager/enterprise/entites/transaction'
+} from '@/domain/finances/enterprise/entites/transaction'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InvalidTransactionOperationError } from './errors/invalid-transaction-operation-error'

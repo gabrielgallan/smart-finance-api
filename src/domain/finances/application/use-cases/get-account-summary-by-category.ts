@@ -6,34 +6,42 @@ import { MemberAccountNotFoundError } from './errors/member-account-not-found-er
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import dayjs from 'dayjs'
 import { InvalidPeriodError } from './errors/invalid-period-error'
-import { AccountSummary } from '@/domain/finance-manager/enterprise/entites/account-summary'
+import { InvalidCategoryAccountRelationError } from './errors/invalid-category-account-relation-error'
+import { ICategoriesRepository } from '../repositories/categories-repository'
+import { findHighestOperationDay } from '../utils/find-highest-operation-day'
+import { CategorySummary } from '../../enterprise/entites/category-summary'
 
-interface GetAccountSummaryByIntervalUseCaseRequest {
+interface GetAccountSummaryByCategoryUseCaseRequest {
   memberId: string
+  categoryId: string
   startDate: Date
   endDate: Date
 }
 
-type GetAccountSummaryByIntervalUseCaseResponse = Either<
-  ResourceNotFoundError | MemberAccountNotFoundError,
+type GetAccountSummaryByCategoryUseCaseResponse = Either<
+  | ResourceNotFoundError
+  | MemberAccountNotFoundError
+  | InvalidCategoryAccountRelationError,
   {
     currentBalance: number
-    accountSummary: AccountSummary
+    categorySummary: CategorySummary
   }
 >
 
-export class GetAccountSummaryByIntervalUseCase {
+export class GetAccountSummaryByCategoryUseCase {
   constructor(
     private membersRepository: IMembersRepository,
     private accountsRepository: IAccountsRepository,
     private transactionsRepository: ITransactionsRepository,
+    private categoriesRepository: ICategoriesRepository,
   ) {}
 
   async execute({
     memberId,
+    categoryId,
     startDate,
     endDate,
-  }: GetAccountSummaryByIntervalUseCaseRequest): Promise<GetAccountSummaryByIntervalUseCaseResponse> {
+  }: GetAccountSummaryByCategoryUseCaseRequest): Promise<GetAccountSummaryByCategoryUseCaseResponse> {
     const startDateJs = dayjs(startDate)
     const endDateJs = dayjs(endDate)
 
@@ -53,9 +61,20 @@ export class GetAccountSummaryByIntervalUseCase {
       return left(new MemberAccountNotFoundError())
     }
 
+    const category = await this.categoriesRepository.findById(categoryId)
+
+    if (!category) {
+      return left(new ResourceNotFoundError())
+    }
+
+    if (category.accountId.toString() !== account.id.toString()) {
+      return left(new InvalidCategoryAccountRelationError())
+    }
+
     const transactions =
-      await this.transactionsRepository.findManyByAccountIdAndInterval(
+      await this.transactionsRepository.findManyByAccountIdAndIntervalAndCategory(
         account.id.toString(),
+        category.id.toString(),
         {
           startDate,
           endDate,
@@ -76,16 +95,22 @@ export class GetAccountSummaryByIntervalUseCase {
       .map((t) => t.amount)
       .reduce((at, acc) => at + acc, 0)
 
-    const accountSummary = AccountSummary.create({
-      accountId: account.id,
-      totalIncome,
-      totalExpense,
-      transactionsCount: transactions.length,
-    })
+    const categorySummary = CategorySummary.generate(
+      {
+        accountId: account.id,
+        dateInterval: { startDate, endDate },
+        totalIncome,
+        totalExpense,
+        highestIncomeDay: findHighestOperationDay(incomeTransactions),
+        highestExpenseDay: findHighestOperationDay(expenseTransactions),
+        transactionsCount: transactions.length,
+      },
+      category,
+    )
 
     return right({
       currentBalance: account.balance,
-      accountSummary,
+      categorySummary,
     })
   }
 }

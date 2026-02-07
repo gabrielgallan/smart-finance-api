@@ -1,15 +1,15 @@
-import { RegisterMemberUseCase } from "@/domain/finance-manager/application/use-cases/register-member"
+import { RegisterMemberUseCase } from "@/domain/finances/application/use-cases/register-member"
 import { InMemoryAccountsRepository } from "./repositories/in-memory-accounts-repository"
 import { InMemoryCategoriesRepository } from "./repositories/in-memory-category-repository"
 import { InMemoryMembersRepository } from "./repositories/in-memory-members-repository"
 import { InMemoryTransactionsRepository } from "./repositories/in-memory-transactions-repository"
-import { OpenAccountUseCase } from "@/domain/finance-manager/application/use-cases/open-account"
-import { CreateAccountCategoryUseCase } from "@/domain/finance-manager/application/use-cases/create-account-category"
-import { CreateTransactionUseCase } from "@/domain/finance-manager/application/use-cases/create-transaction"
-import { GetAccountSummaryByIntervalUseCase } from "@/domain/finance-manager/application/use-cases/get-account-summary-by-interval"
-import { GetAccountSummariesByCategoriesUseCase } from "@/domain/finance-manager/application/use-cases/get-account-summaries-by-categories"
-import { FetchRecentAccountTransactionsUseCase } from "@/domain/finance-manager/application/use-cases/fetch-recent-account-transactions"
-import { FetchAccountTransactionsByCategoryUseCase } from "@/domain/finance-manager/application/use-cases/fetch-account-transactions-by-category"
+import { OpenAccountUseCase } from "@/domain/finances/application/use-cases/open-account"
+import { CreateAccountCategoryUseCase } from "@/domain/finances/application/use-cases/create-account-category"
+import { CreateTransactionUseCase } from "@/domain/finances/application/use-cases/create-transaction"
+import { GetAccountSummaryByIntervalUseCase } from "@/domain/finances/application/use-cases/get-account-summary-by-interval"
+import { GetAccountSummariesByCategoriesUseCase } from "@/domain/finances/application/use-cases/get-account-summaries-by-categories"
+import { FetchRecentAccountTransactionsUseCase } from "@/domain/finances/application/use-cases/fetch-recent-account-transactions"
+import { FetchAccountTransactionsByCategoryUseCase } from "@/domain/finances/application/use-cases/fetch-account-transactions-by-category"
 
 const membersRepository = new InMemoryMembersRepository()
 const accountsRepository = new InMemoryAccountsRepository()
@@ -145,7 +145,7 @@ if (transaction.isLeft()) {
 const summary = await getSummaryByInterval.execute({
     memberId: member.value.member.id.toString(),
     startDate: new Date(2026, 1, 6),
-    endDate: new Date(2026, 1, 6, 23, 59, 59)
+    endDate: new Date(2026, 1, 8)
 })
 
 if (summary.isLeft()) {
@@ -157,14 +157,14 @@ console.log(summary.value)
 const summaryByCategories = await getSummaryByCategories.execute({
     memberId: member.value.member.id.toString(),
     startDate: new Date(2026, 1, 6),
-    endDate: new Date(2026, 1, 6, 23, 59, 59)
+    endDate: new Date(2026, 1, 8)
 })
 
 if (summaryByCategories.isLeft()) {
     throw new Error()
 }
 
-summaryByCategories.value.accountSummariesByCategories.forEach(sum => {
+summaryByCategories.value.categoriesSummaries.forEach(sum => {
     console.log(sum)
 })
 

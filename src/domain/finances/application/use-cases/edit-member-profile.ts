@@ -2,7 +2,7 @@ import { IMembersRepository } from '../repositories/members-repository'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { Either, left, right } from '@/core/either'
 import { MemberAlreadyExistsError } from './errors/member-already-exists-error'
-import { Hash } from '@/domain/finance-manager/enterprise/entites/value-objects/hash'
+import { Hash } from '@/domain/finances/enterprise/entites/value-objects/hash'
 
 interface EditMemberProfileUseCaseRequest {
   memberId: string
