@@ -1,7 +1,7 @@
 ## To Fix
 
-- Account Summary Props (include highest days)
-- Account Summary Props (include interval)
+- [ ] Account Summary Props (include highest days)
+- [x] Account Summary Props (include interval)
 
 ## Next Steps
 

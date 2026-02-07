@@ -3,9 +3,9 @@ import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { Either, left, right } from '@/core/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { ICategoriesRepository } from '../repositories/categories-repository'
-import { Category } from '@/domain/finance-manager/enterprise/entites/category'
+import { Category } from '@/domain/finances/enterprise/entites/category'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
-import { Slug } from '@/domain/finance-manager/enterprise/entites/value-objects/slug'
+import { Slug } from '@/domain/finances/enterprise/entites/value-objects/slug'
 import { CategoryAlreadyExistsError } from './errors/category-already-exists-error'
 
 interface CreateAccountCategoryUseCaseRequest {

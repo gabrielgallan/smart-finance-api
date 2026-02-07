@@ -1,4 +1,4 @@
-import { Transaction } from '@/domain/finance-manager/enterprise/entites/transaction'
+import { Transaction } from '@/domain/finances/enterprise/entites/transaction'
 
 export function findHighestOperationDay(
   transactionsByOperation: Transaction[],

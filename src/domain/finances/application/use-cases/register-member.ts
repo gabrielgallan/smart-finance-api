@@ -3,7 +3,7 @@ import { Member } from '../../enterprise/entites/member'
 import { InvalidMemberAgeError } from './errors/invalid-member-age-erros'
 import { IMembersRepository } from '../repositories/members-repository'
 import { MemberAlreadyExistsError } from './errors/member-already-exists-error'
-import { Hash } from '@/domain/finance-manager/enterprise/entites/value-objects/hash'
+import { Hash } from '@/domain/finances/enterprise/entites/value-objects/hash'
 import { Either, left, right } from '@/core/either'
 
 interface RegisterMemberUseCaseRequest {

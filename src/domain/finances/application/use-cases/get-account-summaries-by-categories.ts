@@ -6,10 +6,11 @@ import { MemberAccountNotFoundError } from './errors/member-account-not-found-er
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import dayjs from 'dayjs'
 import { InvalidPeriodError } from './errors/invalid-period-error'
-import { AccountSummary } from '@/domain/finance-manager/enterprise/entites/account-summary'
 import { ICategoriesRepository } from '../repositories/categories-repository'
-import { Category } from '@/domain/finance-manager/enterprise/entites/category'
 import { AnyCategoryFoundForAccountError } from './errors/any-category-found-for-account-error'
+import { findHighestOperationDay } from '../utils/find-highest-operation-day'
+import { AccountSummary } from '../../enterprise/entites/account-summary'
+import { CategorySummary } from '../../enterprise/entites/category-summary'
 
 interface GetAccountSummariesByCategoriesUseCaseRequest {
   memberId: string
@@ -23,10 +24,7 @@ type GetAccountSummariesByCategoriesUseCaseResponse = Either<
   | AnyCategoryFoundForAccountError,
   {
     currentBalance: number
-    accountSummariesByCategories: {
-      accountSummary: AccountSummary
-      category: Category
-    }[]
+    categoriesSummaries: CategorySummary[]
   }
 >
 
@@ -70,10 +68,7 @@ export class GetAccountSummariesByCategoriesUseCase {
       return left(new AnyCategoryFoundForAccountError())
     }
 
-    const accountSummariesByCategories: {
-      accountSummary: AccountSummary
-      category: Category
-    }[] = []
+    const categoriesSummaries: AccountSummary[] = []
 
     for (const category of categories) {
       const transactions =
@@ -100,23 +95,25 @@ export class GetAccountSummariesByCategoriesUseCase {
         .map((t) => t.amount)
         .reduce((at, acc) => at + acc, 0)
 
-      const accountSummary = AccountSummary.create({
-        accountId: account.id,
-        categoryId: category.id,
-        totalIncome,
-        totalExpense,
-        transactionsCount: transactions.length,
-      })
-
-      accountSummariesByCategories.push({
-        accountSummary,
+      const categorySummary = CategorySummary.generate(
+        {
+          accountId: account.id,
+          dateInterval: { startDate, endDate },
+          totalIncome,
+          totalExpense,
+          highestIncomeDay: findHighestOperationDay(incomeTransactions),
+          highestExpenseDay: findHighestOperationDay(expenseTransactions),
+          transactionsCount: transactions.length,
+        },
         category,
-      })
+      )
+
+      categoriesSummaries.push(categorySummary)
     }
 
     return right({
       currentBalance: account.balance,
-      accountSummariesByCategories,
+      categoriesSummaries,
     })
   }
 }

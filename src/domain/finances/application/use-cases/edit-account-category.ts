@@ -4,8 +4,8 @@ import { Either, left, right } from '@/core/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { ICategoriesRepository } from '../repositories/categories-repository'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
-import { Category } from '@/domain/finance-manager/enterprise/entites/category'
-import { Slug } from '@/domain/finance-manager/enterprise/entites/value-objects/slug'
+import { Category } from '@/domain/finances/enterprise/entites/category'
+import { Slug } from '@/domain/finances/enterprise/entites/value-objects/slug'
 import { CategoryAlreadyExistsError } from './errors/category-already-exists-error'
 
 interface EditAccountCategoryUseCaseRequest {

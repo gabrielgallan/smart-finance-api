@@ -3,36 +3,30 @@ import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { Either, left, right } from '@/core/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
-import { Transaction } from '@/domain/finance-manager/enterprise/entites/transaction'
-import { ITransactionsRepository } from '../repositories/transactions-repository'
-import { Pagination } from '@/core/repositories/pagination'
+import { Category } from '@/domain/finances/enterprise/entites/category'
+import { ICategoriesRepository } from '../repositories/categories-repository'
 
-interface FetchRecentAccountTransactionsUseCaseRequest {
+interface FetchAccountCategoriesUseCaseRequest {
   memberId: string
-  limit: number
-  page: number
 }
 
-type FetchRecentAccountTransactionsUseCaseResponse = Either<
+type FetchAccountCategoriesUseCaseResponse = Either<
   ResourceNotFoundError | MemberAccountNotFoundError,
   {
-    transactions: Transaction[]
-    pagination: Pagination
+    categories: Category[]
   }
 >
 
-export class FetchRecentAccountTransactionsUseCase {
+export class FetchAccountCategoriesUseCase {
   constructor(
     private membersRepository: IMembersRepository,
     private accountsRepository: IAccountsRepository,
-    private transactionsRepository: ITransactionsRepository,
+    private categoriesRepository: ICategoriesRepository,
   ) {}
 
   async execute({
     memberId,
-    limit = 10,
-    page,
-  }: FetchRecentAccountTransactionsUseCaseRequest): Promise<FetchRecentAccountTransactionsUseCaseResponse> {
+  }: FetchAccountCategoriesUseCaseRequest): Promise<FetchAccountCategoriesUseCaseResponse> {
     const member = await this.membersRepository.findById(memberId)
 
     if (!member) {
@@ -45,17 +39,12 @@ export class FetchRecentAccountTransactionsUseCase {
       return left(new MemberAccountNotFoundError())
     }
 
-    const pagination = { limit, page }
-
-    const transactions =
-      await this.transactionsRepository.listRecentByAccountId(
-        account.id.toString(),
-        pagination,
-      )
+    const categories = await this.categoriesRepository.findManyByAccountId(
+      account.id.toString(),
+    )
 
     return right({
-      transactions,
-      pagination,
+      categories,
     })
   }
 }
