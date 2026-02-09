@@ -1,11 +1,17 @@
-## To Fix
+# To Fix
 
-- [ ] Account Summary Props (include highest days)
-- [x] Account Summary Props (include interval)
+# Next Goals
 
-## Next Steps
+## Use Cases
 
-- Close Account use case
-- Unregister member use case
-- Include metrics in categories summaries
-- Reports domain
+- [ ] Close Account use case
+- [ ] Unregister member use case
+- [ ] Create financial goal use case
+
+## Sub Domain
+
+- [ ] Notifications domain
+
+## New feature
+
+- [ ] Include metrics in categories summaries

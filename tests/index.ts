@@ -10,6 +10,7 @@ import { GetAccountSummaryByIntervalUseCase } from "@/domain/finances/applicatio
 import { GetAccountSummariesByCategoriesUseCase } from "@/domain/finances/application/use-cases/get-account-summaries-by-categories"
 import { FetchRecentAccountTransactionsUseCase } from "@/domain/finances/application/use-cases/fetch-recent-account-transactions"
 import { FetchAccountTransactionsByCategoryUseCase } from "@/domain/finances/application/use-cases/fetch-account-transactions-by-category"
+import { mapCategoriesSummariesToPercentages } from "@/domain/finances/application/utils/map-summaries-to-percetages"
 
 const membersRepository = new InMemoryMembersRepository()
 const accountsRepository = new InMemoryAccountsRepository()
@@ -164,9 +165,9 @@ if (summaryByCategories.isLeft()) {
     throw new Error()
 }
 
-summaryByCategories.value.categoriesSummaries.forEach(sum => {
-    console.log(sum)
-})
+console.log(summaryByCategories.value.categoriesSummaries)
+
+mapCategoriesSummariesToPercentages(summaryByCategories.value.categoriesSummaries)
 
 const listTransactions = await fetchRecentTransactions.execute({
     memberId: member.value.member.id.toString(),
