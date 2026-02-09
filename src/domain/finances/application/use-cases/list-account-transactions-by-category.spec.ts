@@ -9,7 +9,7 @@ import { ITransactionsRepository } from '../repositories/transactions-repository
 import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 import { ICategoriesRepository } from '../repositories/categories-repository.ts'
 import { InMemoryCategoriesRepository } from 'tests/repositories/in-memory-category-repository.ts'
-import { FetchAccountTransactionsByCategoryUseCase } from './fetch-account-transactions-by-category.ts'
+import { ListAccountTransactionsByCategoryUseCase } from './list-account-transactions-by-category.ts'
 import { makeCategory } from 'tests/factories/make-category.ts'
 import { makeTransaction } from 'tests/factories/make-transaction.ts'
 
@@ -18,16 +18,16 @@ let accountsRepository: IAccountsRepository
 let transactionsRepository: ITransactionsRepository
 let categoriesRepository: ICategoriesRepository
 
-let sut: FetchAccountTransactionsByCategoryUseCase
+let sut: ListAccountTransactionsByCategoryUseCase
 
-describe('Fetch account trasanctions by interval and category use case', () => {
+describe('List account trasanctions by interval and category use case', () => {
   beforeEach(() => {
     membersRepository = new InMemoryMembersRepository()
     accountsRepository = new InMemoryAccountsRepository()
     transactionsRepository = new InMemoryTransactionsRepository()
     categoriesRepository = new InMemoryCategoriesRepository()
 
-    sut = new FetchAccountTransactionsByCategoryUseCase(
+    sut = new ListAccountTransactionsByCategoryUseCase(
       membersRepository,
       accountsRepository,
       transactionsRepository,
@@ -41,7 +41,7 @@ describe('Fetch account trasanctions by interval and category use case', () => {
     vi.useRealTimers()
   })
 
-  it('should be able to fetch transactions by category and time interval', async () => {
+  it('should be able to List transactions by category and time interval', async () => {
     vi.setSystemTime(new Date(2025, 0, 13))
 
     await membersRepository.create(

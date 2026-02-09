@@ -5,4 +5,5 @@ export interface IAccountsRepository {
   findById(id: string): Promise<Account | null>
   findByHolderId(holderId: string): Promise<Account | null>
   save(account: Account): Promise<Account>
+  delete(account: Account): Promise<number>
 }

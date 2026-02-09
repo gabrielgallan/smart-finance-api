@@ -4,14 +4,13 @@
 
 ## Use Cases
 
-- [ ] Close Account use case
-- [ ] Unregister member use case
-- [ ] Create financial goal use case
+- [x] Close Account use case
 
-## Sub Domain
+## Sub Domains
 
 - [ ] Notifications domain
 
 ## New feature
 
-- [ ] Include metrics in categories summaries
+- [ ] Create financial goal
+- [x] Include metrics in categories summaries

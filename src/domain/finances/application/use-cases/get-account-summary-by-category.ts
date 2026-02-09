@@ -10,6 +10,8 @@ import { InvalidCategoryAccountRelationError } from './errors/invalid-category-a
 import { ICategoriesRepository } from '../repositories/categories-repository'
 import { findHighestOperationDay } from '../utils/find-highest-operation-day'
 import { CategorySummary } from '../../enterprise/entites/category-summary'
+import { calculateTransactionsTotals } from '../utils/calculate-transactions-totals'
+import { AccountSummary } from '../../enterprise/entites/account-summary'
 
 interface GetAccountSummaryByCategoryUseCaseRequest {
   memberId: string
@@ -23,7 +25,6 @@ type GetAccountSummaryByCategoryUseCaseResponse = Either<
   | MemberAccountNotFoundError
   | InvalidCategoryAccountRelationError,
   {
-    currentBalance: number
     categorySummary: CategorySummary
   }
 >
@@ -71,7 +72,26 @@ export class GetAccountSummaryByCategoryUseCase {
       return left(new InvalidCategoryAccountRelationError())
     }
 
-    const transactions =
+    const allTransactions = await this.transactionsRepository.findManyByAccountIdAndInterval(
+      account.id.toString(),
+      { startDate, endDate }
+    )
+
+    const allTransactionsTotal = calculateTransactionsTotals({ transactions: allTransactions })
+
+    const allTransactionsSummary = AccountSummary.generate(
+      {
+        accountId: account.id,
+        dateInterval: { startDate, endDate },
+        totalIncome: allTransactionsTotal.totalIncome,
+        totalExpense: allTransactionsTotal.totalExpense,
+        highestIncomeDay: findHighestOperationDay(allTransactionsTotal.incomeTransactions),
+        highestExpenseDay: findHighestOperationDay(allTransactionsTotal.expenseTransactions),
+        transactionsCount: allTransactions.length,
+      }
+    )
+
+    const transactionsByCategory =
       await this.transactionsRepository.findManyByAccountIdAndIntervalAndCategory(
         account.id.toString(),
         category.id.toString(),
@@ -81,35 +101,30 @@ export class GetAccountSummaryByCategoryUseCase {
         },
       )
 
-    // => Income
-    const incomeTransactions = transactions.filter((t) => t.isIncome())
-
-    const totalIncome = incomeTransactions
-      .map((t) => t.amount)
-      .reduce((at, acc) => at + acc, 0)
-
-    // => Expenses
-    const expenseTransactions = transactions.filter((t) => t.isExpense())
-
-    const totalExpense = expenseTransactions
-      .map((t) => t.amount)
-      .reduce((at, acc) => at + acc, 0)
+    // => By Category
+    const { 
+      incomeTransactions,
+      expenseTransactions,
+      totalIncome,
+      totalExpense 
+    } = calculateTransactionsTotals({ transactions: transactionsByCategory })
 
     const categorySummary = CategorySummary.generate(
       {
         accountId: account.id,
+        categoryId: category.id,
         dateInterval: { startDate, endDate },
         totalIncome,
         totalExpense,
         highestIncomeDay: findHighestOperationDay(incomeTransactions),
         highestExpenseDay: findHighestOperationDay(expenseTransactions),
-        transactionsCount: transactions.length,
-      },
-      category,
+        transactionsCount: transactionsByCategory.length,
+      }
     )
 
+    categorySummary.setPercentages(allTransactionsSummary)
+
     return right({
-      currentBalance: account.balance,
       categorySummary,
     })
   }

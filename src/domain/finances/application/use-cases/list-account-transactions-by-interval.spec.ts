@@ -7,22 +7,22 @@ import { makeAccount } from 'tests/factories/make-account.ts'
 import { InMemoryTransactionsRepository } from 'tests/repositories/in-memory-transactions-repository.ts'
 import { ITransactionsRepository } from '../repositories/transactions-repository.ts'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
-import { FetchAccountTransactionsByIntervalUseCase } from './fetch-account-transactions-by-interval.ts'
+import { ListAccountTransactionsByIntervalUseCase } from './list-account-transactions-by-interval.ts'
 import { makeTransaction } from 'tests/factories/make-transaction.ts'
 
 let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
 let transactionsRepository: ITransactionsRepository
 
-let sut: FetchAccountTransactionsByIntervalUseCase
+let sut: ListAccountTransactionsByIntervalUseCase
 
-describe('Fetch account transactions by interval use case', () => {
+describe('List account transactions by interval use case', () => {
   beforeEach(() => {
     membersRepository = new InMemoryMembersRepository()
     accountsRepository = new InMemoryAccountsRepository()
     transactionsRepository = new InMemoryTransactionsRepository()
 
-    sut = new FetchAccountTransactionsByIntervalUseCase(
+    sut = new ListAccountTransactionsByIntervalUseCase(
       membersRepository,
       accountsRepository,
       transactionsRepository,
@@ -35,7 +35,7 @@ describe('Fetch account transactions by interval use case', () => {
     vi.useRealTimers()
   })
 
-  it('should be able to fetch account transactions by time interval', async () => {
+  it('should be able to List account transactions by time interval', async () => {
     vi.setSystemTime(new Date(2025, 0, 15))
 
     await membersRepository.create(

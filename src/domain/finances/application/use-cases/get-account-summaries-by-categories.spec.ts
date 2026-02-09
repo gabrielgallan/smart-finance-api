@@ -115,12 +115,26 @@ describe('Get account summaries by categories use case', () => {
     if (result.isRight()) {
       expect(result.value.categoriesSummaries).toHaveLength(2)
       expect(result.value.categoriesSummaries[0].netBalance).toBe(100)
-      expect(result.value.categoriesSummaries[0].category?.name).toBe(
-        'Freelance jobs',
+      expect(result.value.categoriesSummaries[0].categoryId?.toString()).toBe(
+        'category-1',
       )
       expect(result.value.categoriesSummaries[1].netBalance).toBe(-75)
-      expect(result.value.categoriesSummaries[1].category?.name).toBe(
-        'Sport expenses',
+      expect(result.value.categoriesSummaries[1].categoryId?.toString()).toBe(
+        'category-2',
+      )
+
+      expect(result.value.categoriesSummaries[0].percentages).toMatchObject(
+        {
+          incomePercentage: expect.any(Number),
+          expensePercentage: expect.any(Number)
+        }
+      )
+
+      expect(result.value.categoriesSummaries[1].percentages).toMatchObject(
+        {
+          incomePercentage: expect.any(Number),
+          expensePercentage: expect.any(Number)
+        }
       )
     }
   })

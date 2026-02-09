@@ -13,7 +13,7 @@ import { Category } from '@/domain/finances/enterprise/entites/category'
 import { Pagination } from '@/core/repositories/pagination'
 import { DateInterval } from '@/core/repositories/date-interval'
 
-interface FetchAccountTransactionsByCategoryUseCaseRequest {
+interface ListAccountTransactionsByCategoryUseCaseRequest {
   memberId: string
   categoryId: string
   startDate: Date
@@ -22,7 +22,7 @@ interface FetchAccountTransactionsByCategoryUseCaseRequest {
   page: number
 }
 
-type FetchAccountTransactionsByCategoryUseCaseResponse = Either<
+type ListAccountTransactionsByCategoryUseCaseResponse = Either<
   | ResourceNotFoundError
   | MemberAccountNotFoundError
   | InvalidPeriodError
@@ -35,7 +35,7 @@ type FetchAccountTransactionsByCategoryUseCaseResponse = Either<
   }
 >
 
-export class FetchAccountTransactionsByCategoryUseCase {
+export class ListAccountTransactionsByCategoryUseCase {
   constructor(
     private membersRepository: IMembersRepository,
     private accountsRepository: IAccountsRepository,
@@ -50,7 +50,7 @@ export class FetchAccountTransactionsByCategoryUseCase {
     endDate,
     limit = 10,
     page,
-  }: FetchAccountTransactionsByCategoryUseCaseRequest): Promise<FetchAccountTransactionsByCategoryUseCaseResponse> {
+  }: ListAccountTransactionsByCategoryUseCaseRequest): Promise<ListAccountTransactionsByCategoryUseCaseResponse> {
     const startDateJs = dayjs(startDate)
     const endDateJs = dayjs(endDate)
 

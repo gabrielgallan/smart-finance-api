@@ -3,13 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "test": "vitest run --project all",
-    "test:watch": "vitest run --watch --project all",
-    "test:unit": "vitest run --project unit",
-    "test:watch:unit": "vitest run --watch --project unit",
-    "test:index": "npx tsx ./tests/index.ts",
-    "lint": "eslint src --ext .ts",
-    "lint:fix": "eslint src --ext .ts --fix"
+    "test": "vitest run",
+    "test:watch": "vitest run --watch",
+    "test:index": "npx tsx ./tests/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -23,12 +19,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "10.2.0",
-    "@rocketseat/eslint-config": "2.2.2",
     "@types/node": "24.0.4",
-    "@typescript-eslint/eslint-plugin": "8.54.0",
-    "@typescript-eslint/parser": "8.54.0",
-    "eslint": "8.57.1",
-    "eslint-plugin-vitest-globals": "1.5.0",
     "tsup": "8.5.1",
     "tsx": "4.20.3",
     "typescript": "5.9.3",

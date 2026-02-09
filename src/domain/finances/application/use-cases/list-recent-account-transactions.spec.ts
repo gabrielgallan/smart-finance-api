@@ -4,7 +4,7 @@ import { makeMember } from 'tests/factories/make-member.ts'
 import { IAccountsRepository } from '../repositories/accounts-repository.ts'
 import { makeAccount } from 'tests/factories/make-account.ts'
 import { InMemoryAccountsRepository } from 'tests/repositories/in-memory-accounts-repository.ts'
-import { FetchRecentAccountTransactionsUseCase } from './fetch-recent-account-transactions.ts'
+import { ListRecentAccountTransactionsUseCase } from './list-recent-account-transactions.ts'
 import { InMemoryTransactionsRepository } from 'tests/repositories/in-memory-transactions-repository.ts'
 import { ITransactionsRepository } from '../repositories/transactions-repository.ts'
 import { makeTransaction } from 'tests/factories/make-transaction.ts'
@@ -14,22 +14,22 @@ let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
 let transactionsRepository: ITransactionsRepository
 
-let sut: FetchRecentAccountTransactionsUseCase
+let sut: ListRecentAccountTransactionsUseCase
 
-describe('Fetch recent account transactions use case', () => {
+describe('List recent account transactions use case', () => {
   beforeEach(() => {
     membersRepository = new InMemoryMembersRepository()
     accountsRepository = new InMemoryAccountsRepository()
     transactionsRepository = new InMemoryTransactionsRepository()
 
-    sut = new FetchRecentAccountTransactionsUseCase(
+    sut = new ListRecentAccountTransactionsUseCase(
       membersRepository,
       accountsRepository,
       transactionsRepository,
     )
   })
 
-  it('should be able to fetch recent account transactions', async () => {
+  it('should be able to List recent account transactions', async () => {
     await membersRepository.create(
       await makeMember({}, new UniqueEntityID('member-1')),
     )
@@ -81,7 +81,7 @@ describe('Fetch recent account transactions use case', () => {
     }
   })
 
-  it('should be able to fetch recent account transactions filtered by pagination', async () => {
+  it('should be able to List recent account transactions filtered by pagination', async () => {
     await membersRepository.create(
       await makeMember({}, new UniqueEntityID('member-1')),
     )
