@@ -1,8 +1,12 @@
 import { Transaction } from '@/domain/finances/enterprise/entites/transaction'
 
+type FindHighestOperationDayInput = Transaction[]
+
+type FindHighestOperationDayOutput = Date | null
+
 export function findHighestOperationDay(
-  transactionsByOperation: Transaction[],
-): Date | null {
+  transactionsByOperation: FindHighestOperationDayInput,
+): FindHighestOperationDayOutput {
   if (transactionsByOperation.length === 0) {
     return null
   }

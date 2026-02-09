@@ -9,4 +9,5 @@ export interface ICategoriesRepository {
   ): Promise<Category | null>
   findManyByAccountId(accountId: string): Promise<Category[]>
   save(category: Category): Promise<Category>
+  deleteAllByAccountId(accountId: string): Promise<number>
 }

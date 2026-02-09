@@ -102,4 +102,14 @@ export class InMemoryTransactionsRepository implements ITransactionsRepository {
 
         return transaction
     }
+
+    async deleteAllByAccountId(accountId: string) {
+        const originalLenght = this.items.length
+
+        const remaining = this.items.filter(a => a.accountId.toString() !== accountId)
+
+        this.items = remaining
+
+        return originalLenght - remaining.length
+    }
 }

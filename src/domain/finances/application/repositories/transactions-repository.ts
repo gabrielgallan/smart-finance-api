@@ -30,4 +30,5 @@ export interface ITransactionsRepository {
     interval: DateInterval,
   ): Promise<Transaction[]>
   save(transaction: Transaction): Promise<Transaction>
+  deleteAllByAccountId(accountId: string): Promise<number>
 }

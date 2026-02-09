@@ -8,9 +8,8 @@ import { CreateAccountCategoryUseCase } from "@/domain/finances/application/use-
 import { CreateTransactionUseCase } from "@/domain/finances/application/use-cases/create-transaction"
 import { GetAccountSummaryByIntervalUseCase } from "@/domain/finances/application/use-cases/get-account-summary-by-interval"
 import { GetAccountSummariesByCategoriesUseCase } from "@/domain/finances/application/use-cases/get-account-summaries-by-categories"
-import { FetchRecentAccountTransactionsUseCase } from "@/domain/finances/application/use-cases/fetch-recent-account-transactions"
-import { FetchAccountTransactionsByCategoryUseCase } from "@/domain/finances/application/use-cases/fetch-account-transactions-by-category"
-import { mapCategoriesSummariesToPercentages } from "@/domain/finances/application/utils/map-summaries-to-percetages"
+import { FetchRecentAccountTransactionsUseCase } from "@/domain/finances/application/use-cases/list-recent-account-transactions"
+import { FetchAccountTransactionsByCategoryUseCase } from "@/domain/finances/application/use-cases/list-account-transactions-by-category"
 
 const membersRepository = new InMemoryMembersRepository()
 const accountsRepository = new InMemoryAccountsRepository()
@@ -143,55 +142,33 @@ if (transaction.isLeft()) {
 
 // console.log(transaction.value.transaction)
 
+const startDate = new Date(2026, 1, 1)
+const endDate = new Date(2026, 1, 28)
+
 const summary = await getSummaryByInterval.execute({
     memberId: member.value.member.id.toString(),
-    startDate: new Date(2026, 1, 6),
-    endDate: new Date(2026, 1, 8)
+    startDate,
+    endDate
 })
 
 if (summary.isLeft()) {
     throw new Error()
 }
 
-console.log(summary.value)
-
 const summaryByCategories = await getSummaryByCategories.execute({
     memberId: member.value.member.id.toString(),
-    startDate: new Date(2026, 1, 6),
-    endDate: new Date(2026, 1, 8)
+    startDate,
+    endDate
 })
 
 if (summaryByCategories.isLeft()) {
     throw new Error()
 }
 
-console.log(summaryByCategories.value.categoriesSummaries)
+summaryByCategories.value.categoriesSummaries.forEach(async sum => {
+    sum.setPercentages(summary.value.accountSummary)
 
-mapCategoriesSummariesToPercentages(summaryByCategories.value.categoriesSummaries)
-
-const listTransactions = await fetchRecentTransactions.execute({
-    memberId: member.value.member.id.toString(),
-    limit: 10,
-    page: 1
+    console.log(sum)
 })
 
-if (listTransactions.isLeft()) {
-    throw new Error()
-}
-
-// console.log(listTransactions.value.transactions)
-
-const listTransactionsCat = await fetchTransactionsByCategory.execute({
-    memberId: member.value.member.id.toString(),
-    categoryId: category2.value.category.id.toString(),
-    startDate: new Date(2026, 1, 6),
-    endDate: new Date(2026, 1, 6, 23, 59, 59),
-    limit: 10,
-    page: 1
-})
-
-if (listTransactionsCat.isLeft()) {
-    throw new Error()
-}
-
-// console.log(listTransactionsCat.value.transactions)
+// console.log(summaryByCategories.value.categoriesSummaries)

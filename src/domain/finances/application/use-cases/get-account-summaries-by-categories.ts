@@ -11,6 +11,7 @@ import { AnyCategoryFoundForAccountError } from './errors/any-category-found-for
 import { findHighestOperationDay } from '../utils/find-highest-operation-day'
 import { AccountSummary } from '../../enterprise/entites/account-summary'
 import { CategorySummary } from '../../enterprise/entites/category-summary'
+import { calculateTransactionsTotals } from '../utils/calculate-transactions-totals'
 
 interface GetAccountSummariesByCategoriesUseCaseRequest {
   memberId: string
@@ -23,7 +24,6 @@ type GetAccountSummariesByCategoriesUseCaseResponse = Either<
   | MemberAccountNotFoundError
   | AnyCategoryFoundForAccountError,
   {
-    currentBalance: number
     categoriesSummaries: CategorySummary[]
   }
 >
@@ -34,7 +34,7 @@ export class GetAccountSummariesByCategoriesUseCase {
     private accountsRepository: IAccountsRepository,
     private transactionsRepository: ITransactionsRepository,
     private categoriesRepository: ICategoriesRepository,
-  ) {}
+  ) { }
 
   async execute({
     memberId,
@@ -68,10 +68,29 @@ export class GetAccountSummariesByCategoriesUseCase {
       return left(new AnyCategoryFoundForAccountError())
     }
 
-    const categoriesSummaries: AccountSummary[] = []
+    const allTransactions = await this.transactionsRepository.findManyByAccountIdAndInterval(
+      account.id.toString(),
+      { startDate, endDate }
+    )
+
+    const allTransactionsTotal = calculateTransactionsTotals({ transactions: allTransactions })
+
+    const allTransactionsSummary = AccountSummary.generate(
+      {
+        accountId: account.id,
+        dateInterval: { startDate, endDate },
+        totalIncome: allTransactionsTotal.totalIncome,
+        totalExpense: allTransactionsTotal.totalExpense,
+        highestIncomeDay: findHighestOperationDay(allTransactionsTotal.incomeTransactions),
+        highestExpenseDay: findHighestOperationDay(allTransactionsTotal.expenseTransactions),
+        transactionsCount: allTransactions.length,
+      }
+    )
+
+    const categoriesSummaries: CategorySummary[] = []
 
     for (const category of categories) {
-      const transactions =
+      const transactionsByCategory =
         await this.transactionsRepository.findManyByAccountIdAndIntervalAndCategory(
           account.id.toString(),
           category.id.toString(),
@@ -82,37 +101,32 @@ export class GetAccountSummariesByCategoriesUseCase {
         )
 
       // => Income
-      const incomeTransactions = transactions.filter((t) => t.isIncome())
-
-      const totalIncome = incomeTransactions
-        .map((t) => t.amount)
-        .reduce((at, acc) => at + acc, 0)
-
-      // => Expenses
-      const expenseTransactions = transactions.filter((t) => t.isExpense())
-
-      const totalExpense = expenseTransactions
-        .map((t) => t.amount)
-        .reduce((at, acc) => at + acc, 0)
+      const {
+        incomeTransactions,
+        expenseTransactions,
+        totalIncome,
+        totalExpense
+      } = calculateTransactionsTotals({ transactions: transactionsByCategory })
 
       const categorySummary = CategorySummary.generate(
         {
           accountId: account.id,
+          categoryId: category.id,
           dateInterval: { startDate, endDate },
           totalIncome,
           totalExpense,
           highestIncomeDay: findHighestOperationDay(incomeTransactions),
           highestExpenseDay: findHighestOperationDay(expenseTransactions),
-          transactionsCount: transactions.length,
-        },
-        category,
+          transactionsCount: transactionsByCategory.length,
+        }
       )
+
+      categorySummary.setPercentages(allTransactionsSummary)
 
       categoriesSummaries.push(categorySummary)
     }
 
     return right({
-      currentBalance: account.balance,
       categoriesSummaries,
     })
   }

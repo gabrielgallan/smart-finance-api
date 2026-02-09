@@ -93,8 +93,13 @@ describe('Get account summary by category use case', () => {
     if (result.isRight()) {
       expect(result.value.categorySummary.netBalance).toBe(150)
       expect(result.value.categorySummary.transactionsCount).toBe(3)
-      expect(result.value.categorySummary.category?.slug.value).toBe(
-        'freelance-jobs',
+      expect(result.value.categorySummary.categoryId?.toString()).toBe('category-1')
+
+      expect(result.value.categorySummary.percentages).toMatchObject(
+        {
+          incomePercentage: expect.any(Number),
+          expensePercentage: expect.any(Number)
+        }
       )
     }
   })

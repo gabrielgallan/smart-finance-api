@@ -2,10 +2,11 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Entity } from '@/core/entities/entity'
 import { Optional } from '@/core/types/optional'
 import { DateInterval } from '@/core/repositories/date-interval'
-import { Category } from './category'
+import { calculatePartPercentage } from '../../application/utils/calculate-percentage'
 
 export interface AccountSummaryProps {
   accountId: UniqueEntityID
+  categoryId?: UniqueEntityID
   totalIncome: number
   totalExpense: number
   netBalance: number
@@ -16,21 +17,16 @@ export interface AccountSummaryProps {
   requestedAt: Date
 }
 
-export class AccountSummary extends Entity<AccountSummaryProps> {
-  public category: Category | null
+export interface Percentages {
+  incomePercentage: number
+  expensePercentage: number
+}
 
-  protected constructor(
-    props: AccountSummaryProps,
-    category?: Category,
-    id?: UniqueEntityID,
-  ) {
-    super(props, id)
-    this.category = category ?? null
-  }
+export class AccountSummary extends Entity<AccountSummaryProps> {
+  private _percentages?: Percentages
 
   static generate(
-    props: Optional<AccountSummaryProps, 'netBalance' | 'requestedAt'>,
-    category?: Category,
+    props: Optional<AccountSummaryProps, 'netBalance' | 'requestedAt' | 'categoryId'>,
     id?: UniqueEntityID,
   ) {
     const accountSummary = new AccountSummary(
@@ -39,7 +35,6 @@ export class AccountSummary extends Entity<AccountSummaryProps> {
         netBalance: props.netBalance ?? props.totalIncome - props.totalExpense,
         requestedAt: new Date(),
       },
-      category,
       id,
     )
 
@@ -48,6 +43,10 @@ export class AccountSummary extends Entity<AccountSummaryProps> {
 
   get accountId() {
     return this.props.accountId
+  }
+
+  get categoryId() {
+    return this.props.categoryId
   }
 
   get totalIncome() {
@@ -72,5 +71,30 @@ export class AccountSummary extends Entity<AccountSummaryProps> {
 
   get transactionsCount() {
     return this.props.transactionsCount
+  }
+
+  get percentages() {
+    return this._percentages
+  }
+
+
+  // Methods
+  private calculatePercentages(totalSummary: AccountSummary): Percentages {
+    return {
+      incomePercentage: calculatePartPercentage({
+        totalValue: totalSummary.totalIncome,
+        partValue: this.props.totalIncome
+      }),
+      expensePercentage: calculatePartPercentage({
+        totalValue: totalSummary.totalExpense,
+        partValue: this.props.totalExpense
+      })
+    }
+  }
+
+  setPercentages(totalSummary: AccountSummary) {
+    const percentages = this.calculatePercentages(totalSummary)
+    
+    this._percentages = percentages
   }
 }

@@ -6,7 +6,7 @@ import { IAccountsRepository } from '../repositories/accounts-repository.ts'
 import { makeAccount } from 'tests/factories/make-account.ts'
 import { InMemoryAccountsRepository } from 'tests/repositories/in-memory-accounts-repository.ts'
 import { InMemoryCategoriesRepository } from 'tests/repositories/in-memory-category-repository.ts'
-import { FetchAccountCategoriesUseCase } from './fetch-account-categories.ts'
+import { ListAccountCategoriesUseCase } from './list-account-categories.ts'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 import { makeCategory } from 'tests/factories/make-category.ts'
 import { Slug } from '@/domain/finances/enterprise/entites/value-objects/slug.ts'
@@ -15,7 +15,7 @@ let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
 let categoriesRepository: ICategoriesRepository
 
-let sut: FetchAccountCategoriesUseCase
+let sut: ListAccountCategoriesUseCase
 
 describe('Fetch account categories use case', () => {
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe('Fetch account categories use case', () => {
     accountsRepository = new InMemoryAccountsRepository()
     categoriesRepository = new InMemoryCategoriesRepository()
 
-    sut = new FetchAccountCategoriesUseCase(
+    sut = new ListAccountCategoriesUseCase(
       membersRepository,
       accountsRepository,
       categoriesRepository,
