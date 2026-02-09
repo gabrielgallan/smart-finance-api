@@ -2,15 +2,11 @@
 
 # Next Goals
 
-## Use Cases
-
-- [x] Close Account use case
-
 ## Sub Domains
 
 - [ ] Notifications domain
 
-## New feature
+## Features
 
-- [ ] Create financial goal
+- [x] Create financial goal
 - [x] Include metrics in categories summaries
