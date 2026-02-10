@@ -1,6 +1,6 @@
-import { Pagination } from '@/core/repositories/pagination'
+import { Pagination } from '@/core/types/repositories/pagination'
 import { Transaction } from '../../enterprise/entites/transaction'
-import { DateInterval } from '@/core/repositories/date-interval'
+import { DateInterval } from '@/core/types/repositories/date-interval'
 
 export interface ITransactionsRepository {
   create(Transaction: Transaction): Promise<void>

@@ -1,7 +1,7 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Entity } from '@/core/entities/entity'
 import { Optional } from '@/core/types/optional'
-import { DateInterval } from '@/core/repositories/date-interval'
+import { DateInterval } from '@/core/types/repositories/date-interval'
 import { calculatePartPercentage } from '../../application/utils/calculate-percentage'
 
 export interface AccountSummaryProps {
@@ -41,6 +41,7 @@ export class AccountSummary extends Entity<AccountSummaryProps> {
     return accountSummary
   }
 
+  // => Getters
   get accountId() {
     return this.props.accountId
   }
@@ -92,7 +93,7 @@ export class AccountSummary extends Entity<AccountSummaryProps> {
     }
   }
 
-  setPercentages(totalSummary: AccountSummary) {
+  public setPercentages(totalSummary: AccountSummary) {
     const percentages = this.calculatePercentages(totalSummary)
     
     this._percentages = percentages

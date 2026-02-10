@@ -8,13 +8,17 @@ import { CreateAccountCategoryUseCase } from "@/domain/finances/application/use-
 import { CreateTransactionUseCase } from "@/domain/finances/application/use-cases/create-transaction"
 import { GetAccountSummaryByIntervalUseCase } from "@/domain/finances/application/use-cases/get-account-summary-by-interval"
 import { GetAccountSummariesByCategoriesUseCase } from "@/domain/finances/application/use-cases/get-account-summaries-by-categories"
-import { FetchRecentAccountTransactionsUseCase } from "@/domain/finances/application/use-cases/list-recent-account-transactions"
-import { FetchAccountTransactionsByCategoryUseCase } from "@/domain/finances/application/use-cases/list-account-transactions-by-category"
+import { CreateFinancialGoalUseCase } from "@/domain/finances/application/use-cases/create-financial-goal"
+import { InMemoryFinancialGoalsRepository } from "./repositories/in-memory-financial-goals-repository"
+import { DomainEvents } from "@/core/events/domain-events"
+import { FinancialGoalCreatedEvent } from "@/domain/finances/enterprise/events/financial-goal-created-event"
+import { OnFinancialGoalCreated } from "@/domain/notifications/application/subscribers/on-financial-goal-created"
 
 const membersRepository = new InMemoryMembersRepository()
 const accountsRepository = new InMemoryAccountsRepository()
 const categoriesRepository = new InMemoryCategoriesRepository()
 const transactionsRepository = new InMemoryTransactionsRepository()
+const financialGoalRepository = new InMemoryFinancialGoalsRepository()
 
 
 const register = new RegisterMemberUseCase(
@@ -52,17 +56,10 @@ const getSummaryByCategories = new GetAccountSummariesByCategoriesUseCase(
     categoriesRepository
 )
 
-const fetchRecentTransactions = new FetchRecentAccountTransactionsUseCase(
+const createFinancialGoal = new CreateFinancialGoalUseCase(
     membersRepository,
     accountsRepository,
-    transactionsRepository
-)
-
-const fetchTransactionsByCategory = new FetchAccountTransactionsByCategoryUseCase(
-    membersRepository,
-    accountsRepository,
-    transactionsRepository,
-    categoriesRepository
+    financialGoalRepository
 )
 
 const member = await register.execute({
@@ -165,10 +162,11 @@ if (summaryByCategories.isLeft()) {
     throw new Error()
 }
 
-summaryByCategories.value.categoriesSummaries.forEach(async sum => {
-    sum.setPercentages(summary.value.accountSummary)
-
-    console.log(sum)
+const financialResult = await createFinancialGoal.execute({
+    memberId: member.value.member.id.toString(),
+    title: 'Buy a car',
+    targetAmount: 40000,
+    targetDate: new Date(2027, 1, 31)
 })
 
 // console.log(summaryByCategories.value.categoriesSummaries)

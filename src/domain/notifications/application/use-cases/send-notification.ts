@@ -1,5 +1,5 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { Either, right } from '@/core/either'
+import { Either, right } from '@/core/types/either'
 import { Notification } from '../../enterprise/entities/notification'
 import { INotificationsRepository } from '../repositories/notifications.repository'
 

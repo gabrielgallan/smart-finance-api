@@ -1,5 +1,5 @@
-import { DateInterval } from "@/core/repositories/date-interval";
-import { Pagination } from "@/core/repositories/pagination";
+import { DateInterval } from "@/core/types/repositories/date-interval";
+import { Pagination } from "@/core/types/repositories/pagination";
 import { ITransactionsRepository } from "@/domain/finances/application/repositories/transactions-repository";
 import { Transaction } from "@/domain/finances/enterprise/entites/transaction";
 
