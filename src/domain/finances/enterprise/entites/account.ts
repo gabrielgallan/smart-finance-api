@@ -39,8 +39,6 @@ export class Account extends Entity<AccountProps> {
     return this.props.updatedAt
   }
 
-  // => Setters
-
   // => Methods
   touch() {
     this.props.updatedAt = new Date()

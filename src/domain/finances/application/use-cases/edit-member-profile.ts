@@ -1,6 +1,6 @@
 import { IMembersRepository } from '../repositories/members-repository'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
-import { Either, left, right } from '@/core/either'
+import { Either, left, right } from '@/core/types/either'
 import { MemberAlreadyExistsError } from './errors/member-already-exists-error'
 import { Hash } from '@/domain/finances/enterprise/entites/value-objects/hash'
 

@@ -1,14 +1,14 @@
 import { IMembersRepository } from '../repositories/members-repository'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
-import { Either, left, right } from '@/core/either'
+import { Either, left, right } from '@/core/types/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
 import { Transaction } from '@/domain/finances/enterprise/entites/transaction'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import { InvalidPeriodError } from './errors/invalid-period-error'
 import dayjs from 'dayjs'
-import { Pagination } from '@/core/repositories/pagination'
-import { DateInterval } from '@/core/repositories/date-interval'
+import { Pagination } from '@/core/types/repositories/pagination'
+import { DateInterval } from '@/core/types/repositories/date-interval'
 
 interface ListAccountTransactionsByIntervalUseCaseRequest {
   memberId: string

@@ -3,7 +3,7 @@ import { Account } from '@/domain/finances/enterprise/entites/account'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { MemberAlreadyHasAccountError } from './errors/member-alredy-has-account-error'
-import { Either, left, right } from '@/core/either'
+import { Either, left, right } from '@/core/types/either'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import { ICategoriesRepository } from '../repositories/categories-repository'
 

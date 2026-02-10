@@ -1,6 +1,7 @@
-import { Entity } from '@/core/entities/entity'
+import { AggregateRoot } from '@/core/entities/aggregate-root'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
+import { FinancialGoalCreatedEvent } from '../events/financial-goal-created-event'
 
 export interface FinancialGoalProps {
   accountId: UniqueEntityID
@@ -13,12 +14,12 @@ export interface FinancialGoalProps {
   updatedAt: Date
 }
 
-export class FinancialGoal extends Entity<FinancialGoalProps> {
+export class FinancialGoal extends AggregateRoot<FinancialGoalProps> {
   static create(
     props: Optional<FinancialGoalProps, 'createdAt' | 'updatedAt' | 'description' | 'currentAmount'>,
     id?: UniqueEntityID,
   ) {
-    const financialgoal = new FinancialGoal(
+    const financialGoal = new FinancialGoal(
       {
         ...props,
         description: props.description ?? null,
@@ -29,7 +30,13 @@ export class FinancialGoal extends Entity<FinancialGoalProps> {
       id,
     )
 
-    return financialgoal
+    const isNew = !id
+
+    if (isNew) {
+      financialGoal.addDomainEvent(new FinancialGoalCreatedEvent(financialGoal))
+    }
+
+    return financialGoal
   }
 
   // => Getters

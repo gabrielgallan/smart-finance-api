@@ -4,7 +4,7 @@ import { InvalidMemberAgeError } from './errors/invalid-member-age-erros'
 import { IMembersRepository } from '../repositories/members-repository'
 import { MemberAlreadyExistsError } from './errors/member-already-exists-error'
 import { Hash } from '@/domain/finances/enterprise/entites/value-objects/hash'
-import { Either, left, right } from '@/core/either'
+import { Either, left, right } from '@/core/types/either'
 
 interface RegisterMemberUseCaseRequest {
   name: string

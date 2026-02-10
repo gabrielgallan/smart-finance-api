@@ -1,4 +1,4 @@
-import { UseCaseError } from '@/core/errors/use-case-error'
+import { UseCaseError } from '@/core/types/errors/use-case-error'
 
 export class CategoryAlreadyExistsError extends Error implements UseCaseError {
   constructor() {

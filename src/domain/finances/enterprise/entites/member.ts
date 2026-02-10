@@ -28,7 +28,7 @@ export class Member extends Entity<MemberProps> {
     return member
   }
 
-  // => GETTERS
+  // => Getters
   get email() {
     return this.props.email
   }
@@ -41,7 +41,7 @@ export class Member extends Entity<MemberProps> {
     return this.props.password
   }
 
-  // => SETTERS
+  // => Setters
   set email(email: string) {
     this.props.email = email
   }

@@ -2,7 +2,7 @@ import { IAccountsRepository } from '../repositories/accounts-repository'
 import { IMembersRepository } from '../repositories/members-repository'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
-import { Either, left, right } from '@/core/either'
+import { Either, left, right } from '@/core/types/either'
 import {
   Transaction,
   TransactionOperation,
