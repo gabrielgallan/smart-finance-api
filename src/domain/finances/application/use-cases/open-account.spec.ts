@@ -1,12 +1,12 @@
-import { IMembersRepository } from '../repositories/members-repository.ts'
-import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository.ts'
-import { ResourceNotFoundError } from './errors/resource-not-found-error.ts'
-import { OpenAccountUseCase } from './open-account.ts'
-import { IAccountsRepository } from '../repositories/accounts-repository.ts'
-import { InMemoryAccountsRepository } from 'tests/repositories/in-memory-accounts-repository.ts'
-import { MemberAlreadyHasAccountError } from './errors/member-alredy-has-account-error.ts'
-import { makeMember } from 'tests/factories/make-member.ts'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
+import { IMembersRepository } from '../repositories/members-repository'
+import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { OpenAccountUseCase } from './open-account'
+import { IAccountsRepository } from '../repositories/accounts-repository'
+import { InMemoryAccountsRepository } from 'tests/repositories/in-memory-accounts-repository'
+import { MemberAlreadyHasAccountError } from './errors/member-alredy-has-account-error'
+import { makeMember } from 'tests/factories/make-member'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 let membersRepository: IMembersRepository
 let accountRepository: IAccountsRepository
@@ -32,7 +32,14 @@ describe('Open member account use case', () => {
 
     expect(result.isRight()).toBe(true)
 
+    
     if (result.isRight()) {
+      const member = await membersRepository.findById('member-1')
+
+      if (member) { 
+        expect(member.accountId?.equals(result.value.account.id)).toBe(true)
+      }
+      
       expect(result.value.account.balance).toBe(250)
       expect(result.value.account.holderId.toString()).toBe('member-1')
     }

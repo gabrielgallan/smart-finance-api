@@ -4,6 +4,7 @@ import { Hash } from './value-objects/hash'
 import { Optional } from '@/core/types/optional'
 
 export interface MemberProps {
+  accountId?: UniqueEntityID
   name: string
   age: number
   document: string
@@ -41,6 +42,10 @@ export class Member extends Entity<MemberProps> {
     return this.props.password
   }
 
+  get accountId(): UniqueEntityID | undefined {
+    return this.props.accountId
+  }
+
   // => Setters
   set email(email: string) {
     this.props.email = email
@@ -48,5 +53,9 @@ export class Member extends Entity<MemberProps> {
 
   set password(passwordHash: Hash) {
     this.props.password = passwordHash
+  }
+
+  set accountId(accountId: UniqueEntityID | undefined) {
+    this.props.accountId = accountId
   }
 }

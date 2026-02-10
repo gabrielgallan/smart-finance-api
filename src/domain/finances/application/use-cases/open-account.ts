@@ -44,6 +44,10 @@ export class OpenAccountUseCase {
 
     await this.accountRepository.create(account)
 
+    member.accountId = account.id
+
+    await this.membersRepository.save(member)
+
     return right({
       account,
     })

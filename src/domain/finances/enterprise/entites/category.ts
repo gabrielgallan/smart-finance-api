@@ -7,7 +7,7 @@ export interface CategoryProps {
   accountId: UniqueEntityID
   name: string
   slug: Slug
-  description: string | null
+  description?: string
   createdAt: Date
   updatedAt: Date
 }
@@ -35,7 +35,7 @@ export class Category extends Entity<CategoryProps> {
     return this.props.name
   }
 
-  get description(): string | null {
+  get description(): string | undefined {
     return this.props.description
   }
 
@@ -55,7 +55,7 @@ export class Category extends Entity<CategoryProps> {
     this.touch()
   }
 
-  set description(description: string) {
+  set description(description: string | undefined) {
     this.props.description = description
 
     this.touch()
