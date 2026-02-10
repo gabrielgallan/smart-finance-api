@@ -6,9 +6,9 @@ import { FinancialGoalCreatedEvent } from '../events/financial-goal-created-even
 export interface FinancialGoalProps {
   accountId: UniqueEntityID
   title: string
-  description: string | null
+  description?: string
   targetAmount: number
-  currentAmount: number
+  savedAmount: number
   targetDate: Date
   createdAt: Date
   updatedAt: Date
@@ -16,14 +16,13 @@ export interface FinancialGoalProps {
 
 export class FinancialGoal extends AggregateRoot<FinancialGoalProps> {
   static create(
-    props: Optional<FinancialGoalProps, 'createdAt' | 'updatedAt' | 'description' | 'currentAmount'>,
+    props: Optional<FinancialGoalProps, 'createdAt' | 'updatedAt' | 'savedAmount'>,
     id?: UniqueEntityID,
   ) {
     const financialGoal = new FinancialGoal(
       {
         ...props,
-        description: props.description ?? null,
-        currentAmount: props.currentAmount ?? 0,
+        savedAmount: props.savedAmount ?? 0,
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
       },
@@ -48,7 +47,7 @@ export class FinancialGoal extends AggregateRoot<FinancialGoalProps> {
     return this.props.title
   }
 
-  get description(): string | null {
+  get description(): string | undefined {
     return this.props.description
   }
 
@@ -67,7 +66,7 @@ export class FinancialGoal extends AggregateRoot<FinancialGoalProps> {
     this.touch()
   }
 
-  set description(description: string) {
+  set description(description: string | undefined) {
     this.props.description = description
 
     this.touch()
@@ -87,13 +86,13 @@ export class FinancialGoal extends AggregateRoot<FinancialGoalProps> {
 
   // => Methods
   saveAmount(amount: number) {
-    this.props.currentAmount += amount
+    this.props.savedAmount += amount
 
     this.touch()
   }
 
   unsaveAmount(amount: number) {
-    this.props.currentAmount -= amount
+    this.props.savedAmount -= amount
 
     this.touch()
   }

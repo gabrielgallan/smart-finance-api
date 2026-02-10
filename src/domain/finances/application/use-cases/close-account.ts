@@ -43,7 +43,11 @@ export class CloseAccountUseCase {
 
     const transactionsDeleted =await this.transactionsRepository.deleteAllByAccountId(memberAccount.id.toString())
 
-    const accountsDeleted =await this.accountRepository.delete(memberAccount)
+    const accountsDeleted = await this.accountRepository.delete(memberAccount)
+
+    member.accountId = undefined
+
+    await this.membersRepository.save(member)
 
     return right({
       rowsDeleted: categoriesDeleted + transactionsDeleted + accountsDeleted,

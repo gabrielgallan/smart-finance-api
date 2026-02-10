@@ -1,14 +1,14 @@
-import { IMembersRepository } from '../repositories/members-repository.ts'
-import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository.ts'
-import { makeMember } from 'tests/factories/make-member.ts'
-import { ICategoriesRepository } from '../repositories/categories-repository.ts'
-import { IAccountsRepository } from '../repositories/accounts-repository.ts'
-import { makeAccount } from 'tests/factories/make-account.ts'
-import { InMemoryAccountsRepository } from 'tests/repositories/in-memory-accounts-repository.ts'
-import { InMemoryCategoriesRepository } from 'tests/repositories/in-memory-category-repository.ts'
-import { EditAccountCategoryUseCase } from './edit-account-category.ts'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
-import { makeCategory } from 'tests/factories/make-category.ts'
+import { IMembersRepository } from '../repositories/members-repository'
+import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository'
+import { makeMember } from 'tests/factories/make-member'
+import { ICategoriesRepository } from '../repositories/categories-repository'
+import { IAccountsRepository } from '../repositories/accounts-repository'
+import { makeAccount } from 'tests/factories/make-account'
+import { InMemoryAccountsRepository } from 'tests/repositories/in-memory-accounts-repository'
+import { InMemoryCategoriesRepository } from 'tests/repositories/in-memory-category-repository'
+import { EditAccountCategoryUseCase } from './edit-account-category'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { makeCategory } from 'tests/factories/make-category'
 
 let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
@@ -59,12 +59,14 @@ describe('Edit account category use case', () => {
       memberId: 'member-1',
       categoryId: 'category-1',
       name: 'Food Expenses',
+      description: 'my food expenses'
     })
 
     expect(result.isRight()).toBe(true)
 
     if (result.isRight()) {
       expect(result.value.category.slug.value).toBe('food-expenses')
+      expect(result.value.category.description).toBe('my food expenses')
     }
   })
 })

@@ -9,6 +9,7 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InvalidTransactionOperationError } from './errors/invalid-transaction-operation-error'
 import { ICategoriesRepository } from '../repositories/categories-repository'
 import { InvalidCategoryAccountRelationError } from './errors/invalid-category-account-relation-error'
+import { NotAllowedError } from './errors/not-allowed-error'
 
 interface EditTransactionUseCaseRequest {
   memberId: string
@@ -22,8 +23,8 @@ interface EditTransactionUseCaseRequest {
 type EditTransactionUseCaseResponse = Either<
   | ResourceNotFoundError
   | MemberAccountNotFoundError
-  | InvalidCategoryAccountRelationError
-  | InvalidTransactionOperationError,
+  | InvalidTransactionOperationError
+  | NotAllowedError,
   { transaction: Transaction }
 >
 
@@ -63,7 +64,7 @@ export class EditTransactionUseCase {
     }
 
     if (transaction.accountId.toString() !== account.id.toString()) {
-      return left(new Error())
+      return left(new NotAllowedError())
     }
 
     if (categoryId) {
@@ -74,7 +75,7 @@ export class EditTransactionUseCase {
       }
 
       if (category.accountId.toString() !== account.id.toString()) {
-        return left(new InvalidCategoryAccountRelationError())
+        return left(new NotAllowedError())
       }
 
       transaction.categoryId = new UniqueEntityID(categoryId)

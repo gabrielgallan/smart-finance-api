@@ -1,18 +1,17 @@
-import { IMembersRepository } from '../repositories/members-repository.ts'
-import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository.ts'
-import { ResourceNotFoundError } from './errors/resource-not-found-error.ts'
-import { CloseAccountUseCase } from './close-account.ts'
-import { IAccountsRepository } from '../repositories/accounts-repository.ts'
-import { InMemoryAccountsRepository } from 'tests/repositories/in-memory-accounts-repository.ts'
-import { makeMember } from 'tests/factories/make-member.ts'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
-import { ITransactionsRepository } from '../repositories/transactions-repository.ts'
-import { ICategoriesRepository } from '../repositories/categories-repository.ts'
-import { InMemoryCategoriesRepository } from 'tests/repositories/in-memory-category-repository.ts'
-import { InMemoryTransactionsRepository } from 'tests/repositories/in-memory-transactions-repository.ts'
-import { makeAccount } from 'tests/factories/make-account.ts'
-import { makeCategory } from 'tests/factories/make-category.ts'
-import { makeTransaction } from 'tests/factories/make-transaction.ts'
+import { IMembersRepository } from '../repositories/members-repository'
+import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository'
+import { CloseAccountUseCase } from './close-account'
+import { IAccountsRepository } from '../repositories/accounts-repository'
+import { InMemoryAccountsRepository } from 'tests/repositories/in-memory-accounts-repository'
+import { makeMember } from 'tests/factories/make-member'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { ITransactionsRepository } from '../repositories/transactions-repository'
+import { ICategoriesRepository } from '../repositories/categories-repository'
+import { InMemoryCategoriesRepository } from 'tests/repositories/in-memory-category-repository'
+import { InMemoryTransactionsRepository } from 'tests/repositories/in-memory-transactions-repository'
+import { makeAccount } from 'tests/factories/make-account'
+import { makeCategory } from 'tests/factories/make-category'
+import { makeTransaction } from 'tests/factories/make-transaction'
 
 let membersRepository: IMembersRepository
 let accountRepository: IAccountsRepository
@@ -72,6 +71,7 @@ describe('Close member account use case', () => {
 
         if (result.isRight()) {
             expect(result.value.rowsDeleted).toBe(4)
+            expect(membersRepository.items[0].accountId).toBe(undefined)
             expect(accountRepository.items).toHaveLength(0)
             expect(transactionsRepository.items).toHaveLength(0)
             expect(categoriesRepository.items).toHaveLength(0)
