@@ -63,7 +63,7 @@ export class CreateAccountCategoryUseCase {
       accountId: account.id,
       name: categoryName,
       slug: categorySlug,
-      description: categoryDescription ?? null,
+      description: categoryDescription,
     })
 
     await this.categoriesRepository.create(category)

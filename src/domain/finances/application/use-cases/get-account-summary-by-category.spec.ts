@@ -91,14 +91,14 @@ describe('Get account summary by category use case', () => {
     expect(result.isRight()).toBe(true)
 
     if (result.isRight()) {
-      expect(result.value.categorySummary.netBalance).toBe(150)
-      expect(result.value.categorySummary.transactionsCount).toBe(3)
-      expect(result.value.categorySummary.categoryId?.toString()).toBe('category-1')
+      expect(result.value.byCategorySummary.netBalance).toBe(150)
+      expect(result.value.byCategorySummary.transactionsCount).toBe(3)
+      expect(result.value.byCategorySummary.categoryId?.toString()).toBe('category-1')
 
-      expect(result.value.categorySummary.percentages).toMatchObject(
+      expect(result.value.byCategorySummary.percentages).toMatchObject(
         {
-          incomePercentage: expect.any(Number),
-          expensePercentage: expect.any(Number)
+          totalIncomePercentage: expect.any(Number),
+          totalExpensePercentage: expect.any(Number)
         }
       )
     }

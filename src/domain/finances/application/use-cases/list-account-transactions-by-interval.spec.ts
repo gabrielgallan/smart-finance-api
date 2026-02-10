@@ -35,7 +35,7 @@ describe('List account transactions by interval use case', () => {
     vi.useRealTimers()
   })
 
-  it('should be able to List account transactions by time interval', async () => {
+  it('should be able to list account transactions by time interval', async () => {
     vi.setSystemTime(new Date(2025, 0, 15))
 
     await membersRepository.create(

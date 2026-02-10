@@ -13,13 +13,14 @@ import { InMemoryFinancialGoalsRepository } from "./repositories/in-memory-finan
 import { DomainEvents } from "@/core/events/domain-events"
 import { FinancialGoalCreatedEvent } from "@/domain/finances/enterprise/events/financial-goal-created-event"
 import { OnFinancialGoalCreated } from "@/domain/notifications/application/subscribers/on-financial-goal-created"
+import dayjs from "dayjs"
+import { GetYearlySummariesProgressUseCase } from "@/domain/finances/application/use-cases/get-rolling-yearly-progress"
 
 const membersRepository = new InMemoryMembersRepository()
 const accountsRepository = new InMemoryAccountsRepository()
 const categoriesRepository = new InMemoryCategoriesRepository()
 const transactionsRepository = new InMemoryTransactionsRepository()
 const financialGoalRepository = new InMemoryFinancialGoalsRepository()
-
 
 const register = new RegisterMemberUseCase(
     membersRepository
@@ -60,6 +61,12 @@ const createFinancialGoal = new CreateFinancialGoalUseCase(
     membersRepository,
     accountsRepository,
     financialGoalRepository
+)
+
+const getYearlyProgress = new GetYearlySummariesProgressUseCase(
+    membersRepository,
+    accountsRepository,
+    transactionsRepository
 )
 
 const member = await register.execute({
@@ -162,11 +169,13 @@ if (summaryByCategories.isLeft()) {
     throw new Error()
 }
 
-const financialResult = await createFinancialGoal.execute({
-    memberId: member.value.member.id.toString(),
-    title: 'Buy a car',
-    targetAmount: 40000,
-    targetDate: new Date(2027, 1, 31)
+const yearlyProgress = await getYearlyProgress.execute({
+    memberId: member.value.member.id.toString()
 })
 
-// console.log(summaryByCategories.value.categoriesSummaries)
+if (yearlyProgress.isLeft()) {
+    throw new Error()
+}
+
+console.log(yearlyProgress.value.lastYearSummary)
+yearlyProgress.value.lastTwelveMonthsSummaries.forEach(sum => console.log(sum))

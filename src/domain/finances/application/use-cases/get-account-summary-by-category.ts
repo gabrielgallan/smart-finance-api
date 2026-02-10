@@ -25,7 +25,8 @@ type GetAccountSummaryByCategoryUseCaseResponse = Either<
   | MemberAccountNotFoundError
   | InvalidCategoryAccountRelationError,
   {
-    categorySummary: CategorySummary
+    fullTermAccountSummary: AccountSummary
+    byCategorySummary: CategorySummary
   }
 >
 
@@ -109,7 +110,7 @@ export class GetAccountSummaryByCategoryUseCase {
       totalExpense 
     } = calculateTransactionsTotals({ transactions: transactionsByCategory })
 
-    const categorySummary = CategorySummary.generate(
+    const byCategorySummary = CategorySummary.generate(
       {
         accountId: account.id,
         categoryId: category.id,
@@ -122,10 +123,11 @@ export class GetAccountSummaryByCategoryUseCase {
       }
     )
 
-    categorySummary.setPercentages(allTransactionsSummary)
+    byCategorySummary.setComparativePercentages(allTransactionsSummary)
 
     return right({
-      categorySummary,
+      fullTermAccountSummary: allTransactionsSummary,
+      byCategorySummary,
     })
   }
 }

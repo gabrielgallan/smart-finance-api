@@ -41,7 +41,7 @@ describe('List account trasanctions by interval and category use case', () => {
     vi.useRealTimers()
   })
 
-  it('should be able to List transactions by category and time interval', async () => {
+  it('should be able to list transactions by category and time interval', async () => {
     vi.setSystemTime(new Date(2025, 0, 13))
 
     await membersRepository.create(

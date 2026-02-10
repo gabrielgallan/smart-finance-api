@@ -14,17 +14,16 @@ export interface AccountSummaryProps {
   highestExpenseDay: Date | null
   transactionsCount: number
   dateInterval: DateInterval
+  comparativePercentages?: ComparativePercentages
   requestedAt: Date
 }
 
-export interface Percentages {
-  incomePercentage: number
-  expensePercentage: number
+export interface ComparativePercentages {
+  totalIncomePercentage: number
+  totalExpensePercentage: number
 }
 
 export class AccountSummary extends Entity<AccountSummaryProps> {
-  private _percentages?: Percentages
-
   static generate(
     props: Optional<AccountSummaryProps, 'netBalance' | 'requestedAt' | 'categoryId'>,
     id?: UniqueEntityID,
@@ -75,27 +74,27 @@ export class AccountSummary extends Entity<AccountSummaryProps> {
   }
 
   get percentages() {
-    return this._percentages
+    return this.props.comparativePercentages
   }
 
 
   // Methods
-  private calculatePercentages(totalSummary: AccountSummary): Percentages {
+  private calculateComparativePercentages(summary: AccountSummary): ComparativePercentages {
     return {
-      incomePercentage: calculatePartPercentage({
-        totalValue: totalSummary.totalIncome,
+      totalIncomePercentage: calculatePartPercentage({
+        totalValue: summary.totalIncome,
         partValue: this.props.totalIncome
       }),
-      expensePercentage: calculatePartPercentage({
-        totalValue: totalSummary.totalExpense,
+      totalExpensePercentage: calculatePartPercentage({
+        totalValue: summary.totalExpense,
         partValue: this.props.totalExpense
       })
     }
   }
 
-  public setPercentages(totalSummary: AccountSummary) {
-    const percentages = this.calculatePercentages(totalSummary)
+  public setComparativePercentages(toCompareSummary: AccountSummary) {
+    const percentages = this.calculateComparativePercentages(toCompareSummary)
     
-    this._percentages = percentages
+    this.props.comparativePercentages = percentages
   }
 }

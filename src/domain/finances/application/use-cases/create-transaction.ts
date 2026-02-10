@@ -95,12 +95,12 @@ export class CreateTransactionUseCase {
 
     const transaction = Transaction.create({
       accountId: account.id,
-      categoryId: categoryId ? new UniqueEntityID(categoryId) : null,
+      categoryId: categoryId ? new UniqueEntityID(categoryId) : undefined,
       title,
-      description: description ?? null,
+      description,
       amount,
       operation: transactionOperation,
-      method: method ?? null,
+      method,
     })
 
     await this.transactionsRepository.create(transaction)

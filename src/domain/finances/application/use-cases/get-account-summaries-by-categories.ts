@@ -24,7 +24,8 @@ type GetAccountSummariesByCategoriesUseCaseResponse = Either<
   | MemberAccountNotFoundError
   | AnyCategoryFoundForAccountError,
   {
-    categoriesSummaries: CategorySummary[]
+    fullTermAccounSummary: AccountSummary
+    byCategoriesSummaries: CategorySummary[]
   }
 >
 
@@ -87,7 +88,7 @@ export class GetAccountSummariesByCategoriesUseCase {
       }
     )
 
-    const categoriesSummaries: CategorySummary[] = []
+    const byCategoriesSummaries: CategorySummary[] = []
 
     for (const category of categories) {
       const transactionsByCategory =
@@ -121,13 +122,14 @@ export class GetAccountSummariesByCategoriesUseCase {
         }
       )
 
-      categorySummary.setPercentages(allTransactionsSummary)
+      categorySummary.setComparativePercentages(allTransactionsSummary)
 
-      categoriesSummaries.push(categorySummary)
+      byCategoriesSummaries.push(categorySummary)
     }
 
     return right({
-      categoriesSummaries,
+      fullTermAccounSummary: allTransactionsSummary,
+      byCategoriesSummaries,
     })
   }
 }

@@ -17,7 +17,7 @@ let categoriesRepository: ICategoriesRepository
 
 let sut: ListAccountCategoriesUseCase
 
-describe('Fetch account categories use case', () => {
+describe('List account categories use case', () => {
   beforeEach(() => {
     membersRepository = new InMemoryMembersRepository()
     accountsRepository = new InMemoryAccountsRepository()
@@ -30,7 +30,7 @@ describe('Fetch account categories use case', () => {
     )
   })
 
-  it('should be able to fetch account categories', async () => {
+  it('should be able to list account categories', async () => {
     await membersRepository.create(
       await makeMember({}, new UniqueEntityID('member-1')),
     )
