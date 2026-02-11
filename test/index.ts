@@ -14,7 +14,8 @@ import { DomainEvents } from "@/core/events/domain-events"
 import { FinancialGoalCreatedEvent } from "@/domain/finances/enterprise/events/financial-goal-created-event"
 import { OnFinancialGoalCreated } from "@/domain/notifications/application/subscribers/on-financial-goal-created"
 import dayjs from "dayjs"
-import { GetYearlySummariesProgressUseCase } from "@/domain/finances/application/use-cases/get-rolling-yearly-progress"
+import { GetRollingYearProgressUseCase } from "@/domain/finances/application/use-cases/get-rolling-yearly-progress"
+import { GetRollingMonthProgressUseCase } from "@/domain/finances/application/use-cases/get-rolling-month-progress"
 
 const membersRepository = new InMemoryMembersRepository()
 const accountsRepository = new InMemoryAccountsRepository()
@@ -63,8 +64,12 @@ const createFinancialGoal = new CreateFinancialGoalUseCase(
     financialGoalRepository
 )
 
-const getYearlyProgress = new GetYearlySummariesProgressUseCase(
-    membersRepository,
+const getYearlyProgress = new GetRollingYearProgressUseCase(
+    accountsRepository,
+    transactionsRepository
+)
+
+const getMonthProgress = new GetRollingMonthProgressUseCase(
     accountsRepository,
     transactionsRepository
 )
@@ -169,13 +174,26 @@ if (summaryByCategories.isLeft()) {
     throw new Error()
 }
 
-const yearlyProgress = await getYearlyProgress.execute({
-    memberId: member.value.member.id.toString()
-})
+console.log(summaryByCategories.value.fullTermAccounSummary)
+summaryByCategories.value.byCategoriesSummaries.forEach(sum => console.log(sum))
+// const yearlyProgress = await getYearlyProgress.execute({
+//     memberId: member.value.member.id.toString()
+// })
 
-if (yearlyProgress.isLeft()) {
-    throw new Error()
-}
+// if (yearlyProgress.isLeft()) {
+//     throw new Error()
+// }
 
-console.log(yearlyProgress.value.lastYearSummary)
-yearlyProgress.value.lastTwelveMonthsSummaries.forEach(sum => console.log(sum))
+// console.log(yearlyProgress.value.rollingYearSummary)
+// yearlyProgress.value.rollingMonthsSummaries.forEach(sum => console.log(sum))
+
+// const monthProgress = await getMonthProgress.execute({
+//     memberId: member.value.member.id.toString()
+// })
+
+// if (monthProgress.isLeft()) {
+//     throw new Error()
+// }
+
+// console.log(monthProgress.value.rollingMonthSummary)
+// monthProgress.value.rollingWeeksSummaries.forEach(sum => console.log(sum.summary))

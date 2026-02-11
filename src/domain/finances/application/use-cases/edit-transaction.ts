@@ -1,15 +1,14 @@
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { IMembersRepository } from '../repositories/members-repository'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
-import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'
 import { Transaction } from '@/domain/finances/enterprise/entites/transaction'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InvalidTransactionOperationError } from './errors/invalid-transaction-operation-error'
 import { ICategoriesRepository } from '../repositories/categories-repository'
-import { InvalidCategoryAccountRelationError } from './errors/invalid-category-account-relation-error'
-import { NotAllowedError } from './errors/not-allowed-error'
+import { NotAllowedError } from '@/core/errors/not-allowed-error'
 
 interface EditTransactionUseCaseRequest {
   memberId: string

@@ -10,5 +10,6 @@ export function calculatePartPercentage({
     totalValue,
     partValue
 }: CalculatePartPercentageInput): CalculatePartPercentageOutput {
-    return (partValue / totalValue) * 100
+    if (totalValue === 0) return 0
+    return (partValue / totalValue)
 }

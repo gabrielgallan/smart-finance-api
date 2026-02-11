@@ -1,8 +1,8 @@
 import { IMembersRepository } from '../repositories/members-repository.ts'
-import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository.ts'
-import { ResourceNotFoundError } from './errors/resource-not-found-error.ts'
+import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository.ts'
+import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error.ts'
 import { GetMemberProfileUseCase } from './get-member-profile.ts'
-import { makeMember } from 'tests/factories/make-member.ts'
+import { makeMember } from 'test/factories/make-member.ts'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 
 let membersRepository: IMembersRepository

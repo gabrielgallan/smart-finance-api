@@ -1,5 +1,5 @@
 import { IMembersRepository } from '../repositories/members-repository'
-import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
@@ -7,7 +7,7 @@ import { FinancialGoal } from '../../enterprise/entites/financial-goal'
 import { IFinancialGoalsRepository } from '../repositories/financial-goals-repository'
 import dayjs from 'dayjs'
 import { InvalidPeriodError } from './errors/invalid-period-error'
-import { InvalidPositiveNumberError } from './errors/invalid-positive-number-error'
+import { InvalidPositiveNumberError } from '@/core/errors/invalid-positive-number-error'
 
 interface CreateFinancialGoalUseCaseRequest {
   memberId: string

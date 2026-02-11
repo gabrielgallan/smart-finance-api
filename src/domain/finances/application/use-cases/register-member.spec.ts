@@ -1,10 +1,10 @@
 import { RegisterMemberUseCase } from './register-member.ts'
 import { Member } from '../../enterprise/entites/member.ts'
 import { IMembersRepository } from '../repositories/members-repository.ts'
-import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository'
+import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository.ts'
 import { InvalidMemberAgeError } from './errors/invalid-member-age-erros.ts'
 import { MemberAlreadyExistsError } from './errors/member-already-exists-error.ts'
-import { makeMember } from 'tests/factories/make-member.ts'
+import { makeMember } from 'test/factories/make-member.ts'
 
 let membersRepository: IMembersRepository
 let sut: RegisterMemberUseCase
