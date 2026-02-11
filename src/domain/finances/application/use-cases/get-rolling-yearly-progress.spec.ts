@@ -1,14 +1,15 @@
 import { IMembersRepository } from '../repositories/members-repository.ts'
-import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository.ts'
-import { makeMember } from 'tests/factories/make-member.ts'
+import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository.ts'
+import { makeMember } from 'test/factories/make-member.ts'
 import { IAccountsRepository } from '../repositories/accounts-repository.ts'
-import { makeAccount } from 'tests/factories/make-account.ts'
-import { InMemoryAccountsRepository } from 'tests/repositories/in-memory-accounts-repository.ts'
+import { makeAccount } from 'test/factories/make-account.ts'
+import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository.ts'
 import { GetRollingYearProgressUseCase } from './get-rolling-yearly-progress.ts'
-import { InMemoryTransactionsRepository } from 'tests/repositories/in-memory-transactions-repository.ts'
+import { InMemoryTransactionsRepository } from 'test/repositories/in-memory-transactions-repository.ts'
 import { ITransactionsRepository } from '../repositories/transactions-repository.ts'
-import { makeTransaction } from 'tests/factories/make-transaction.ts'
+import { makeTransaction } from 'test/factories/make-transaction.ts'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
+import { TransactionOperation } from '../../enterprise/entites/transaction.ts'
 
 let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
@@ -34,7 +35,7 @@ describe('Get rolling yearly progress use case', () => {
     vi.useRealTimers()
   })
 
-  it('should be able to get a rolling yearly summaries', async () => {
+  it('should be able to get a rolling year summary categorized by months', async () => {
     vi.setSystemTime(new Date(2025, 6, 10))
 
     await membersRepository.create(
@@ -59,7 +60,9 @@ describe('Get rolling yearly progress use case', () => {
 
     await transactionsRepository.create(
       makeTransaction({
+        amount: 179.9,
         accountId: new UniqueEntityID('account-1'),
+        operation: TransactionOperation.INCOME,
         createdAt: new Date(2025, 9, 25),
       }),
     )
@@ -81,6 +84,19 @@ describe('Get rolling yearly progress use case', () => {
 
     if (result.isRight()) {
       expect(result.value.rollingMonthsSummaries).toHaveLength(12)
+      expect(result.value.rollingMonthsSummaries).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            period: {
+              monthIndex: 10,
+              year: 2025
+            },
+            summary: expect.objectContaining({
+              totalIncome: 179.9,
+            }),
+          }),
+        ])
+      )
     }
   })
 })

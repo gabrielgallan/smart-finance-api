@@ -1,13 +1,13 @@
 import { IMembersRepository } from '../repositories/members-repository.ts'
-import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository.ts'
+import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository.ts'
 import { IAccountsRepository } from '../repositories/accounts-repository.ts'
-import { InMemoryAccountsRepository } from 'tests/repositories/in-memory-accounts-repository.ts'
-import { makeMember } from 'tests/factories/make-member.ts'
+import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository.ts'
+import { makeMember } from 'test/factories/make-member.ts'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
-import { makeAccount } from 'tests/factories/make-account.ts'
+import { makeAccount } from 'test/factories/make-account.ts'
 import { IFinancialGoalsRepository } from '../repositories/financial-goals-repository.ts'
 import { CreateFinancialGoalUseCase } from './create-financial-goal.ts'
-import { InMemoryFinancialGoalsRepository } from 'tests/repositories/in-memory-financial-goals-repository.ts'
+import { InMemoryFinancialGoalsRepository } from 'test/repositories/in-memory-financial-goals-repository.ts'
 
 let membersRepository: IMembersRepository
 let accountRepository: IAccountsRepository

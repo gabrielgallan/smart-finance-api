@@ -1,7 +1,7 @@
-import { InMemoryNotificationsRepository } from "tests/repositories/in-memory-notifications-repository"
+import { InMemoryNotificationsRepository } from "test/repositories/in-memory-notifications-repository"
 import { INotificationsRepository } from "../repositories/notifications.repository"
 import { ReadNotificationUseCase } from "./read-notification"
-import { makeNotification } from "tests/factories/make-notification"
+import { makeNotification } from "test/factories/make-notification"
 import { UniqueEntityID } from "@/core/entities/unique-entity-id"
 
 let notificationsRepository: INotificationsRepository

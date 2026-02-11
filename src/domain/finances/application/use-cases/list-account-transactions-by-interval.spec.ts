@@ -1,14 +1,14 @@
 import { IMembersRepository } from '../repositories/members-repository.ts'
-import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository.ts'
-import { makeMember } from 'tests/factories/make-member.ts'
+import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository.ts'
+import { makeMember } from 'test/factories/make-member.ts'
 import { IAccountsRepository } from '../repositories/accounts-repository.ts'
-import { InMemoryAccountsRepository } from 'tests/repositories/in-memory-accounts-repository.ts'
-import { makeAccount } from 'tests/factories/make-account.ts'
-import { InMemoryTransactionsRepository } from 'tests/repositories/in-memory-transactions-repository.ts'
+import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository.ts'
+import { makeAccount } from 'test/factories/make-account.ts'
+import { InMemoryTransactionsRepository } from 'test/repositories/in-memory-transactions-repository.ts'
 import { ITransactionsRepository } from '../repositories/transactions-repository.ts'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
 import { ListAccountTransactionsByIntervalUseCase } from './list-account-transactions-by-interval.ts'
-import { makeTransaction } from 'tests/factories/make-transaction.ts'
+import { makeTransaction } from 'test/factories/make-transaction.ts'
 
 let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository

@@ -1,14 +1,14 @@
 import { IMembersRepository } from '../repositories/members-repository'
-import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository'
-import { makeMember } from 'tests/factories/make-member'
+import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
+import { makeMember } from 'test/factories/make-member'
 import { ICategoriesRepository } from '../repositories/categories-repository'
 import { IAccountsRepository } from '../repositories/accounts-repository'
-import { makeAccount } from 'tests/factories/make-account'
-import { InMemoryAccountsRepository } from 'tests/repositories/in-memory-accounts-repository'
-import { InMemoryCategoriesRepository } from 'tests/repositories/in-memory-category-repository'
+import { makeAccount } from 'test/factories/make-account'
+import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository'
+import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-category-repository'
 import { EditAccountCategoryUseCase } from './edit-account-category'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { makeCategory } from 'tests/factories/make-category'
+import { makeCategory } from 'test/factories/make-category'
 
 let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository

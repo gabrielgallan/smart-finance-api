@@ -1,11 +1,11 @@
 import { IMembersRepository } from '../repositories/members-repository'
-import { InMemoryMembersRepository } from '@/../tests/repositories/in-memory-members-repository'
-import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
+import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { OpenAccountUseCase } from './open-account'
 import { IAccountsRepository } from '../repositories/accounts-repository'
-import { InMemoryAccountsRepository } from 'tests/repositories/in-memory-accounts-repository'
+import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository'
 import { MemberAlreadyHasAccountError } from './errors/member-alredy-has-account-error'
-import { makeMember } from 'tests/factories/make-member'
+import { makeMember } from 'test/factories/make-member'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 let membersRepository: IMembersRepository

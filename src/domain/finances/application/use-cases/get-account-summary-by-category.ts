@@ -1,5 +1,5 @@
 import { IMembersRepository } from '../repositories/members-repository'
-import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
