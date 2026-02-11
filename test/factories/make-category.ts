@@ -9,7 +9,6 @@ export function makeCategory(
     const category = Category.create({
         accountId: new UniqueEntityID(),
         name: faker.lorem.words(2),
-        description: null,
         ...override
     }, id)
 

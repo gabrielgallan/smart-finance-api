@@ -8,12 +8,9 @@ export function makeTransaction(
 ) {
     const transaction = Transaction.create({
         accountId: new UniqueEntityID(),
-        categoryId: null,
         title: faker.lorem.words(2),
-        description: null,
         amount: faker.number.int({ min: 1, max: 99999 }),
         operation: TransactionOperation.INCOME,
-        method: null,
         ...override
     }, id)
 
