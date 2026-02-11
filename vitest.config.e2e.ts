@@ -7,10 +7,14 @@ export default defineConfig({
   test: {
     name: 'E2E',
     include: [
-        "./src/infra/http/controllers/**/*.spec.ts"
+        './src/infra/http/controllers/**/*.spec.ts'
+    ],
+    setupFiles: [
+      'test/setup-e2e.ts'
     ],
     globals: true,
     root: './',
+    hookTimeout: 15000
   },
   plugins: [
     tsconfigPaths(),

@@ -1,11 +1,15 @@
-import { Body, ConflictException, Controller, HttpCode, Post, UsePipes } from '@nestjs/common'
-import { PrismaService } from '../../prisma/prisma.service'
+import { BadRequestException, Body, ConflictException, Controller, HttpCode, InternalServerErrorException, Post, UsePipes } from '@nestjs/common'
 import z from 'zod'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
-import { hash } from 'bcryptjs'
+import { PrismaMembersRepository } from '@/infra/database/prisma/repositories/prisma-members-repository'
+import { RegisterMemberUseCase } from '@/domain/finances/application/use-cases/register-member'
+import { InvalidMemberAgeError } from '@/domain/finances/application/use-cases/errors/invalid-member-age-erros'
+import { MemberAlreadyExistsError } from '@/domain/finances/application/use-cases/errors/member-already-exists-error'
 
 const registerBodySchema = z.object({
   name: z.string(),
+  birthDate: z.coerce.date(),
+  document: z.string().optional(),
   email: z.string().email(),
   password: z.string()
 })
@@ -15,30 +19,41 @@ type RegisterBodyDTO = z.infer<typeof registerBodySchema>
 @Controller('/api')
 export class RegisterController {
   constructor(
-    private prisma: PrismaService
-  ) {}
+    private membersRepository: PrismaMembersRepository
+  ) { }
 
-  @Post('/users')
+  @Post('/members')
   @HttpCode(201)
   @UsePipes(new ZodValidationPipe(registerBodySchema))
   async handle(@Body() body: RegisterBodyDTO) {
-    const { name, email, password } = body
+    const { name, email, password, birthDate, document } = body
 
-    const userWithSameEmail = await this.prisma.user.findUnique({
-      where: { email }
+    const registerMemberuseCase = new RegisterMemberUseCase(
+      this.membersRepository
+    )
+
+    const result = await registerMemberuseCase.execute({
+      name,
+      birthDate,
+      document,
+      email,
+      password,
     })
 
-    if (userWithSameEmail) {
-      throw new ConflictException('User already exists')
-    }
+    if (result.isLeft()) {
+      const error = result.value
 
-    await this.prisma.user.create({
-      data: {
-        name,
-        email,
-        password: await hash(password, 6)
+      switch (true) {
+        case error instanceof InvalidMemberAgeError:
+          return new BadRequestException()
+
+        case error instanceof MemberAlreadyExistsError:
+          return new ConflictException()
+
+        default:
+          return new InternalServerErrorException()
       }
-    })
+    }
 
     return {}
   }

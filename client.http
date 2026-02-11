@@ -2,13 +2,14 @@
 @authToken = {{authenticate.response.body.token}}
 
 # @name register
-POST {{baseUrl}}/api/users
+POST {{baseUrl}}/api/members
 Content-Type: application/json
 
 {
-    "name": "John Doe",
-    "email": "johndoe@email.com",
-    "password": "john123"
+    "name": "Gabriel Gallan",
+    "email": "gabriel@email.com",
+    "password": "gab123",
+    "birthDate": "2005-10-31T20:00:00.000Z"
 }
 
 ###
@@ -18,8 +19,8 @@ POST {{baseUrl}}/api/sessions
 Content-Type: application/json
 
 {
-    "email": "johndoe@email.com",
-    "password": "john123"
+    "email": "gabriel@email.com",
+    "password": "gab123"
 }
 
 ###
@@ -30,12 +31,3 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 ###
-
-# @name open_account
-POST  {{baseUrl}}/api/accounts
-Content-Type: application/json
-Authorization: Bearer {{authToken}}
-
-{
-    "initialBalance": 40
-}

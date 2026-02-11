@@ -1,13 +1,13 @@
-import { Body, ConflictException, Controller, HttpCode, Post, UseGuards, UsePipes } from '@nestjs/common'
-import { PrismaService } from '../../prisma/prisma.service'
+import { Body, ConflictException, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
+import { PrismaService } from '../../database/prisma/prisma.service'
 import z from 'zod'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
-import { JwtAuthGuard } from 'src/infra/auth/jwt-auth-guard'
-import { CurrentUser } from 'src/infra/auth/current-user-decorator'
-import type { UserPayload } from 'src/infra/auth/jwt.strategy'
+import { JwtAuthGuard } from '@/infra/auth/jwt-auth-guard'
+import { CurrentUser } from '@/infra/auth/current-user-decorator'
+import type { UserPayload } from '@/infra/auth/jwt.strategy'
 
 const openAccountBodySchema = z.object({
-    initialBalance: z.coerce.number().default(0)
+    initialBalance: z.coerce.number()
 })
 
 type OpenAccountBodyDTO = z.infer<typeof openAccountBodySchema>

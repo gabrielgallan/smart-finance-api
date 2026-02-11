@@ -1,9 +1,11 @@
-import { Body, Controller, HttpCode, Post, UnauthorizedException, UsePipes } from '@nestjs/common'
-import { PrismaService } from '../../prisma/prisma.service'
+import { Body, Controller, HttpCode, InternalServerErrorException, NotFoundException, Post, UnauthorizedException, UsePipes } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import z from 'zod'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
-import { compare } from 'bcryptjs'
+import { AuthenticateMemberUseCase } from '@/domain/finances/application/use-cases/authenticate-member'
+import { PrismaMembersRepository } from '@/infra/database/prisma/repositories/prisma-members-repository'
+import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { InvalidCredentialsError } from '@/domain/finances/application/use-cases/errors/invalid-credentials-error'
 
 const authenticateBodySchema = z.object({
   email: z.string().email(),
@@ -16,8 +18,8 @@ type AuthenticateBodyDTO = z.infer<typeof authenticateBodySchema>
 export class AuthenticateController {
   constructor(
     private jwt: JwtService,
-    private prisma: PrismaService
-  ) {}
+    private membersRepository: PrismaMembersRepository
+  ) { }
 
   @Post('/sessions')
   @HttpCode(201)
@@ -25,22 +27,31 @@ export class AuthenticateController {
   async handle(@Body() body: AuthenticateBodyDTO) {
     const { email, password } = body
 
-    const userWithEmail = await this.prisma.user.findUnique({
-      where: { email }
+    const authenticateMemberUseCase = new AuthenticateMemberUseCase(
+      this.membersRepository
+    )
+
+    const result = await authenticateMemberUseCase.execute({
+      email, password
     })
 
-    if (!userWithEmail) {
-      throw new UnauthorizedException('Invalid credentials error')
-    }
+    if (result.isLeft()) {
+      const error = result.value
 
-    const isPasswordCorrect = await compare(password, userWithEmail.password)
+      switch (true) {
+        case error instanceof ResourceNotFoundError:
+          return new NotFoundException()
 
-    if (!isPasswordCorrect) {
-      throw new UnauthorizedException('Invalid credentials error')
+        case error instanceof InvalidCredentialsError:
+          return new UnauthorizedException()
+
+        default:
+          return new InternalServerErrorException()
+      }
     }
 
     const token = this.jwt.sign({
-      sub: userWithEmail.id
+      sub: result.value.memberId.toString()
     })
 
     return {

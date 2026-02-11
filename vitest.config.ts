@@ -5,6 +5,15 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
   test: {
+    include: [
+      "**/*.spec.ts",
+      "**/*.test.ts",
+    ],
+    exclude: [
+      "node_modules",
+      "dist",
+      "src/infra/http/controllers/*"
+    ],
     globals: true,
     root: './',
   },
