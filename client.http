@@ -7,8 +7,8 @@ Content-Type: application/json
 
 {
     "name": "Gabriel Gallan",
-    "email": "gabriel@email.com",
-    "password": "gab123",
+    "email": "gallan@email.com",
+    "password": "gallan123",
     "birthDate": "2005-10-31T20:00:00.000Z"
 }
 
@@ -19,8 +19,8 @@ POST {{baseUrl}}/api/sessions
 Content-Type: application/json
 
 {
-    "email": "gabriel@email.com",
-    "password": "gab123"
+    "email": "gallan@email.com",
+    "password": "gallan123"
 }
 
 ###
@@ -31,3 +31,12 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 ###
+
+# @name open_account
+POST {{baseUrl}}/api/accounts
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "initialBalance": "90"
+}

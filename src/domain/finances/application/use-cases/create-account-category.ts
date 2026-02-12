@@ -7,6 +7,7 @@ import { Category } from '@/domain/finances/enterprise/entites/category'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
 import { Slug } from '@/domain/finances/enterprise/entites/value-objects/slug'
 import { CategoryAlreadyExistsError } from './errors/category-already-exists-error'
+import { Injectable } from '@nestjs/common'
 
 interface CreateAccountCategoryUseCaseRequest {
   memberId: string
@@ -23,6 +24,7 @@ type CreateAccountCategoryUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class CreateAccountCategoryUseCase {
   constructor(
     private membersRepository: IMembersRepository,

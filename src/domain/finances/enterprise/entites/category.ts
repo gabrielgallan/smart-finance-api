@@ -7,9 +7,9 @@ export interface CategoryProps {
   accountId: UniqueEntityID
   name: string
   slug: Slug
-  description?: string
+  description?: string | null
   createdAt: Date
-  updatedAt: Date
+  updatedAt?: Date | null
 }
 
 export class Category extends Entity<CategoryProps> {
@@ -22,7 +22,7 @@ export class Category extends Entity<CategoryProps> {
         ...props,
         slug: props.slug ?? Slug.createFromText(props.name),
         createdAt: props.createdAt ?? new Date(),
-        updatedAt: props.updatedAt ?? new Date(),
+        updatedAt: props.updatedAt ?? null,
       },
       id,
     )
@@ -35,7 +35,7 @@ export class Category extends Entity<CategoryProps> {
     return this.props.name
   }
 
-  get description(): string | undefined {
+  get description() {
     return this.props.description
   }
 
@@ -55,14 +55,14 @@ export class Category extends Entity<CategoryProps> {
     this.touch()
   }
 
-  set description(description: string | undefined) {
+  set description(description: string | undefined | null) {
     this.props.description = description
 
     this.touch()
   }
 
   // => Methods
-  touch() {
+  private touch() {
     this.props.updatedAt = new Date()
   }
 }

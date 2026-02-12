@@ -2,33 +2,33 @@ import { Pagination } from '@/core/types/repositories/pagination'
 import { Transaction } from '../../enterprise/entites/transaction'
 import { DateInterval } from '@/core/types/repositories/date-interval'
 
-export interface ITransactionsRepository {
-  create(transaction: Transaction): Promise<void>
-  findById(id: string): Promise<Transaction | null>
-  listRecentByAccountId(
+export abstract class ITransactionsRepository {
+  abstract create(transaction: Transaction): Promise<void>
+  abstract findById(id: string): Promise<Transaction | null>
+  abstract listRecentByAccountId(
     accountId: string,
     pagination: Pagination,
   ): Promise<Transaction[]>
-  listByIntervalAndAccountId(
+  abstract listByIntervalAndAccountId(
     accountId: string,
     interval: DateInterval,
     pagination: Pagination,
   ): Promise<Transaction[]>
-  listByIntervalAndAccountIdAndCategory(
+  abstract listByIntervalAndAccountIdAndCategory(
     accountId: string,
     categoryId: string,
     interval: DateInterval,
     pagination: Pagination,
   ): Promise<Transaction[]>
-  findManyByAccountIdAndInterval(
+  abstract findManyByAccountIdAndInterval(
     accountId: string,
     interval: DateInterval,
   ): Promise<Transaction[]>
-  findManyByAccountIdAndIntervalAndCategory(
+  abstract findManyByAccountIdAndIntervalAndCategory(
     accountId: string,
     categoryId: string,
     interval: DateInterval,
   ): Promise<Transaction[]>
-  save(transaction: Transaction): Promise<Transaction>
-  deleteAllByAccountId(accountId: string): Promise<number>
+  abstract save(transaction: Transaction): Promise<Transaction>
+  abstract deleteAllByAccountId(accountId: string): Promise<number>
 }

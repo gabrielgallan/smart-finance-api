@@ -31,7 +31,7 @@ describe('Send notification use case', () => {
 
     if (result.isRight()) {
       expect(result.value.notification).toBeInstanceOf(Notification)
-      expect(result.value.notification.readAt).toBe(undefined)
+      expect(result.value.notification.readAt).toBe(null)
       expect(result.value.notification.content).toBe('new notification to user 1')
     }
   })

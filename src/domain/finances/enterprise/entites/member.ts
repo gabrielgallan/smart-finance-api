@@ -4,10 +4,9 @@ import { Hash } from './value-objects/hash'
 import { Optional } from '@/core/types/optional'
 
 export interface MemberProps {
-  accountId?: UniqueEntityID
   name: string
   birthDate: Date
-  document?: string
+  document?: string | null
   email: string
   password: Hash
   createdAt: Date
@@ -38,20 +37,16 @@ export class Member extends Entity<MemberProps> {
     return this.props.birthDate
   }
 
-  get email() {
-    return this.props.email
-  }
-
   get document() {
     return this.props.document
   }
 
-  get password() {
-    return this.props.password
+  get email() {
+    return this.props.email
   }
 
-  get accountId(): UniqueEntityID | undefined {
-    return this.props.accountId
+  get password() {
+    return this.props.password
   }
 
   get createdAt() {
@@ -65,9 +60,5 @@ export class Member extends Entity<MemberProps> {
 
   set password(passwordHash: Hash) {
     this.props.password = passwordHash
-  }
-
-  set accountId(accountId: UniqueEntityID | undefined) {
-    this.props.accountId = accountId
   }
 }

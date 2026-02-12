@@ -1,9 +1,9 @@
 import { Account } from '../../enterprise/entites/account'
 
-export interface IAccountsRepository {
-  create(Account: Account): Promise<void>
-  findById(id: string): Promise<Account | null>
-  findByHolderId(holderId: string): Promise<Account | null>
-  save(account: Account): Promise<Account>
-  delete(account: Account): Promise<number>
+export abstract class IAccountsRepository {
+  abstract create(account: Account): Promise<void>
+  abstract findById(id: string): Promise<Account | null>
+  abstract findByHolderId(holderId: string): Promise<Account | null>
+  abstract save(account: Account): Promise<Account>
+  abstract delete(account: Account): Promise<number>
 }

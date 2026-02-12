@@ -13,10 +13,12 @@ export class PrismaMembersRepository implements IMembersRepository {
         const prismaMember = await this.prisma.member.create({
             data: {
                 id: member.id.toString(),
-                birthDate: member.birthDate,
                 name: member.name,
+                birthDate: member.birthDate,
+                document: member.document,
                 email: member.email,
                 passwordHash: member.password.value,
+                createdAt: member.createdAt
             }
         })
 
@@ -25,9 +27,7 @@ export class PrismaMembersRepository implements IMembersRepository {
 
     async findById(id: string) {
         const prismaMember = await this.prisma.member.findUnique({
-            where: {
-                id
-            }
+            where: { id }
         })
 
         if (!prismaMember) {
@@ -39,9 +39,7 @@ export class PrismaMembersRepository implements IMembersRepository {
 
     async findByDocument(document: string) {
         const prismaMember = await this.prisma.member.findFirst({
-            where: {
-                document
-            }
+            where: { document }
         })
 
         if (!prismaMember) {
@@ -78,11 +76,11 @@ export class PrismaMembersRepository implements IMembersRepository {
     }
     
     async save(member: Member) {
-        const prismaMember = PrismaMemberMapper.toPrisma(member)
+        const data = PrismaMemberMapper.toPrisma(member)
 
         const updated = await this.prisma.member.update({
             where: { id: member.id.toString() },
-            data: prismaMember
+            data
         })
 
         return PrismaMemberMapper.toDomain(updated)

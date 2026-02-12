@@ -22,11 +22,11 @@ describe('Authenticate member tests', () => {
   })
 
   it('[POST] /api/sessions', async () => {
-    await prisma.user.create({
+    await prisma.member.create({
         data: {
             name: 'gabriel@email.com',
             email: 'gabriel@email.com',
-            password: await hash('gabriel123', 8)
+            passwordHash: await hash('gabriel123', 8)
         }
     })
 

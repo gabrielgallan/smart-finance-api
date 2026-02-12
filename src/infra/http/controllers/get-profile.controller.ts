@@ -2,25 +2,21 @@ import { Controller, Get, HttpCode, InternalServerErrorException, NotFoundExcept
 import { JwtAuthGuard } from '../../auth/jwt-auth-guard'
 import { CurrentUser } from '../../auth/current-user-decorator'
 import type { UserPayload } from '../../auth/jwt.strategy'
-import { PrismaMembersRepository } from '@/infra/database/prisma/repositories/prisma-members-repository'
 import { GetMemberProfileUseCase } from '@/domain/finances/application/use-cases/get-member-profile'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { MemberPresenter } from '../presenters/member-presenter'
 
 @Controller('/api')
 @UseGuards(JwtAuthGuard)
 export class GetProfileController {
   constructor(
-    private membersRepository: PrismaMembersRepository
+    private getMemberProfile: GetMemberProfileUseCase
   ) { }
 
   @Get('/profile')
   @HttpCode(200)
   async handle(@CurrentUser() user: UserPayload) {
-    const getProfileUseCase = new GetMemberProfileUseCase(
-      this.membersRepository
-    )
-
-    const result = await getProfileUseCase.execute({
+    const result = await this.getMemberProfile.execute({
       memberId: user.sub
     })
 
@@ -29,7 +25,9 @@ export class GetProfileController {
 
       switch (true) {
         case error instanceof ResourceNotFoundError:
-          return new NotFoundException()
+          return new NotFoundException({
+            message: error.message
+          })
 
         default:
           return new InternalServerErrorException()
@@ -37,11 +35,7 @@ export class GetProfileController {
     }
 
     return {
-      profile: {
-        ...result.value.member,
-        password: undefined,
-        id: undefined,
-      }
+      member: MemberPresenter.toHTTP(result.value.member)
     }
   }
 }

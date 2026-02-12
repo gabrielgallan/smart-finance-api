@@ -4,6 +4,7 @@ import { IAccountsRepository } from '../repositories/accounts-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { MemberAlreadyHasAccountError } from './errors/member-alredy-has-account-error'
 import { Either, left, right } from '@/core/types/either'
+import { Injectable } from '@nestjs/common'
 
 interface OpenAccountUseCaseRequest {
   memberId: string
@@ -15,6 +16,7 @@ type OpenAccountUseCaseResponse = Either<
   { account: Account }
 >
 
+@Injectable()
 export class OpenAccountUseCase {
   constructor(
     private membersRepository: IMembersRepository,
@@ -43,10 +45,6 @@ export class OpenAccountUseCase {
     })
 
     await this.accountRepository.create(account)
-
-    member.accountId = account.id
-
-    await this.membersRepository.save(member)
 
     return right({
       account,

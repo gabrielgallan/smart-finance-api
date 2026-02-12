@@ -3,6 +3,7 @@ import { IMembersRepository } from '../repositories/members-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { InvalidCredentialsError } from './errors/invalid-credentials-error'
 import { Either, left, right } from '@/core/types/either'
+import { Injectable } from '@nestjs/common'
 
 interface AuthenticateMemberUseCaseRequest {
   email: string
@@ -14,6 +15,7 @@ type AuthenticateMemberUseCaseResponse = Either<
   { memberId: UniqueEntityID }
 >
 
+@Injectable()
 export class AuthenticateMemberUseCase {
   constructor(private membersRepository: IMembersRepository) {}
 

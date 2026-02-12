@@ -5,6 +5,7 @@ import { IMembersRepository } from '../repositories/members-repository'
 import { MemberAlreadyExistsError } from './errors/member-already-exists-error'
 import { Hash } from '@/domain/finances/enterprise/entites/value-objects/hash'
 import { Either, left, right } from '@/core/types/either'
+import { Injectable } from '@nestjs/common'
 
 interface RegisterMemberUseCaseRequest {
   name: string
@@ -19,6 +20,7 @@ type RegisterMemberUseCaseResponse = Either<
   { member: Member }
 >
 
+@Injectable()
 export class RegisterMemberUseCase {
   constructor(private membersRepository: IMembersRepository) {}
 

@@ -3,7 +3,6 @@ import { JwtService } from '@nestjs/jwt'
 import z from 'zod'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
 import { AuthenticateMemberUseCase } from '@/domain/finances/application/use-cases/authenticate-member'
-import { PrismaMembersRepository } from '@/infra/database/prisma/repositories/prisma-members-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { InvalidCredentialsError } from '@/domain/finances/application/use-cases/errors/invalid-credentials-error'
 
@@ -18,7 +17,7 @@ type AuthenticateBodyDTO = z.infer<typeof authenticateBodySchema>
 export class AuthenticateController {
   constructor(
     private jwt: JwtService,
-    private membersRepository: PrismaMembersRepository
+    private authenticateMember: AuthenticateMemberUseCase
   ) { }
 
   @Post('/sessions')
@@ -27,11 +26,7 @@ export class AuthenticateController {
   async handle(@Body() body: AuthenticateBodyDTO) {
     const { email, password } = body
 
-    const authenticateMemberUseCase = new AuthenticateMemberUseCase(
-      this.membersRepository
-    )
-
-    const result = await authenticateMemberUseCase.execute({
+    const result = await this.authenticateMember.execute({
       email, password
     })
 
@@ -40,10 +35,14 @@ export class AuthenticateController {
 
       switch (true) {
         case error instanceof ResourceNotFoundError:
-          return new NotFoundException()
+          return new NotFoundException({
+            message: error.message
+          })
 
         case error instanceof InvalidCredentialsError:
-          return new UnauthorizedException()
+          return new UnauthorizedException({
+            message: error.message
+          })
 
         default:
           return new InternalServerErrorException()

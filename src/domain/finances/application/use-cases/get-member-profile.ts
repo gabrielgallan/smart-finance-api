@@ -2,6 +2,7 @@ import { Member } from '@/domain/finances/enterprise/entites/member'
 import { IMembersRepository } from '../repositories/members-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'
+import { Injectable } from '@nestjs/common'
 
 interface GetMemberProfileUseCaseRequest {
   memberId: string
@@ -12,6 +13,7 @@ type GetMemberProfileUseCaseResponse = Either<
   { member: Member }
 >
 
+@Injectable()
 export class GetMemberProfileUseCase {
   constructor(private membersRepository: IMembersRepository) {}
 

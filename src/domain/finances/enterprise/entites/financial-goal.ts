@@ -6,12 +6,12 @@ import { FinancialGoalCreatedEvent } from '../events/financial-goal-created-even
 export interface FinancialGoalProps {
   accountId: UniqueEntityID
   title: string
-  description?: string
+  description?: string | null
   targetAmount: number
   savedAmount: number
   targetDate: Date
   createdAt: Date
-  updatedAt: Date
+  updatedAt?: Date | null
 }
 
 export class FinancialGoal extends AggregateRoot<FinancialGoalProps> {
@@ -24,7 +24,7 @@ export class FinancialGoal extends AggregateRoot<FinancialGoalProps> {
         ...props,
         savedAmount: props.savedAmount ?? 0,
         createdAt: props.createdAt ?? new Date(),
-        updatedAt: props.updatedAt ?? new Date(),
+        updatedAt: props.updatedAt ?? null,
       },
       id,
     )
@@ -47,7 +47,7 @@ export class FinancialGoal extends AggregateRoot<FinancialGoalProps> {
     return this.props.title
   }
 
-  get description(): string | undefined {
+  get description() {
     return this.props.description
   }
 
@@ -66,7 +66,7 @@ export class FinancialGoal extends AggregateRoot<FinancialGoalProps> {
     this.touch()
   }
 
-  set description(description: string | undefined) {
+  set description(description: string | undefined | null) {
     this.props.description = description
 
     this.touch()
@@ -97,7 +97,7 @@ export class FinancialGoal extends AggregateRoot<FinancialGoalProps> {
     this.touch()
   }
 
-  touch() {
+  private touch() {
     this.props.updatedAt = new Date()
   }
 }

@@ -22,7 +22,7 @@ describe('Read notification use case', () => {
   it('should be able to read a notification', async () => {
     vi.setSystemTime(new Date(2026, 0, 31, 20, 0, 0))
 
-    notificationsRepository.create(
+    await notificationsRepository.create(
         makeNotification(
             {
                 recipientId: new UniqueEntityID('user-1')

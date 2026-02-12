@@ -6,7 +6,7 @@ export interface AccountProps {
   holderId: UniqueEntityID
   balance: number
   createdAt: Date
-  updatedAt: Date
+  updatedAt?: Date | null
 }
 
 export class Account extends Entity<AccountProps> {
@@ -18,7 +18,7 @@ export class Account extends Entity<AccountProps> {
       {
         ...props,
         createdAt: props.createdAt ?? new Date(),
-        updatedAt: props.updatedAt ?? new Date(),
+        updatedAt: props.updatedAt ?? null,
       },
       id,
     )
@@ -35,12 +35,16 @@ export class Account extends Entity<AccountProps> {
     return this.props.holderId
   }
 
+  get createdAt() {
+    return this.props.createdAt
+  }
+
   get updatedAt() {
     return this.props.updatedAt
   }
 
   // => Methods
-  touch() {
+  private touch() {
     this.props.updatedAt = new Date()
   }
 

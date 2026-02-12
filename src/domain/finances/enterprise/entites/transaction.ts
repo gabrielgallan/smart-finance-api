@@ -9,14 +9,14 @@ export enum TransactionOperation {
 
 export interface TransactionProps {
   accountId: UniqueEntityID
-  categoryId?: UniqueEntityID
+  categoryId?: UniqueEntityID | null
   title: string
   amount: number
-  description?: string
+  description?: string | null
   operation: TransactionOperation
-  method?: string
+  method?: string | null
   createdAt: Date
-  updatedAt: Date
+  updatedAt?: Date | null
 }
 
 export class Transaction extends AggregateRoot<TransactionProps> {
@@ -28,7 +28,7 @@ export class Transaction extends AggregateRoot<TransactionProps> {
       {
         ...props,
         createdAt: props.createdAt ?? new Date(),
-        updatedAt: props.updatedAt ?? new Date(),
+        updatedAt: props.updatedAt ?? null,
       },
       id,
     )
@@ -41,7 +41,7 @@ export class Transaction extends AggregateRoot<TransactionProps> {
     return this.props.accountId
   }
 
-  get categoryId(): UniqueEntityID | undefined {
+  get categoryId() {
     return this.props.categoryId
   }
 
@@ -49,7 +49,7 @@ export class Transaction extends AggregateRoot<TransactionProps> {
     return this.props.title
   }
 
-  get description(): string | undefined {
+  get description() {
     return this.props.description
   }
 
@@ -57,7 +57,7 @@ export class Transaction extends AggregateRoot<TransactionProps> {
     return this.props.amount
   }
 
-  get method(): string | undefined {
+  get method() {
     return this.props.method
   }
 
@@ -72,34 +72,34 @@ export class Transaction extends AggregateRoot<TransactionProps> {
     this.touch()
   }
 
-  set categoryId(categoryId: UniqueEntityID | undefined) {
+  set categoryId(categoryId: UniqueEntityID | undefined | null) {
     this.props.categoryId = categoryId
 
     this.touch()
   }
 
-  set description(description: string | undefined) {
+  set description(description: string | undefined | null) {
     this.props.description = description
 
     this.touch()
   }
 
-  set method(method: string | undefined) {
+  set method(method: string | undefined | null) {
     this.props.method = method
 
-    this.touch()
+    this.touch() 
   }
 
   // => Methods
-  touch() {
+  private touch() {
     this.props.updatedAt = new Date()
   }
 
-  isIncome() {
+  public isIncome() {
     return this.props.operation === TransactionOperation.INCOME
   }
 
-  isExpense() {
+  public isExpense() {
     return this.props.operation === TransactionOperation.EXPENSE
   }
 }

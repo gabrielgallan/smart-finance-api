@@ -1,13 +1,15 @@
-import { Body, ConflictException, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
-import { PrismaService } from '../../database/prisma/prisma.service'
+import { Body, ConflictException, Controller, HttpCode, InternalServerErrorException, NotFoundException, Post, UseGuards } from '@nestjs/common'
 import z from 'zod'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth-guard'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import type { UserPayload } from '@/infra/auth/jwt.strategy'
+import { OpenAccountUseCase } from '@/domain/finances/application/use-cases/open-account'
+import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { MemberAlreadyHasAccountError } from '@/domain/finances/application/use-cases/errors/member-alredy-has-account-error'
 
 const openAccountBodySchema = z.object({
-    initialBalance: z.coerce.number()
+  initialBalance: z.coerce.number().optional()
 })
 
 type OpenAccountBodyDTO = z.infer<typeof openAccountBodySchema>
@@ -16,31 +18,40 @@ type OpenAccountBodyDTO = z.infer<typeof openAccountBodySchema>
 @UseGuards(JwtAuthGuard)
 export class OpenAccountController {
   constructor(
-    private prisma: PrismaService
-  ) {}
+    private openAccount: OpenAccountUseCase
+  ) { }
 
   @Post('/accounts')
   @HttpCode(201)
   async handle(
-    @CurrentUser() user: UserPayload, 
+    @CurrentUser() user: UserPayload,
     @Body(new ZodValidationPipe(openAccountBodySchema)) body: OpenAccountBodyDTO
   ) {
     const { initialBalance } = body
 
-    const userAlreadyHasAccount = await this.prisma.account.findUnique({
-        where: { holderId: user.sub }
+    const result = await this.openAccount.execute({
+      memberId: user.sub,
+      initialBalance
     })
 
-    if (userAlreadyHasAccount) {
-        throw new ConflictException('User already has account')
-    }
+    if (result.isLeft()) {
+      const error = result.value
 
-    await this.prisma.account.create({
-      data: {
-        balance: initialBalance,
-        holderId: user.sub
+      switch (true) {
+        case error instanceof ResourceNotFoundError:
+          return new NotFoundException({
+            message: error.message
+          })
+
+        case error instanceof MemberAlreadyHasAccountError:
+          return new ConflictException({
+            message: error.message
+          })
+
+        default:
+          return new InternalServerErrorException()
       }
-    })
+    }
 
     return {}
   }
