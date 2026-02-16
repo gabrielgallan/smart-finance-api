@@ -9,7 +9,7 @@ export async function makeMember(
 ) {
     const member = Member.create({
       name: faker.person.fullName(),
-      birthDate: new Date(2005, 9, 31),
+      birthDate: new Date(),
       document: faker.string.numeric(11),
       email: faker.internet.email(),
       password: await Hash.create(faker.string.hexadecimal({

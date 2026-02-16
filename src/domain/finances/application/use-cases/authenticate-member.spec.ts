@@ -1,11 +1,11 @@
-import { IMembersRepository } from '../repositories/members-repository.ts'
-import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository.ts'
-import { AuthenticateMemberUseCase } from './authenticate-member.ts'
-import { Hash } from '@/domain/finances/enterprise/entites/value-objects/hash.ts'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
-import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error.ts'
-import { InvalidCredentialsError } from './errors/invalid-credentials-error.ts'
-import { makeMember } from 'test/factories/make-member.ts'
+import { IMembersRepository } from '../repositories/members-repository'
+import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
+import { AuthenticateMemberUseCase } from './authenticate-member'
+import { Hash } from '@/domain/finances/enterprise/entites/value-objects/hash'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { InvalidCredentialsError } from './errors/invalid-credentials-error'
+import { makeMember } from 'test/factories/make-member'
 
 let membersRepository: IMembersRepository
 let sut: AuthenticateMemberUseCase

@@ -1,9 +1,9 @@
-import { IMembersRepository } from '../repositories/members-repository.ts'
-import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository.ts'
-import { Hash } from '@/domain/finances/enterprise/entites/value-objects/hash.ts'
-import { makeMember } from 'test/factories/make-member.ts'
-import { EditMemberProfileUseCase } from './edit-member-profile.ts'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id.ts'
+import { IMembersRepository } from '../repositories/members-repository'
+import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
+import { Hash } from '@/domain/finances/enterprise/entites/value-objects/hash'
+import { makeMember } from 'test/factories/make-member'
+import { EditMemberProfileUseCase } from './edit-member-profile'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 let membersRepository: IMembersRepository
 let sut: EditMemberProfileUseCase

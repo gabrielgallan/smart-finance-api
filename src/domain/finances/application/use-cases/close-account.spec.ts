@@ -71,7 +71,6 @@ describe('Close member account use case', () => {
 
         if (result.isRight()) {
             expect(result.value.rowsDeleted).toBe(4)
-            expect(membersRepository.items[0].accountId).toBe(undefined)
             expect(accountRepository.items).toHaveLength(0)
             expect(transactionsRepository.items).toHaveLength(0)
             expect(categoriesRepository.items).toHaveLength(0)

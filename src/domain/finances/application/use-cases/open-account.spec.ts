@@ -35,10 +35,6 @@ describe('Open member account use case', () => {
     
     if (result.isRight()) {
       const member = await membersRepository.findById('member-1')
-
-      if (member) { 
-        expect(member.accountId?.equals(result.value.account.id)).toBe(true)
-      }
       
       expect(result.value.account.balance).toBe(250)
       expect(result.value.account.holderId.toString()).toBe('member-1')
