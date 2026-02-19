@@ -47,6 +47,14 @@ export class Category extends Entity<CategoryProps> {
     return this.props.accountId
   }
 
+  get createdAt() {
+    return this.props.createdAt
+  }
+
+  get updatedAt() {
+    return this.props.updatedAt
+  }
+
   // => Setters
   set name(name: string) {
     this.props.name = name

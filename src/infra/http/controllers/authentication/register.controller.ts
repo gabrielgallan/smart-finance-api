@@ -1,6 +1,6 @@
 import { BadRequestException, Body, ConflictException, Controller, HttpCode, InternalServerErrorException, Post, UsePipes } from '@nestjs/common'
 import z from 'zod'
-import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
+import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { RegisterMemberUseCase } from '@/domain/finances/application/use-cases/register-member'
 import { InvalidMemberAgeError } from '@/domain/finances/application/use-cases/errors/invalid-member-age-erros'
 import { MemberAlreadyExistsError } from '@/domain/finances/application/use-cases/errors/member-already-exists-error'

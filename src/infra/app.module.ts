@@ -6,12 +6,12 @@ import { AuthModule } from './auth/auth.module'
 
 @Module({
   imports: [
+    AuthModule,
     HttpModule,
     ConfigModule.forRoot({
       validate: env => envSchema.parse(env),
       isGlobal: true
-    }),
-    AuthModule,
+    })
   ]
 })
 export class AppModule {}

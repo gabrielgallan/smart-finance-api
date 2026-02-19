@@ -5,6 +5,7 @@ import { IAccountsRepository } from '../repositories/accounts-repository'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
 import { Category } from '@/domain/finances/enterprise/entites/category'
 import { ICategoriesRepository } from '../repositories/categories-repository'
+import { Injectable } from '@nestjs/common'
 
 interface ListAccountCategoriesUseCaseRequest {
   memberId: string
@@ -17,6 +18,7 @@ type ListAccountCategoriesUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class ListAccountCategoriesUseCase {
   constructor(
     private membersRepository: IMembersRepository,

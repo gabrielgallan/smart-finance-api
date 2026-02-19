@@ -28,10 +28,10 @@ model Member {
 }
 
 model Account {
-  id        String   @id @default(uuid())
-  balance   Decimal  @default(0) @db.Decimal(14, 2)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id        String    @id @default(uuid())
+  balance   Decimal   @default(0) @db.Decimal(14, 2)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
 
   holder   Member @relation(fields: [holderId], references: [id])
   holderId String @unique @map("holder_id")
@@ -50,7 +50,7 @@ model Transaction {
   operation   Operation
   method      String?
   createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
 
   account   Account @relation(fields: [accountId], references: [id])
   accountId String  @map("account_id")
@@ -67,12 +67,12 @@ enum Operation {
 }
 
 model Category {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   name        String
   slug        String
   description String?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
 
   account   Account @relation(fields: [accountId], references: [id])
   accountId String  @map("account_id")

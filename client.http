@@ -40,3 +40,34 @@ Authorization: Bearer {{authToken}}
 {
     "initialBalance": "90"
 }
+
+###
+
+# @name create_category
+POST {{baseUrl}}/api/categories
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "name": "Uber"
+}
+
+###
+
+# @name list_categories
+GET {{baseUrl}}/api/categories
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name edit_category
+PUT {{baseUrl}}/api/categories
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "categoryId": "ff767f33-3995-4c4e-865b-128bec365df4",
+    "name": "Sports",
+    "description": "sports expenses"
+}

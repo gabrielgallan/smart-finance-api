@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, InternalServerErrorException, NotFoundException, Post, UnauthorizedException, UsePipes } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import z from 'zod'
-import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
+import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { AuthenticateMemberUseCase } from '@/domain/finances/application/use-cases/authenticate-member'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { InvalidCredentialsError } from '@/domain/finances/application/use-cases/errors/invalid-credentials-error'
