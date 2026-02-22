@@ -13,7 +13,7 @@ export interface TransactionProps {
   title: string
   amount: number
   description?: string | null
-  operation: TransactionOperation
+  operation: 'income' | 'expense'
   method?: string | null
   createdAt: Date
   updatedAt?: Date | null
@@ -65,6 +65,10 @@ export class Transaction extends AggregateRoot<TransactionProps> {
     return this.props.createdAt
   }
 
+  get updatedAt() {
+    return this.props.updatedAt
+  }
+
   // => Setters
   set title(title: string) {
     this.props.title = title
@@ -96,10 +100,10 @@ export class Transaction extends AggregateRoot<TransactionProps> {
   }
 
   public isIncome() {
-    return this.props.operation === TransactionOperation.INCOME
+    return this.props.operation === 'income'
   }
 
   public isExpense() {
-    return this.props.operation === TransactionOperation.EXPENSE
+    return this.props.operation === 'expense'
   }
 }

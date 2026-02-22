@@ -15,9 +15,9 @@ describe('Register new member tests', () => {
     await app.init()
   })
 
-  it('[POST] /api/users', async () => {
+  it('[POST] /api/members', async () => {
     return request(app.getHttpServer())
-      .post('/api/users')
+      .post('/api/members')
       .send({
         name: 'gabriel',
         email: 'gabriel@email.com',

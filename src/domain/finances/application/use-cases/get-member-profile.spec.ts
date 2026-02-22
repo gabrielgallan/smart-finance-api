@@ -1,8 +1,8 @@
 import { IMembersRepository } from '../repositories/members-repository'
-import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
+import { InMemoryMembersRepository } from 'test/unit/repositories/in-memory-members-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { GetMemberProfileUseCase } from './get-member-profile'
-import { makeMember } from 'test/factories/make-member'
+import { makeMember } from 'test/unit/factories/make-member'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 let membersRepository: IMembersRepository

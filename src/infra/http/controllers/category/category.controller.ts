@@ -3,7 +3,7 @@ https://docs.nestjs.com/controllers#controllers
 */
 
 import { CreateAccountCategoryUseCase } from '@/domain/finances/application/use-cases/create-account-category';
-import { Body, ConflictException, Controller, Get, HttpCode, InternalServerErrorException, NotFoundException, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Get, HttpCode, InternalServerErrorException, NotFoundException, Param, Post, Put, UseGuards } from '@nestjs/common';
 import z from 'zod';
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe';
 import { CurrentUser } from '@/infra/auth/current-user-decorator';
@@ -22,14 +22,19 @@ const createCategoryBodySchema = z.object({
 })
 
 const editCategoryBodySchema = z.object({
-    categoryId: z.string(),
     name: z.string().optional(),
     description: z.string().optional()
+})
+
+const editCategoryParamsSchema = z.object({
+    slug: z.string()
 })
 
 type CreateCategoryBodyDTO = z.infer<typeof createCategoryBodySchema>
 
 type EditCategoryBodyDTO = z.infer<typeof editCategoryBodySchema>
+
+type EditCategoryParamsDTO = z.infer<typeof editCategoryParamsSchema>
 
 @Controller('/api/categories')
 @UseGuards(JwtAuthGuard)
@@ -95,11 +100,6 @@ export class CategoryController {
             const error = result.value
 
             switch (true) {
-                case error instanceof ResourceNotFoundError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
-
                 case error instanceof MemberAccountNotFoundError:
                     return new NotFoundException({
                         message: error.message
@@ -115,17 +115,19 @@ export class CategoryController {
         }
     }
 
-    @Put()
+    @Put('/:slug')
     @HttpCode(204)
     async edit(
         @CurrentUser() user: UserPayload,
-        @Body(new ZodValidationPipe(editCategoryBodySchema)) body: EditCategoryBodyDTO
+        @Body(new ZodValidationPipe(editCategoryBodySchema)) body: EditCategoryBodyDTO,
+        @Param(new ZodValidationPipe(editCategoryParamsSchema)) params: EditCategoryParamsDTO
     ) {
-        const { categoryId, name, description } = body
+        const { name, description } = body
+        const { slug } = params
 
         const result = await this.editCategory.execute({
             memberId: user.sub,
-            categoryId,
+            slug,
             name,
             description
         })
@@ -154,6 +156,6 @@ export class CategoryController {
             }
         }
 
-        return {}
+        return
     }
 }

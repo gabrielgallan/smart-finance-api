@@ -12,11 +12,11 @@ export interface PaginatedTransactionsQuery extends TransactionsQuery {
   pagination: Pagination
 }
 
-export interface ITransactionsRepository {
-   create(transaction: Transaction): Promise<void>
-   findById(id: string): Promise<Transaction | null>
-   listPaginated(query: PaginatedTransactionsQuery): Promise<Transaction[]>
-   findManyByQuery(query: TransactionsQuery): Promise<Transaction[]>
-   save(transaction: Transaction): Promise<Transaction>
-   deleteAllByAccountId(accountId: string): Promise<number>
+export abstract class ITransactionsRepository {
+  abstract create(transaction: Transaction): Promise<void>
+  abstract findById(id: string): Promise<Transaction | null>
+  abstract listPaginated(query: PaginatedTransactionsQuery): Promise<Transaction[]>
+  abstract findManyByQuery(query: TransactionsQuery): Promise<Transaction[]>
+  abstract save(transaction: Transaction): Promise<Transaction>
+  abstract deleteAllByAccountId(accountId: string): Promise<number>
 }

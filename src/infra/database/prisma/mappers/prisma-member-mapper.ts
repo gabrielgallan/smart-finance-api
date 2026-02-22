@@ -1,6 +1,5 @@
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Member } from "@/domain/finances/enterprise/entities/member";
-import { Hash } from "@/domain/finances/enterprise/entities/value-objects/hash";
 import { Member as PrismaMember, Prisma } from "@prisma/client"
 
 export class PrismaMemberMapper {
@@ -8,10 +7,9 @@ export class PrismaMemberMapper {
         return Member.create(
             {
                 name: raw.name,
-                birthDate: raw.birthDate,
                 document: raw.document,
                 email: raw.email,
-                password: new Hash(raw.passwordHash),
+                password: raw.passwordHash,
                 createdAt: new Date(raw.createdAt)
             },
             new UniqueEntityID(raw.id)
@@ -22,10 +20,9 @@ export class PrismaMemberMapper {
         return {
             id: member.id.toString(),
             name: member.name,
-            birthDate: member.birthDate,
             document: member.document,
             email: member.email,
-            passwordHash: member.password.value,
+            passwordHash: member.password,
             createdAt: member.createdAt
         }
     }

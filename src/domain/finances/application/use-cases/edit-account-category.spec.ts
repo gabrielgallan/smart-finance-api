@@ -1,11 +1,11 @@
 import { ICategoriesRepository } from '../repositories/categories-repository'
 import { IAccountsRepository } from '../repositories/accounts-repository'
-import { makeAccount } from 'test/factories/make-account'
-import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository'
-import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-category-repository'
+import { makeAccount } from 'test/unit/factories/make-account'
+import { InMemoryAccountsRepository } from 'test/unit/repositories/in-memory-accounts-repository'
+import { InMemoryCategoriesRepository } from 'test/unit/repositories/in-memory-category-repository'
 import { EditAccountCategoryUseCase } from './edit-account-category'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { makeCategory } from 'test/factories/make-category'
+import { makeCategory } from 'test/unit/factories/make-category'
 
 let accountsRepository: IAccountsRepository
 let categoriesRepository: ICategoriesRepository

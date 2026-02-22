@@ -18,6 +18,7 @@ export function findHighestOperationDay(
     const dayKey = transaction.createdAt.toISOString().split('T')[0]
 
     const currentTotal = totalsByDay.get(dayKey) ?? 0
+    
     totalsByDay.set(dayKey, currentTotal + transaction.amount)
   }
 

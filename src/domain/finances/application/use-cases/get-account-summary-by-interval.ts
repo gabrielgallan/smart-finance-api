@@ -5,8 +5,8 @@ import { MemberAccountNotFoundError } from './errors/member-account-not-found-er
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import dayjs from 'dayjs'
 import { InvalidPeriodError } from './errors/invalid-period-error'
-import { findHighestOperationDay } from '../utils/find-highest-operation-day'
-import { AccountSummary } from '../../enterprise/entities/value-objects/account-summary'
+import { AccountSummary } from '../../enterprise/entities/value-objects/summaries/account-summary'
+import { AccountSummaryCalculator } from '../services/account-summary-calculator'
 
 
 interface GetAccountSummaryByIntervalUseCaseRequest {
@@ -49,37 +49,18 @@ export class GetAccountSummaryByIntervalUseCase {
       return left(new MemberAccountNotFoundError())
     }
 
+    const interval = { startDate, endDate }
+
     const transactions =
       await this.transactionsRepository.findManyByQuery({
         accountId: account.id.toString(),
-        interval: {
-          startDate,
-          endDate,
-        }
+        interval
       })
 
-    // => Income
-    const incomeTransactions = transactions.filter((t) => t.isIncome())
-
-    const totalIncome = incomeTransactions
-      .map((t) => t.amount)
-      .reduce((at, acc) => at + acc, 0)
-
-    // => Expenses
-    const expenseTransactions = transactions.filter((t) => t.isExpense())
-
-    const totalExpense = expenseTransactions
-      .map((t) => t.amount)
-      .reduce((at, acc) => at + acc, 0)
-
-    const accountSummary = AccountSummary.generate({
+    const accountSummary = AccountSummaryCalculator.calculate({
       accountId: account.id,
-      interval: { startDate, endDate },
-      totalIncome,
-      totalExpense,
-      highestIncomeDay: findHighestOperationDay(incomeTransactions),
-      highestExpenseDay: findHighestOperationDay(expenseTransactions),
-      transactionsCount: transactions.length,
+      interval,
+      transactions
     })
 
     return right({

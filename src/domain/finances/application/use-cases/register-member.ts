@@ -3,7 +3,7 @@ import { IMembersRepository } from '../repositories/members-repository'
 import { MemberAlreadyExistsError } from './errors/member-already-exists-error'
 import { Either, left, right } from '@/core/types/either'
 import { Injectable } from '@nestjs/common'
-import { Hasher } from '../criptography/hasher'
+import { Hasher } from '../cryptography/hasher'
 
 interface RegisterMemberUseCaseRequest {
   name: string

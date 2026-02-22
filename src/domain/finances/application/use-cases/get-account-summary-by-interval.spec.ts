@@ -1,11 +1,11 @@
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { GetAccountSummaryByIntervalUseCase } from './get-account-summary-by-interval'
-import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository'
-import { makeAccount } from 'test/factories/make-account'
-import { InMemoryTransactionsRepository } from 'test/repositories/in-memory-transactions-repository'
+import { InMemoryAccountsRepository } from 'test/unit/repositories/in-memory-accounts-repository'
+import { makeAccount } from 'test/unit/factories/make-account'
+import { InMemoryTransactionsRepository } from 'test/unit/repositories/in-memory-transactions-repository'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { makeTransaction } from 'test/factories/make-transaction'
+import { makeTransaction } from 'test/unit/factories/make-transaction'
 import { TransactionOperation } from '@/domain/finances/enterprise/entities/transaction'
 
 let accountsRepository: IAccountsRepository

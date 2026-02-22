@@ -1,10 +1,9 @@
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { IMembersRepository } from '../repositories/members-repository'
-import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { InvalidCredentialsError } from './errors/invalid-credentials-error'
 import { Either, left, right } from '@/core/types/either'
 import { Injectable } from '@nestjs/common'
-import { Hasher } from '../criptography/hasher'
+import { Hasher } from '../cryptography/hasher'
+import { Encrypter } from '../cryptography/encrypter'
 
 interface AuthenticateMemberUseCaseRequest {
   email: string
@@ -12,38 +11,41 @@ interface AuthenticateMemberUseCaseRequest {
 }
 
 type AuthenticateMemberUseCaseResponse = Either<
-  ResourceNotFoundError | InvalidCredentialsError,
-  { memberId: UniqueEntityID }
+  InvalidCredentialsError,
+  { token: string }
 >
 
 @Injectable()
 export class AuthenticateMemberUseCase {
   constructor(
     private membersRepository: IMembersRepository,
-    private hasher: Hasher
+    private hasher: Hasher,
+    private encrypter: Encrypter
   ) {}
 
   async execute({
     email,
     password,
   }: AuthenticateMemberUseCaseRequest): Promise<AuthenticateMemberUseCaseResponse> {
-    const memberWithEmail = await this.membersRepository.findByEmail(email)
+    const member = await this.membersRepository.findByEmail(email)
 
-    if (!memberWithEmail) {
-      return left(new ResourceNotFoundError())
+    if (!member) {
+      return left(new InvalidCredentialsError())
     }
 
     const isPasswordCorrect = await this.hasher.compare(
       password, 
-      memberWithEmail.password
+      member.password
     )
 
     if (!isPasswordCorrect) {
       return left(new InvalidCredentialsError())
     }
 
+    const token = await this.encrypter.encrypt({ sub: member.id.toString() })
+
     return right({
-      memberId: memberWithEmail.id,
+      token
     })
   }
 }

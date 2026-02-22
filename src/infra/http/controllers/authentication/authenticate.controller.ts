@@ -1,5 +1,4 @@
 import { Body, Controller, HttpCode, InternalServerErrorException, NotFoundException, Post, UnauthorizedException, UsePipes } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
 import z from 'zod'
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { AuthenticateMemberUseCase } from '@/domain/finances/application/use-cases/authenticate-member'
@@ -16,7 +15,6 @@ type AuthenticateBodyDTO = z.infer<typeof authenticateBodySchema>
 @Controller('/api')
 export class AuthenticateController {
   constructor(
-    private jwt: JwtService,
     private authenticateMember: AuthenticateMemberUseCase
   ) { }
 
@@ -49,12 +47,8 @@ export class AuthenticateController {
       }
     }
 
-    const token = this.jwt.sign({
-      sub: result.value.memberId.toString()
-    })
-
     return {
-      token
+      token: result.value.token
     }
   }
 }

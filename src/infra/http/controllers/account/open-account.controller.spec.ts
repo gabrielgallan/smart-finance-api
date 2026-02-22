@@ -3,13 +3,14 @@ import { Test } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import { AppModule } from '@/infra/app.module'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { hash } from 'bcryptjs'
-import { JwtService } from '@nestjs/jwt'
+import { Encrypter } from '@/domain/finances/application/cryptography/encrypter'
+import { Hasher } from '@/domain/finances/application/cryptography/hasher'
 
 describe('Open member account tests', () => {
   let app: INestApplication
   let prisma: PrismaService
-  let jwt: JwtService
+  let encrypter: Encrypter
+  let hasher: Hasher
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -20,21 +21,23 @@ describe('Open member account tests', () => {
 
     prisma = moduleRef.get(PrismaService)
 
-    jwt = moduleRef.get(JwtService)
+    encrypter = moduleRef.get(Encrypter)
+
+    hasher = moduleRef.get(Hasher)
 
     await app.init()
   })
 
   it('[POST] /api/accounts', async () => {
-    const user = await prisma.user.create({
+    const member = await prisma.member.create({
         data: {
             name: 'gabriel',
             email: 'gabriel@email.com',
-            password: await hash('gabriel123', 8)
+            passwordHash: await hasher.generate('gabriel123')
         }
     })
 
-    const token = jwt.sign({ sub: user.id })
+    const token = await encrypter.encrypt({ sub: member.id })
 
     return await request(app.getHttpServer())
       .post('/api/accounts')

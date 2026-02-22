@@ -3,6 +3,7 @@ import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import { ICategoriesRepository } from '../repositories/categories-repository'
+import { Injectable } from '@nestjs/common'
 
 interface CloseAccountUseCaseRequest {
   memberId: string
@@ -13,6 +14,7 @@ type CloseAccountUseCaseResponse = Either<
   { rowsDeleted: number }
 >
 
+@Injectable()
 export class CloseAccountUseCase {
   constructor(
     private accountRepository: IAccountsRepository,

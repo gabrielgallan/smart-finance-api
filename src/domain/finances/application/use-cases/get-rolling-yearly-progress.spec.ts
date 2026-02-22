@@ -1,10 +1,10 @@
 import { IAccountsRepository } from '../repositories/accounts-repository'
-import { makeAccount } from 'test/factories/make-account'
-import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository'
+import { makeAccount } from 'test/unit/factories/make-account'
+import { InMemoryAccountsRepository } from 'test/unit/repositories/in-memory-accounts-repository'
 import { GetRollingYearProgressUseCase } from './get-rolling-yearly-progress'
-import { InMemoryTransactionsRepository } from 'test/repositories/in-memory-transactions-repository'
+import { InMemoryTransactionsRepository } from 'test/unit/repositories/in-memory-transactions-repository'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
-import { makeTransaction } from 'test/factories/make-transaction'
+import { makeTransaction } from 'test/unit/factories/make-transaction'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { TransactionOperation } from '../../enterprise/entities/transaction'
 
@@ -74,14 +74,11 @@ describe('Get rolling yearly progress use case', () => {
     expect(result.isRight()).toBe(true)
 
     if (result.isRight()) {
-      expect(result.value.rollingMonthsSummaries).toHaveLength(12)
-      expect(result.value.rollingMonthsSummaries).toEqual(
+      expect(result.value.yearAccountSummary.monthSummaries).toHaveLength(12)
+      expect(result.value.yearAccountSummary.monthSummaries).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            period: {
-              monthIndex: 10,
-              year: 2025
-            },
+            monthIndex: 10,
             summary: expect.objectContaining({
               totalIncome: 179.9,
             }),

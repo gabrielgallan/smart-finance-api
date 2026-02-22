@@ -4,6 +4,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { Env } from '@/infra/env';
 import { JwtStrategy } from './jwt.strategy';
+import { Encrypter } from '@/domain/finances/application/cryptography/encrypter';
+import { JwtEncrypter } from '../cryptography/jwt-encrypter';
+import { Hasher } from '@/domain/finances/application/cryptography/hasher';
+import { BcryptHasher } from '../cryptography/bcrypt-hasher';
 
 @Module({
   imports: [
@@ -22,9 +26,17 @@ import { JwtStrategy } from './jwt.strategy';
         }
     })
   ],
-  exports: [JwtModule],
+  exports: [JwtModule, Encrypter, Hasher],
   providers: [
     JwtStrategy,
+    {
+      provide: Encrypter,
+      useClass: JwtEncrypter
+    },
+    {
+      provide: Hasher,
+      useClass: BcryptHasher
+    }
   ]
 })
 export class AuthModule {}

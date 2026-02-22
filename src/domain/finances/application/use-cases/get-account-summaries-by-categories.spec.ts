@@ -1,15 +1,15 @@
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { GetAccountSummariesByCategoriesUseCase } from './get-account-summaries-by-categories'
-import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository'
-import { makeAccount } from 'test/factories/make-account'
-import { InMemoryTransactionsRepository } from 'test/repositories/in-memory-transactions-repository'
+import { InMemoryAccountsRepository } from 'test/unit/repositories/in-memory-accounts-repository'
+import { makeAccount } from 'test/unit/factories/make-account'
+import { InMemoryTransactionsRepository } from 'test/unit/repositories/in-memory-transactions-repository'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ICategoriesRepository } from '../repositories/categories-repository'
-import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-category-repository'
-import { makeTransaction } from 'test/factories/make-transaction'
+import { InMemoryCategoriesRepository } from 'test/unit/repositories/in-memory-category-repository'
+import { makeTransaction } from 'test/unit/factories/make-transaction'
 import { TransactionOperation } from '@/domain/finances/enterprise/entities/transaction'
-import { makeCategory } from 'test/factories/make-category'
+import { makeCategory } from 'test/unit/factories/make-category'
 
 let accountsRepository: IAccountsRepository
 let transactionsRepository: ITransactionsRepository
@@ -96,31 +96,33 @@ describe('Get account summaries by categories use case', () => {
 
     const result = await sut.execute({
       memberId: 'member-1',
-      startDate: new Date(2025, 0, 12),
-      endDate: new Date(2025, 0, 14),
+      interval: {
+        startDate: new Date(2025, 0, 12),
+        endDate: new Date(2025, 0, 14),
+      }
     })
 
     expect(result.isRight()).toBe(true)
 
     if (result.isRight()) {
-      expect(result.value.byCategoriesSummaries).toHaveLength(2)
-      expect(result.value.byCategoriesSummaries[0].netBalance).toBe(100)
-      expect(result.value.byCategoriesSummaries[0].categoryId?.toString()).toBe(
+      expect(result.value.fromCategoriesSummaries).toHaveLength(2)
+      expect(result.value.fromCategoriesSummaries[0].netBalance).toBe(100)
+      expect(result.value.fromCategoriesSummaries[0].categoryId?.toString()).toBe(
         'category-1',
       )
-      expect(result.value.byCategoriesSummaries[1].netBalance).toBe(-75)
-      expect(result.value.byCategoriesSummaries[1].categoryId?.toString()).toBe(
+      expect(result.value.fromCategoriesSummaries[1].netBalance).toBe(-75)
+      expect(result.value.fromCategoriesSummaries[1].categoryId?.toString()).toBe(
         'category-2',
       )
 
-      expect(result.value.byCategoriesSummaries[0].percentages).toMatchObject(
+      expect(result.value.fromCategoriesSummaries[0].percentages).toMatchObject(
         {
           totalIncomePercentage: expect.any(Number),
           totalExpensePercentage: expect.any(Number)
         }
       )
 
-      expect(result.value.byCategoriesSummaries[1].percentages).toMatchObject(
+      expect(result.value.fromCategoriesSummaries[1].percentages).toMatchObject(
         {
           totalIncomePercentage: expect.any(Number),
           totalExpensePercentage: expect.any(Number)

@@ -3,19 +3,17 @@ import { Either, left, right } from '@/core/types/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
-import dayjs from 'dayjs'
 import { InvalidPeriodError } from './errors/invalid-period-error'
 import { ICategoriesRepository } from '../repositories/categories-repository'
-import { findHighestOperationDay } from '../utils/find-highest-operation-day'
-import { calculateTransactionsTotals } from '../utils/calculate-transactions-totals'
-import { AccountSummary } from '../../enterprise/entities/value-objects/account-summary'
+import { AccountSummary } from '../../enterprise/entities/value-objects/summaries/account-summary'
+import { DateInterval } from '@/core/types/repositories/date-interval'
+import { AccountSummaryCalculator } from '../services/account-summary-calculator'
 
 
 interface GetAccountSummaryByCategoryUseCaseRequest {
   memberId: string
   categoryId: string
-  startDate: Date
-  endDate: Date
+  interval: DateInterval
 }
 
 type GetAccountSummaryByCategoryUseCaseResponse = Either<
@@ -24,7 +22,7 @@ type GetAccountSummaryByCategoryUseCaseResponse = Either<
   | InvalidPeriodError,
   {
     fullTermAccountSummary: AccountSummary
-    byCategorySummary: AccountSummary
+    fromCategorySummary: AccountSummary
   }
 >
 
@@ -33,21 +31,13 @@ export class GetAccountSummaryByCategoryUseCase {
     private accountsRepository: IAccountsRepository,
     private transactionsRepository: ITransactionsRepository,
     private categoriesRepository: ICategoriesRepository,
-  ) {}
+  ) { }
 
   async execute({
     memberId,
     categoryId,
-    startDate,
-    endDate,
+    interval
   }: GetAccountSummaryByCategoryUseCaseRequest): Promise<GetAccountSummaryByCategoryUseCaseResponse> {
-    const startDateJs = dayjs(startDate)
-    const endDateJs = dayjs(endDate)
-
-    if (endDateJs.isBefore(startDateJs)) {
-      return left(new InvalidPeriodError())
-    }
-
     const account = await this.accountsRepository.findByHolderId(memberId)
 
     if (!account) {
@@ -63,58 +53,36 @@ export class GetAccountSummaryByCategoryUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    const allTransactions = await this.transactionsRepository.findManyByQuery({
+    const transactions = await this.transactionsRepository.findManyByQuery({
       accountId: account.id.toString(),
-      interval: { startDate, endDate }
+      interval,
     })
 
-    const allTransactionsTotal = calculateTransactionsTotals({ transactions: allTransactions })
+    const fullTermAccountSummary = AccountSummaryCalculator.calculate({
+      accountId: account.id,
+      interval,
+      transactions: transactions
+    })
 
-    const allTransactionsSummary = AccountSummary.generate(
-      {
-        accountId: account.id,
-        interval: { startDate, endDate },
-        totalIncome: allTransactionsTotal.totalIncome,
-        totalExpense: allTransactionsTotal.totalExpense,
-        highestIncomeDay: findHighestOperationDay(allTransactionsTotal.incomeTransactions),
-        highestExpenseDay: findHighestOperationDay(allTransactionsTotal.expenseTransactions),
-        transactionsCount: allTransactions.length,
-      }
-    )
-
-    const transactionsByCategory =
+    const transactionsFromCategory =
       await this.transactionsRepository.findManyByQuery({
         accountId: account.id.toString(),
         categoryId: category.id.toString(),
-        interval: { startDate, endDate },
+        interval,
       })
 
-    // => By Category
-    const { 
-      incomeTransactions,
-      expenseTransactions,
-      totalIncome,
-      totalExpense 
-    } = calculateTransactionsTotals({ transactions: transactionsByCategory })
+    const fromCategorySummary = AccountSummaryCalculator.calculate({
+      accountId: account.id,
+      categoryId: category.id,
+      interval,
+      transactions: transactionsFromCategory
+    })
 
-    const byCategorySummary = AccountSummary.generate(
-      {
-        accountId: account.id,
-        categoryId: category.id,
-        interval: { startDate, endDate },
-        totalIncome,
-        totalExpense,
-        highestIncomeDay: findHighestOperationDay(incomeTransactions),
-        highestExpenseDay: findHighestOperationDay(expenseTransactions),
-        transactionsCount: transactionsByCategory.length,
-      }
-    )
-
-    byCategorySummary.setComparativePercentages(allTransactionsSummary)
+    fromCategorySummary.setComparativePercentages(fullTermAccountSummary)
 
     return right({
-      fullTermAccountSummary: allTransactionsSummary,
-      byCategorySummary,
+      fullTermAccountSummary,
+      fromCategorySummary,
     })
   }
 }

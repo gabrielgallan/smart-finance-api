@@ -13,6 +13,7 @@ import { AuthenticateController } from './controllers/authentication/authenticat
 import { GetProfileController } from './controllers/member/get-profile.controller'
 import { OpenAccountController } from './controllers/account/open-account.controller'
 import { CategoryController } from './controllers/category/category.controller'
+import { CloseAccountController } from './controllers/account/close-account.controller'
 
 // use-cases
 import { RegisterMemberUseCase } from '@/domain/finances/application/use-cases/register-member'
@@ -22,6 +23,9 @@ import { OpenAccountUseCase } from '@/domain/finances/application/use-cases/open
 import { CreateAccountCategoryUseCase } from '@/domain/finances/application/use-cases/create-account-category'
 import { ListAccountCategoriesUseCase } from '@/domain/finances/application/use-cases/list-account-categories'
 import { EditAccountCategoryUseCase } from '@/domain/finances/application/use-cases/edit-account-category'
+import { CloseAccountUseCase } from '@/domain/finances/application/use-cases/close-account'
+import { EditProfileController } from './controllers/member/edit-profile.controller'
+import { EditMemberProfileUseCase } from '@/domain/finances/application/use-cases/edit-member-profile'
 
 @Module({
     imports: [
@@ -32,14 +36,18 @@ import { EditAccountCategoryUseCase } from '@/domain/finances/application/use-ca
         RegisterController,
         AuthenticateController,
         GetProfileController,
+        EditProfileController,
         OpenAccountController,
+        CloseAccountController,
         CategoryController
     ],
     providers: [
         RegisterMemberUseCase,
         AuthenticateMemberUseCase,
         GetMemberProfileUseCase,
+        EditMemberProfileUseCase,
         OpenAccountUseCase,
+        CloseAccountUseCase,
         CreateAccountCategoryUseCase,
         ListAccountCategoriesUseCase,
         EditAccountCategoryUseCase

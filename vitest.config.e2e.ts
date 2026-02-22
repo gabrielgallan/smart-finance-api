@@ -7,10 +7,10 @@ export default defineConfig({
   test: {
     name: 'E2E',
     include: [
-        './src/infra/http/controllers/**/*.spec'
+        './src/infra/http/controllers/**/*.spec.ts'
     ],
     setupFiles: [
-      'test/setup-e2e'
+      'test/e2e/setup-e2e'
     ],
     globals: true,
     root: './',
