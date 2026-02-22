@@ -1,11 +1,9 @@
-import { DateInterval } from "@/core/types/repositories/date-interval";
-import { Pagination } from "@/core/types/repositories/pagination";
-import { ITransactionsRepository } from "@/domain/finances/application/repositories/transactions-repository";
-import { Transaction } from "@/domain/finances/enterprise/entites/transaction";
+import { ITransactionsRepository, PaginatedTransactionsQuery, TransactionsQuery } from "@/domain/finances/application/repositories/transactions-repository";
+import { Transaction } from "@/domain/finances/enterprise/entities/transaction";
 
 export class InMemoryTransactionsRepository implements ITransactionsRepository {
     public items: Transaction[] = []
-    
+
     async create(Transaction: Transaction) {
         this.items.push(Transaction)
         
@@ -18,80 +16,52 @@ export class InMemoryTransactionsRepository implements ITransactionsRepository {
         return transaction ?? null
     }
     
-    async listRecentByAccountId(accountId: string, { limit, page }: Pagination) {
-        const transactions = this.items
-            .filter(t => t.accountId.toString() === accountId)
+    async listPaginated({
+        accountId, 
+        categoryId, 
+        interval, 
+        pagination 
+    }: PaginatedTransactionsQuery) {
+        const { page, limit } = pagination
+        const { startDate, endDate } = interval
+
+        const transactions = this.items.filter(t => {
+            return t.accountId.toString() === accountId &&
+            t.createdAt.getTime() >= startDate.getTime() &&
+            t.createdAt.getTime() <= endDate.getTime()
+        })
+
+        const byCategory = categoryId ? 
+            transactions.filter(t => t.categoryId?.toString() === categoryId) :
+            transactions
+
+        const paginated = byCategory
             .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
             .slice((page - 1) * limit, page * limit)
-        
+
+        return paginated
+    }
+
+    async findManyByQuery({
+        accountId,
+        categoryId,
+        interval
+    }: TransactionsQuery) {
+        const { startDate, endDate } = interval
+
+        const transactions = this.items.filter(t => {
+            return t.accountId.toString() === accountId &&
+            t.createdAt.getTime() >= startDate.getTime() &&
+            t.createdAt.getTime() <= endDate.getTime()
+        })
+
+        if (categoryId) {
+            return transactions.filter(t => t.categoryId?.toString() === categoryId)
+        }
+
         return transactions
     }
-
-    async listByIntervalAndAccountId(
-        accountId: string,
-        { startDate, endDate }: DateInterval,
-        { limit, page }: Pagination
-    ) {
-        const transactionsByInterval = this.items.filter((t) => {
-            return  t.accountId.toString() === accountId &&
-                t.createdAt.getTime() >= startDate.getTime() &&
-                t.createdAt.getTime() <= endDate.getTime()
-        })
-
-        const transactionsPagineted = transactionsByInterval
-            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-            .slice((page - 1) * limit, page * limit)
-        
-        return transactionsPagineted
-    }
-
-    async listByIntervalAndAccountIdAndCategory(
-        accountId: string,
-        catedoryId: string,
-        { startDate, endDate }: DateInterval,
-        { limit, page }: Pagination
-    ) {
-        const transactionsByIntervalAndCategory = this.items.filter((t) => {
-            return  t.accountId.toString() === accountId &&
-                t.categoryId?.toString() === catedoryId &&
-                t.createdAt.getTime() >= startDate.getTime() &&
-                t.createdAt.getTime() <= endDate.getTime()
-        })
-
-        const transactionsPagineted = transactionsByIntervalAndCategory
-            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-            .slice((page - 1) * limit, page * limit)
-        
-        return transactionsPagineted
-    }
     
-    async findManyByAccountIdAndInterval(
-        accountId: string, 
-        { startDate, endDate }: DateInterval
-    ) {
-        const transactionsByInterval = this.items.filter((t) => {
-            return  t.accountId.toString() === accountId &&
-                t.createdAt.getTime() >= startDate.getTime() &&
-                t.createdAt.getTime() <= endDate.getTime()
-        })
-
-        return transactionsByInterval
-    }
-
-    async findManyByAccountIdAndIntervalAndCategory(
-        accountId: string, 
-        catedoryId: string,
-        { startDate, endDate }: DateInterval,
-    ) {
-        const transactionsByIntervalAndCategory = this.items.filter((t) => {
-            return  t.accountId.toString() === accountId &&
-                t.categoryId?.toString() === catedoryId &&
-                t.createdAt.getTime() >= startDate.getTime() &&
-                t.createdAt.getTime() <= endDate.getTime()
-        })
-
-        return transactionsByIntervalAndCategory
-    }
 
     async save(transaction: Transaction) {
         const transactionIndex = this.items.findIndex(t => t.id.toString() === transaction.id.toString())

@@ -2,7 +2,7 @@ import { IMembersRepository } from '../repositories/members-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'
 import { MemberAlreadyExistsError } from './errors/member-already-exists-error'
-import { Hash } from '@/domain/finances/enterprise/entites/value-objects/hash'
+import { Hasher } from '../criptography/hasher'
 
 interface EditMemberProfileUseCaseRequest {
   memberId: string
@@ -16,7 +16,10 @@ type EditMemberProfileUseCaseResponse = Either<
 >
 
 export class EditMemberProfileUseCase {
-  constructor(private membersRepository: IMembersRepository) {}
+  constructor(
+    private membersRepository: IMembersRepository,
+    private hasher: Hasher
+  ) {}
 
   async execute({
     memberId,
@@ -44,7 +47,7 @@ export class EditMemberProfileUseCase {
     }
 
     if (password) {
-      member.password = await Hash.create(password)
+      member.password = await this.hasher.generate(password)
     }
 
     await this.membersRepository.save(member)

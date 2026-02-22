@@ -1,45 +1,35 @@
-import dayjs from 'dayjs'
-import { Member } from '../../enterprise/entites/member'
-import { InvalidMemberAgeError } from './errors/invalid-member-age-erros'
+import { Member } from '../../enterprise/entities/member'
 import { IMembersRepository } from '../repositories/members-repository'
 import { MemberAlreadyExistsError } from './errors/member-already-exists-error'
-import { Hash } from '@/domain/finances/enterprise/entites/value-objects/hash'
 import { Either, left, right } from '@/core/types/either'
 import { Injectable } from '@nestjs/common'
+import { Hasher } from '../criptography/hasher'
 
 interface RegisterMemberUseCaseRequest {
   name: string
-  birthDate: Date
   document?: string
   email: string
   password: string
 }
 
 type RegisterMemberUseCaseResponse = Either<
-  InvalidMemberAgeError | MemberAlreadyExistsError,
+  MemberAlreadyExistsError,
   { member: Member }
 >
 
 @Injectable()
 export class RegisterMemberUseCase {
-  constructor(private membersRepository: IMembersRepository) {}
+  constructor(
+    private membersRepository: IMembersRepository,
+    private hasher: Hasher
+  ) {}
 
   async execute({
     name,
-    birthDate,
     document,
     email,
     password,
   }: RegisterMemberUseCaseRequest): Promise<RegisterMemberUseCaseResponse> {
-    const birthDateJS = dayjs(birthDate)
-    const nowDateJS = dayjs()
-
-    const memberAge = nowDateJS.diff(birthDateJS, 'year')
-
-    if (memberAge < 16) {
-      return left(new InvalidMemberAgeError())
-    }
-
     if (document) {
       const memberWithSabeDocument =
         await this.membersRepository.findByDocument(document)
@@ -57,10 +47,9 @@ export class RegisterMemberUseCase {
 
     const member = Member.create({
       name,
-      birthDate,
       document,
       email,
-      password: await Hash.create(password),
+      password: await this.hasher.generate(password),
     })
 
     await this.membersRepository.create(member)

@@ -1,5 +1,5 @@
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { Account } from "@/domain/finances/enterprise/entites/account";
+import { Account } from "@/domain/finances/enterprise/entities/account";
 import { Account as PrismaAccount, Prisma } from "@prisma/client"
 
 export class PrismaAccountMapper {

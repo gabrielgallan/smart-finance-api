@@ -1,5 +1,5 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { FinancialGoal, FinancialGoalProps } from '@/domain/finances/enterprise/entites/financial-goal'
+import { FinancialGoal, FinancialGoalProps } from '@/domain/finances/enterprise/entities/financial-goal'
 import { faker } from '@faker-js/faker'
 
 export function makeFinancialGoal(

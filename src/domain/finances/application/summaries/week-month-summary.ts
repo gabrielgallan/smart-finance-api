@@ -1,4 +1,4 @@
-import { AccountSummary } from "../../enterprise/entites/account-summary"
+import { AccountSummary } from "../../enterprise/entities/value-objects/account-summary"
 
 export interface WeekMonthSummary {
     period: {

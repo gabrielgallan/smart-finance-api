@@ -1,15 +1,14 @@
-import { IMembersRepository } from '../repositories/members-repository'
-import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import dayjs from 'dayjs'
 import { findHighestOperationDay } from '../utils/find-highest-operation-day'
-import { AccountSummary } from '../../enterprise/entites/account-summary'
+
 import { calculateTransactionsTotals } from '../utils/calculate-transactions-totals'
 import { getMonthDateRange } from '../utils/get-month-date-range'
 import { YearMonthSummary } from '../summaries/year-month-summary'
+import { AccountSummary } from '../../enterprise/entities/value-objects/account-summary'
 
 interface GetRollingYearProgressUseCaseRequest {
     memberId: string
@@ -43,20 +42,20 @@ export class GetRollingYearProgressUseCase {
 
         rollingYearStartDate.setFullYear(rollingYearEndDate.getFullYear() - 1)
 
-        const rollingYearTransactions = await this.transactionsRepository.findManyByAccountIdAndInterval(
-            account.id.toString(),
-            {
+        const rollingYearTransactions = await this.transactionsRepository.findManyByQuery({
+            accountId: account.id.toString(),
+            interval: {
                 startDate: rollingYearStartDate,
                 endDate: rollingYearEndDate
             }
-        )
+        })
 
         const rollingYearTransactionsTotals = calculateTransactionsTotals({ transactions: rollingYearTransactions })
 
         const rollingYearSummary = AccountSummary.generate(
             {
                 accountId: account.id,
-                dateInterval: { 
+                interval: { 
                     startDate: rollingYearStartDate,
                     endDate: rollingYearEndDate
                 },
@@ -78,13 +77,13 @@ export class GetRollingYearProgressUseCase {
             })
 
             const transactionsByMonth = 
-                await this.transactionsRepository.findManyByAccountIdAndInterval(
-                    account.id.toString(),
-                    {
+                await this.transactionsRepository.findManyByQuery({
+                    accountId: account.id.toString(),
+                    interval: {
                         startDate: start,
                         endDate: end,
                     },
-                )
+                })
 
             // => Totals
             const {
@@ -97,7 +96,7 @@ export class GetRollingYearProgressUseCase {
             const monthSummary = AccountSummary.generate(
                 {
                     accountId: account.id,
-                    dateInterval: { 
+                    interval: { 
                         startDate: start,
                         endDate: end
                     },

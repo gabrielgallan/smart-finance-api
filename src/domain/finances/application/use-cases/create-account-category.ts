@@ -1,11 +1,9 @@
-import { IMembersRepository } from '../repositories/members-repository'
-import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { ICategoriesRepository } from '../repositories/categories-repository'
-import { Category } from '@/domain/finances/enterprise/entites/category'
+import { Category } from '@/domain/finances/enterprise/entities/category'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
-import { Slug } from '@/domain/finances/enterprise/entites/value-objects/slug'
+import { Slug } from '@/domain/finances/enterprise/entities/value-objects/slug'
 import { CategoryAlreadyExistsError } from './errors/category-already-exists-error'
 import { Injectable } from '@nestjs/common'
 
@@ -16,7 +14,6 @@ interface CreateAccountCategoryUseCaseRequest {
 }
 
 type CreateAccountCategoryUseCaseResponse = Either<
-  | ResourceNotFoundError
   | MemberAccountNotFoundError
   | CategoryAlreadyExistsError,
   {
@@ -27,7 +24,6 @@ type CreateAccountCategoryUseCaseResponse = Either<
 @Injectable()
 export class CreateAccountCategoryUseCase {
   constructor(
-    private membersRepository: IMembersRepository,
     private accountsRepository: IAccountsRepository,
     private categoriesRepository: ICategoriesRepository,
   ) {}
@@ -37,12 +33,6 @@ export class CreateAccountCategoryUseCase {
     categoryName,
     categoryDescription,
   }: CreateAccountCategoryUseCaseRequest): Promise<CreateAccountCategoryUseCaseResponse> {
-    const member = await this.membersRepository.findById(memberId)
-
-    if (!member) {
-      return left(new ResourceNotFoundError())
-    }
-
     const account = await this.accountsRepository.findByHolderId(memberId)
 
     if (!account) {

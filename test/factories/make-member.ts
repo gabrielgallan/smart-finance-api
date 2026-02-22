@@ -1,7 +1,9 @@
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { Member, MemberProps } from "@/domain/finances/enterprise/entites/member";
-import { Hash } from "@/domain/finances/enterprise/entites/value-objects/hash";
+import { Member, MemberProps } from "@/domain/finances/enterprise/entities/member";
 import { faker } from "@faker-js/faker";
+import { BcriptjsHasher } from "test/criptography/hasher";
+
+const hasher = new BcriptjsHasher()
 
 export async function makeMember(
     override: Partial<MemberProps> = {},
@@ -9,12 +11,11 @@ export async function makeMember(
 ) {
     const member = Member.create({
       name: faker.person.fullName(),
-      birthDate: new Date(),
       document: faker.string.numeric(11),
       email: faker.internet.email(),
-      password: await Hash.create(faker.string.hexadecimal({
+      password: await hasher.generate((faker.string.hexadecimal({
         length: 10
-      })),
+      }))),
       ...override
     }, id)
 

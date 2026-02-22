@@ -1,6 +1,6 @@
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { DomainEvent } from "@/core/events/domain-event";
-import { FinancialGoal } from "../entites/financial-goal";
+import { FinancialGoal } from "../entities/financial-goal";
 
 export class FinancialGoalCreatedEvent implements DomainEvent {
     public ocurredAt: Date

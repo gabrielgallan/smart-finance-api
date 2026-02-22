@@ -1,14 +1,12 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Entity } from '@/core/entities/entity'
-import { Hash } from './value-objects/hash'
 import { Optional } from '@/core/types/optional'
 
 export interface MemberProps {
   name: string
-  birthDate: Date
   document?: string | null
   email: string
-  password: Hash
+  password: string
   createdAt: Date
 }
 
@@ -33,10 +31,6 @@ export class Member extends Entity<MemberProps> {
     return this.props.name
   }
 
-  get birthDate() {
-    return this.props.birthDate
-  }
-
   get document() {
     return this.props.document
   }
@@ -58,7 +52,7 @@ export class Member extends Entity<MemberProps> {
     this.props.email = email
   }
 
-  set password(passwordHash: Hash) {
-    this.props.password = passwordHash
+  set password(password: string) {
+    this.props.password = password
   }
 }

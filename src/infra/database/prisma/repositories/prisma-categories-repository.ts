@@ -1,5 +1,5 @@
 import { ICategoriesRepository } from "@/domain/finances/application/repositories/categories-repository";
-import { Category } from "@/domain/finances/enterprise/entites/category";
+import { Category } from "@/domain/finances/enterprise/entities/category";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import { PrismaCategoryMapper } from "../mappers/prisma-category-mapper";

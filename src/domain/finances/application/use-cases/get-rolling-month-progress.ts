@@ -4,9 +4,10 @@ import { MemberAccountNotFoundError } from './errors/member-account-not-found-er
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import dayjs from 'dayjs'
 import { findHighestOperationDay } from '../utils/find-highest-operation-day'
-import { AccountSummary } from '../../enterprise/entites/account-summary'
+
 import { calculateTransactionsTotals } from '../utils/calculate-transactions-totals'
 import { WeekMonthSummary } from '../summaries/week-month-summary'
+import { AccountSummary } from '../../enterprise/entities/value-objects/account-summary'
 
 interface GetRollingMonthProgressUseCaseRequest {
     memberId: string
@@ -40,21 +41,21 @@ export class GetRollingMonthProgressUseCase {
 
         rollingMonthStartDate.setMonth(rollingMonthEndDate.getMonth() - 1)
 
-        const rollingMonthTransctions = await this.transactionsRepository.findManyByAccountIdAndInterval(
-            account.id.toString(),
-            {
-                startDate: rollingMonthStartDate,
-                endDate: rollingMonthEndDate
-            }
-        )
+        const rollingMonthTransctions =
+            await this.transactionsRepository.findManyByQuery({
+                accountId: account.id.toString(),
+                interval: {
+                    startDate: rollingMonthStartDate,
+                    endDate: rollingMonthEndDate,
+                }
+            })
 
         const rollingMonthTransactionsTotal = calculateTransactionsTotals({ transactions: rollingMonthTransctions })
 
-        
         const rollingMonthSummary = AccountSummary.generate(
             {
                 accountId: account.id,
-                dateInterval: { 
+                interval: {
                     startDate: rollingMonthStartDate,
                     endDate: rollingMonthEndDate
                 },
@@ -65,23 +66,23 @@ export class GetRollingMonthProgressUseCase {
                 transactionsCount: rollingMonthTransctions.length,
             }
         )
-        
+
         const rollingWeeksSummaries: WeekMonthSummary[] = []
-        
+
         const now = dayjs().endOf('day')
 
         for (let c = 3; c >= 0; c--) {
             const referenceWeekEnd = now.subtract(c * 7, 'day').endOf('day')
             const referenceWeekStart = now.subtract((c + 1) * 7, 'day').startOf('day')
 
-            const transactionsByWeek = 
-                await this.transactionsRepository.findManyByAccountIdAndInterval(
-                    account.id.toString(),
-                    {
+            const transactionsByWeek =
+                await this.transactionsRepository.findManyByQuery({
+                    accountId: account.id.toString(),
+                    interval: {
                         startDate: referenceWeekStart.toDate(),
                         endDate: referenceWeekEnd.toDate(),
                     },
-                )
+                })
 
             // => Totals
             const {
@@ -94,7 +95,7 @@ export class GetRollingMonthProgressUseCase {
             const weekSummary = AccountSummary.generate(
                 {
                     accountId: account.id,
-                    dateInterval: { 
+                    interval: {
                         startDate: referenceWeekStart.toDate(),
                         endDate: referenceWeekEnd.toDate()
                     },

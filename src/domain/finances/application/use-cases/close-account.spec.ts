@@ -1,9 +1,6 @@
-import { IMembersRepository } from '../repositories/members-repository'
-import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
 import { CloseAccountUseCase } from './close-account'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository'
-import { makeMember } from 'test/factories/make-member'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import { ICategoriesRepository } from '../repositories/categories-repository'
@@ -13,7 +10,6 @@ import { makeAccount } from 'test/factories/make-account'
 import { makeCategory } from 'test/factories/make-category'
 import { makeTransaction } from 'test/factories/make-transaction'
 
-let membersRepository: IMembersRepository
 let accountRepository: IAccountsRepository
 let transactionsRepository: ITransactionsRepository
 let categoriesRepository: ICategoriesRepository
@@ -21,13 +17,11 @@ let sut: CloseAccountUseCase
 
 describe('Close member account use case', () => {
     beforeEach(() => {
-        membersRepository = new InMemoryMembersRepository()
         accountRepository = new InMemoryAccountsRepository()
         transactionsRepository = new InMemoryTransactionsRepository()
         categoriesRepository = new InMemoryCategoriesRepository()
 
         sut = new CloseAccountUseCase(
-            membersRepository,
             accountRepository,
             transactionsRepository,
             categoriesRepository
@@ -35,10 +29,6 @@ describe('Close member account use case', () => {
     })
 
     it('should be able to close a member account', async () => {
-        await membersRepository.create(
-            await makeMember({}, new UniqueEntityID('member-1')),
-        )
-
         await accountRepository.create(
             makeAccount({
                 holderId: new UniqueEntityID('member-1')

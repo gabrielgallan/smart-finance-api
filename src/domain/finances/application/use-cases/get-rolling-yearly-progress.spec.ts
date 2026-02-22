@@ -1,6 +1,3 @@
-import { IMembersRepository } from '../repositories/members-repository'
-import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
-import { makeMember } from 'test/factories/make-member'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { makeAccount } from 'test/factories/make-account'
 import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository'
@@ -9,9 +6,8 @@ import { InMemoryTransactionsRepository } from 'test/repositories/in-memory-tran
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import { makeTransaction } from 'test/factories/make-transaction'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { TransactionOperation } from '../../enterprise/entites/transaction'
+import { TransactionOperation } from '../../enterprise/entities/transaction'
 
-let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
 let transactionsRepository: ITransactionsRepository
 
@@ -19,7 +15,6 @@ let sut: GetRollingYearProgressUseCase
 
 describe('Get rolling yearly progress use case', () => {
   beforeEach(() => {
-    membersRepository = new InMemoryMembersRepository()
     accountsRepository = new InMemoryAccountsRepository()
     transactionsRepository = new InMemoryTransactionsRepository()
 
@@ -37,10 +32,6 @@ describe('Get rolling yearly progress use case', () => {
 
   it('should be able to get a rolling year summary categorized by months', async () => {
     vi.setSystemTime(new Date(2025, 6, 10))
-
-    await membersRepository.create(
-      await makeMember({}, new UniqueEntityID('member-1')),
-    )
 
     await accountsRepository.create(
       makeAccount(

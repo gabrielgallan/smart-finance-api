@@ -1,6 +1,3 @@
-import { IMembersRepository } from '../repositories/members-repository'
-import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
-import { makeMember } from 'test/factories/make-member'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { GetAccountSummaryByIntervalUseCase } from './get-account-summary-by-interval'
 import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository'
@@ -9,9 +6,8 @@ import { InMemoryTransactionsRepository } from 'test/repositories/in-memory-tran
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { makeTransaction } from 'test/factories/make-transaction'
-import { TransactionOperation } from '@/domain/finances/enterprise/entites/transaction'
+import { TransactionOperation } from '@/domain/finances/enterprise/entities/transaction'
 
-let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
 let transactionsRepository: ITransactionsRepository
 
@@ -19,12 +15,10 @@ let sut: GetAccountSummaryByIntervalUseCase
 
 describe('Get account summary by interval use case', () => {
   beforeEach(() => {
-    membersRepository = new InMemoryMembersRepository()
     accountsRepository = new InMemoryAccountsRepository()
     transactionsRepository = new InMemoryTransactionsRepository()
 
     sut = new GetAccountSummaryByIntervalUseCase(
-      membersRepository,
       accountsRepository,
       transactionsRepository,
     )
@@ -38,10 +32,6 @@ describe('Get account summary by interval use case', () => {
 
   it('should be able to get account summary by time interval', async () => {
     vi.setSystemTime(new Date(2025, 0, 13))
-
-    await membersRepository.create(
-      await makeMember({}, new UniqueEntityID('member-1')),
-    )
 
     const account = makeAccount(
       {

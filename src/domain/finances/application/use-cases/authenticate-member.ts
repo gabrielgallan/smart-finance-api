@@ -4,6 +4,7 @@ import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { InvalidCredentialsError } from './errors/invalid-credentials-error'
 import { Either, left, right } from '@/core/types/either'
 import { Injectable } from '@nestjs/common'
+import { Hasher } from '../criptography/hasher'
 
 interface AuthenticateMemberUseCaseRequest {
   email: string
@@ -17,7 +18,10 @@ type AuthenticateMemberUseCaseResponse = Either<
 
 @Injectable()
 export class AuthenticateMemberUseCase {
-  constructor(private membersRepository: IMembersRepository) {}
+  constructor(
+    private membersRepository: IMembersRepository,
+    private hasher: Hasher
+  ) {}
 
   async execute({
     email,
@@ -29,7 +33,10 @@ export class AuthenticateMemberUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    const isPasswordCorrect = await memberWithEmail.password.compare(password)
+    const isPasswordCorrect = await this.hasher.compare(
+      password, 
+      memberWithEmail.password
+    )
 
     if (!isPasswordCorrect) {
       return left(new InvalidCredentialsError())

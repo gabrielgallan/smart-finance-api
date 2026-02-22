@@ -1,5 +1,5 @@
 import { IAccountsRepository } from "@/domain/finances/application/repositories/accounts-repository";
-import { Account } from "@/domain/finances/enterprise/entites/account";
+import { Account } from "@/domain/finances/enterprise/entities/account";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import { PrismaAccountMapper } from "../mappers/prisma-account-mapper";

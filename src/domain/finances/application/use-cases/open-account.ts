@@ -1,5 +1,5 @@
 import { IMembersRepository } from '../repositories/members-repository'
-import { Account } from '@/domain/finances/enterprise/entites/account'
+import { Account } from '@/domain/finances/enterprise/entities/account'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { MemberAlreadyHasAccountError } from './errors/member-alredy-has-account-error'

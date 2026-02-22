@@ -1,7 +1,7 @@
 import { DateInterval } from "@/core/types/repositories/date-interval";
 import { Pagination } from "@/core/types/repositories/pagination";
 import { ITransactionsRepository } from "@/domain/finances/application/repositories/transactions-repository";
-import { Transaction } from "@/domain/finances/enterprise/entites/transaction";
+import { Transaction } from "@/domain/finances/enterprise/entities/transaction";
 import { Injectable } from "@nestjs/common";
 
 /* eslint-disable */

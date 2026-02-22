@@ -1,5 +1,5 @@
 import { ICategoriesRepository } from "@/domain/finances/application/repositories/categories-repository";
-import { Category } from "@/domain/finances/enterprise/entites/category";
+import { Category } from "@/domain/finances/enterprise/entities/category";
 
 export class InMemoryCategoriesRepository implements ICategoriesRepository {
     public items: Category[] = []
@@ -9,14 +9,16 @@ export class InMemoryCategoriesRepository implements ICategoriesRepository {
         return
     }
 
-    async findById(id: string) {
-        const category = await this.items.find((c) => c.id.toString() === id)
+    async findByIdAndAccountId(id: string, accountId: string) {
+        const category = this.items.find((c) => {
+            return c.id.toString() === id && c.accountId.toString() === accountId
+        })
 
         return category ?? null
     }
 
     async findByAccountIdAndSlug(accountId: string, slug: string) {
-        const category = await this.items.find((c) => {
+        const category = this.items.find((c) => {
             return (c.accountId.toString() === accountId && c.slug.value === slug)
         })
 

@@ -1,4 +1,3 @@
-import { IMembersRepository } from '../repositories/members-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
@@ -7,7 +6,8 @@ import { ITransactionsRepository } from '../repositories/transactions-repository
 import dayjs from 'dayjs'
 import { InvalidPeriodError } from './errors/invalid-period-error'
 import { findHighestOperationDay } from '../utils/find-highest-operation-day'
-import { AccountSummary } from '../../enterprise/entites/account-summary'
+import { AccountSummary } from '../../enterprise/entities/value-objects/account-summary'
+
 
 interface GetAccountSummaryByIntervalUseCaseRequest {
   memberId: string
@@ -16,7 +16,9 @@ interface GetAccountSummaryByIntervalUseCaseRequest {
 }
 
 type GetAccountSummaryByIntervalUseCaseResponse = Either<
-  ResourceNotFoundError | MemberAccountNotFoundError,
+  ResourceNotFoundError
+  | MemberAccountNotFoundError
+  | InvalidPeriodError,
   {
     currentBalance: number
     accountSummary: AccountSummary
@@ -25,7 +27,6 @@ type GetAccountSummaryByIntervalUseCaseResponse = Either<
 
 export class GetAccountSummaryByIntervalUseCase {
   constructor(
-    private membersRepository: IMembersRepository,
     private accountsRepository: IAccountsRepository,
     private transactionsRepository: ITransactionsRepository,
   ) {}
@@ -42,12 +43,6 @@ export class GetAccountSummaryByIntervalUseCase {
       return left(new InvalidPeriodError())
     }
 
-    const member = await this.membersRepository.findById(memberId)
-
-    if (!member) {
-      return left(new ResourceNotFoundError())
-    }
-
     const account = await this.accountsRepository.findByHolderId(memberId)
 
     if (!account) {
@@ -55,13 +50,13 @@ export class GetAccountSummaryByIntervalUseCase {
     }
 
     const transactions =
-      await this.transactionsRepository.findManyByAccountIdAndInterval(
-        account.id.toString(),
-        {
+      await this.transactionsRepository.findManyByQuery({
+        accountId: account.id.toString(),
+        interval: {
           startDate,
           endDate,
-        },
-      )
+        }
+      })
 
     // => Income
     const incomeTransactions = transactions.filter((t) => t.isIncome())
@@ -79,7 +74,7 @@ export class GetAccountSummaryByIntervalUseCase {
 
     const accountSummary = AccountSummary.generate({
       accountId: account.id,
-      dateInterval: { startDate, endDate },
+      interval: { startDate, endDate },
       totalIncome,
       totalExpense,
       highestIncomeDay: findHighestOperationDay(incomeTransactions),

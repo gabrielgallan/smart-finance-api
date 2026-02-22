@@ -1,6 +1,3 @@
-import { IMembersRepository } from '../repositories/members-repository'
-import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
-import { makeMember } from 'test/factories/make-member'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository'
@@ -13,7 +10,6 @@ import { EditTransactionUseCase } from './edit-transaction'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { makeTransaction } from 'test/factories/make-transaction'
 
-let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
 let transactionsRepository: ITransactionsRepository
 let categoriesRepository: ICategoriesRepository
@@ -22,13 +18,11 @@ let sut: EditTransactionUseCase
 
 describe('Edit transaction use case', () => {
   beforeEach(() => {
-    membersRepository = new InMemoryMembersRepository()
     accountsRepository = new InMemoryAccountsRepository()
     transactionsRepository = new InMemoryTransactionsRepository()
     categoriesRepository = new InMemoryCategoriesRepository()
 
     sut = new EditTransactionUseCase(
-      membersRepository,
       accountsRepository,
       transactionsRepository,
       categoriesRepository,
@@ -36,10 +30,6 @@ describe('Edit transaction use case', () => {
   })
 
   it('should be able to edit a transaction', async () => {
-    await membersRepository.create(
-      await makeMember({}, new UniqueEntityID('member-1')),
-    )
-
     await accountsRepository.create(
       makeAccount(
         {

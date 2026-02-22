@@ -1,4 +1,4 @@
-import { Account } from '../../enterprise/entites/account'
+import { Account } from '../../enterprise/entities/account'
 
 export abstract class IAccountsRepository {
   abstract create(account: Account): Promise<void>

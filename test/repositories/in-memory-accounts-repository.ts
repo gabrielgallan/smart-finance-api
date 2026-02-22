@@ -1,5 +1,5 @@
 import { IAccountsRepository } from "@/domain/finances/application/repositories/accounts-repository";
-import { Account } from "@/domain/finances/enterprise/entites/account";
+import { Account } from "@/domain/finances/enterprise/entities/account";
 
 export class InMemoryAccountsRepository implements IAccountsRepository {
     public items: Account[] = []
@@ -10,13 +10,13 @@ export class InMemoryAccountsRepository implements IAccountsRepository {
     }
     
     async findByHolderId(holderId: string): Promise<Account | null> {
-        const account = await this.items.find((a) => a.holderId.toString() === holderId)
+        const account = this.items.find((a) => a.holderId.toString() === holderId)
         
         return account ?? null
     }
     
     async findById(id: string) {
-        const account = await this.items.find((a) => a.id.toString() === id)
+        const account = this.items.find((a) => a.id.toString() === id)
         
         return account ?? null
     }

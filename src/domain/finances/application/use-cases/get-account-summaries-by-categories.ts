@@ -1,4 +1,3 @@
-import { IMembersRepository } from '../repositories/members-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
@@ -9,9 +8,8 @@ import { InvalidPeriodError } from './errors/invalid-period-error'
 import { ICategoriesRepository } from '../repositories/categories-repository'
 import { AnyCategoryFoundForAccountError } from './errors/any-category-found-for-account-error'
 import { findHighestOperationDay } from '../utils/find-highest-operation-day'
-import { AccountSummary } from '../../enterprise/entites/account-summary'
-import { CategorySummary } from '../../enterprise/entites/category-summary'
 import { calculateTransactionsTotals } from '../utils/calculate-transactions-totals'
+import { AccountSummary } from '../../enterprise/entities/value-objects/account-summary'
 
 interface GetAccountSummariesByCategoriesUseCaseRequest {
   memberId: string
@@ -22,16 +20,16 @@ interface GetAccountSummariesByCategoriesUseCaseRequest {
 type GetAccountSummariesByCategoriesUseCaseResponse = Either<
   | ResourceNotFoundError
   | MemberAccountNotFoundError
-  | AnyCategoryFoundForAccountError,
+  | AnyCategoryFoundForAccountError
+  | InvalidPeriodError,
   {
     fullTermAccounSummary: AccountSummary
-    byCategoriesSummaries: CategorySummary[]
+    byCategoriesSummaries: AccountSummary[]
   }
 >
 
 export class GetAccountSummariesByCategoriesUseCase {
   constructor(
-    private membersRepository: IMembersRepository,
     private accountsRepository: IAccountsRepository,
     private transactionsRepository: ITransactionsRepository,
     private categoriesRepository: ICategoriesRepository,
@@ -49,12 +47,6 @@ export class GetAccountSummariesByCategoriesUseCase {
       return left(new InvalidPeriodError())
     }
 
-    const member = await this.membersRepository.findById(memberId)
-
-    if (!member) {
-      return left(new ResourceNotFoundError())
-    }
-
     const account = await this.accountsRepository.findByHolderId(memberId)
 
     if (!account) {
@@ -69,17 +61,17 @@ export class GetAccountSummariesByCategoriesUseCase {
       return left(new AnyCategoryFoundForAccountError())
     }
 
-    const allTransactions = await this.transactionsRepository.findManyByAccountIdAndInterval(
-      account.id.toString(),
-      { startDate, endDate }
-    )
+    const allTransactions = await this.transactionsRepository.findManyByQuery({
+      accountId: account.id.toString(),
+      interval: { startDate, endDate }
+    })
 
     const allTransactionsTotal = calculateTransactionsTotals({ transactions: allTransactions })
 
     const allTransactionsSummary = AccountSummary.generate(
       {
         accountId: account.id,
-        dateInterval: { startDate, endDate },
+        interval: { startDate, endDate },
         totalIncome: allTransactionsTotal.totalIncome,
         totalExpense: allTransactionsTotal.totalExpense,
         highestIncomeDay: findHighestOperationDay(allTransactionsTotal.incomeTransactions),
@@ -88,18 +80,15 @@ export class GetAccountSummariesByCategoriesUseCase {
       }
     )
 
-    const byCategoriesSummaries: CategorySummary[] = []
+    const byCategoriesSummaries: AccountSummary[] = []
 
     for (const category of categories) {
       const transactionsByCategory =
-        await this.transactionsRepository.findManyByAccountIdAndIntervalAndCategory(
-          account.id.toString(),
-          category.id.toString(),
-          {
-            startDate,
-            endDate,
-          },
-        )
+        await this.transactionsRepository.findManyByQuery({
+          accountId: account.id.toString(),
+          categoryId: category.id.toString(),
+          interval: { startDate, endDate }
+        })
 
       // => Income
       const {
@@ -109,11 +98,11 @@ export class GetAccountSummariesByCategoriesUseCase {
         totalExpense
       } = calculateTransactionsTotals({ transactions: transactionsByCategory })
 
-      const categorySummary = CategorySummary.generate(
+      const categorySummary = AccountSummary.generate(
         {
           accountId: account.id,
           categoryId: category.id,
-          dateInterval: { startDate, endDate },
+          interval: { startDate, endDate },
           totalIncome,
           totalExpense,
           highestIncomeDay: findHighestOperationDay(incomeTransactions),

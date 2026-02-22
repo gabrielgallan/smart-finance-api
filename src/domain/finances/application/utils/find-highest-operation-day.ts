@@ -1,4 +1,4 @@
-import { Transaction } from '@/domain/finances/enterprise/entites/transaction'
+import { Transaction } from '@/domain/finances/enterprise/entities/transaction'
 
 type FindHighestOperationDayInput = Transaction[]
 

@@ -1,8 +1,8 @@
-import { Category } from '../../enterprise/entites/category'
+import { Category } from '../../enterprise/entities/category'
 
 export abstract class ICategoriesRepository {
   abstract create(category: Category): Promise<void>
-  abstract findById(id: string): Promise<Category | null>
+  abstract findByIdAndAccountId(id: string, accountId: string): Promise<Category | null>
   abstract findByAccountIdAndSlug(
     accountId: string,
     slug: string,

@@ -1,17 +1,25 @@
 import { IMembersRepository } from '../repositories/members-repository'
 import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
-import { Hash } from '@/domain/finances/enterprise/entites/value-objects/hash'
 import { makeMember } from 'test/factories/make-member'
 import { EditMemberProfileUseCase } from './edit-member-profile'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { BcriptjsHasher } from 'test/criptography/hasher'
+import { Hasher } from '../criptography/hasher'
 
 let membersRepository: IMembersRepository
+let hasher: Hasher
+
 let sut: EditMemberProfileUseCase
 
 describe('Edit member profile use case', () => {
   beforeEach(() => {
     membersRepository = new InMemoryMembersRepository()
-    sut = new EditMemberProfileUseCase(membersRepository)
+    hasher = new BcriptjsHasher()
+
+    sut = new EditMemberProfileUseCase(
+      membersRepository,
+      hasher
+    )
   })
 
   it('should be able to edit a member profile', async () => {
@@ -19,7 +27,7 @@ describe('Edit member profile use case', () => {
       await makeMember(
         {
           email: 'johndoe@email.com',
-          password: await Hash.create('johnDoe123'),
+          password: await hasher.generate('johnDoe123'),
         },
         new UniqueEntityID('member-1'),
       ),
@@ -36,8 +44,11 @@ describe('Edit member profile use case', () => {
     if (result.isRight()) {
       expect(membersRepository.items[0].email).toBe('newjohn@email.com')
 
-      const passCorrect =
-        await membersRepository.items[0].password.compare('newJohnPass')
+      const passCorrect = await hasher.compare(
+        'newJohnPass',
+        membersRepository.items[0].password
+      )
+      
       expect(passCorrect).toBe(true)
     }
   })

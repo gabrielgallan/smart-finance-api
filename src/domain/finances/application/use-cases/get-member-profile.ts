@@ -1,4 +1,4 @@
-import { Member } from '@/domain/finances/enterprise/entites/member'
+import { Member } from '@/domain/finances/enterprise/entities/member'
 import { IMembersRepository } from '../repositories/members-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'

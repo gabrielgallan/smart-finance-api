@@ -1,5 +1,5 @@
 import { IMembersRepository } from "@/domain/finances/application/repositories/members-repository";
-import { Member } from "@/domain/finances/enterprise/entites/member";
+import { Member } from "@/domain/finances/enterprise/entities/member";
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import { PrismaMemberMapper } from "../mappers/prisma-member-mapper";

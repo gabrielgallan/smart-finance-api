@@ -1,6 +1,6 @@
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { Category } from "@/domain/finances/enterprise/entites/category";
-import { Slug } from "@/domain/finances/enterprise/entites/value-objects/slug";
+import { Category } from "@/domain/finances/enterprise/entities/category";
+import { Slug } from "@/domain/finances/enterprise/entities/value-objects/slug";
 import { Category as PrismaCategory, Prisma } from "@prisma/client"
 
 export class PrismaCategoryMapper {

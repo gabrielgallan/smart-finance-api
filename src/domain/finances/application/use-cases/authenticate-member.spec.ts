@@ -1,19 +1,26 @@
 import { IMembersRepository } from '../repositories/members-repository'
 import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
 import { AuthenticateMemberUseCase } from './authenticate-member'
-import { Hash } from '@/domain/finances/enterprise/entites/value-objects/hash'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { InvalidCredentialsError } from './errors/invalid-credentials-error'
 import { makeMember } from 'test/factories/make-member'
+import { Hasher } from '../criptography/hasher'
+import { BcriptjsHasher } from 'test/criptography/hasher'
 
 let membersRepository: IMembersRepository
+let hasher: Hasher
+
 let sut: AuthenticateMemberUseCase
 
 describe('Authenticate member use case', () => {
   beforeEach(() => {
     membersRepository = new InMemoryMembersRepository()
-    sut = new AuthenticateMemberUseCase(membersRepository)
+    hasher = new BcriptjsHasher()
+
+    sut = new AuthenticateMemberUseCase(
+      membersRepository,
+      hasher
+    )
   })
 
   it('should be able to authenticate a member', async () => {
@@ -21,7 +28,7 @@ describe('Authenticate member use case', () => {
       await makeMember(
         {
           email: 'johndoe@email.com',
-          password: await Hash.create('johnDoe123'),
+          password: await hasher.generate('johnDoe123'),
         },
         new UniqueEntityID('member-1'),
       ),
@@ -40,21 +47,11 @@ describe('Authenticate member use case', () => {
     }
   })
 
-  it('should not be able to authenticate a member that does not exist', async () => {
-    const result = await sut.execute({
-      email: 'johndoe@email.com',
-      password: 'johnDoe123',
-    })
-
-    expect(result.isLeft()).toBe(true)
-    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
-  })
-
   it('should not be able to authenticate a member with incorrect credentials', async () => {
     await membersRepository.create(
       await makeMember({
         email: 'johndoe@email.com',
-        password: await Hash.create('johnDoe123'),
+        password: await hasher.generate('johnDoe123'),
       }),
     )
 

@@ -1,5 +1,5 @@
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { Transaction, TransactionOperation, TransactionProps } from "@/domain/finances/enterprise/entites/transaction";
+import { Transaction, TransactionOperation, TransactionProps } from "@/domain/finances/enterprise/entities/transaction";
 import { faker } from "@faker-js/faker";
 
 export function makeTransaction(

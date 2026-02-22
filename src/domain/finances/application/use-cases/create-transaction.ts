@@ -1,17 +1,15 @@
 import { IAccountsRepository } from '../repositories/accounts-repository'
-import { IMembersRepository } from '../repositories/members-repository'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'
 import {
   Transaction,
   TransactionOperation,
-} from '@/domain/finances/enterprise/entites/transaction'
+} from '@/domain/finances/enterprise/entities/transaction'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InvalidTransactionOperationError } from './errors/invalid-transaction-operation-error'
 import { ICategoriesRepository } from '../repositories/categories-repository'
-import { InvalidCategoryAccountRelationError } from './errors/invalid-category-account-relation-error'
 
 interface CreateTransactionUseCaseRequest {
   memberId: string
@@ -26,14 +24,12 @@ interface CreateTransactionUseCaseRequest {
 type CreateTransactionUseCaseResponse = Either<
   | ResourceNotFoundError
   | MemberAccountNotFoundError
-  | InvalidCategoryAccountRelationError
   | InvalidTransactionOperationError,
   { transaction: Transaction }
 >
 
 export class CreateTransactionUseCase {
   constructor(
-    private membersRepository: IMembersRepository,
     private accountsRepository: IAccountsRepository,
     private transactionsRepository: ITransactionsRepository,
     private categoriesRepository: ICategoriesRepository,
@@ -48,12 +44,6 @@ export class CreateTransactionUseCase {
     operation,
     method,
   }: CreateTransactionUseCaseRequest): Promise<CreateTransactionUseCaseResponse> {
-    const member = await this.membersRepository.findById(memberId)
-
-    if (!member) {
-      return left(new ResourceNotFoundError())
-    }
-
     const account = await this.accountsRepository.findByHolderId(memberId)
 
     if (!account) {
@@ -61,14 +51,13 @@ export class CreateTransactionUseCase {
     }
 
     if (categoryId) {
-      const category = await this.categoriesRepository.findById(categoryId)
+      const category = await this.categoriesRepository.findByIdAndAccountId(
+        categoryId,
+        account.id.toString()
+      )
 
       if (!category) {
         return left(new ResourceNotFoundError())
-      }
-
-      if (category.accountId.toString() !== account.id.toString()) {
-        return left(new InvalidCategoryAccountRelationError())
       }
     }
 

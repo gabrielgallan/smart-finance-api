@@ -1,4 +1,4 @@
-import { Transaction } from "../../enterprise/entites/transaction"
+import { Transaction } from "../../enterprise/entities/transaction"
 
 type CalculateTransactionsTotalsInput = {
   transactions: Transaction[]

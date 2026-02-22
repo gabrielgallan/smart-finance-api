@@ -1,12 +1,10 @@
 import { IAccountsRepository } from '../repositories/accounts-repository'
-import { IMembersRepository } from '../repositories/members-repository'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'
-import { Transaction } from '@/domain/finances/enterprise/entites/transaction'
+import { Transaction } from '@/domain/finances/enterprise/entities/transaction'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { InvalidTransactionOperationError } from './errors/invalid-transaction-operation-error'
 import { ICategoriesRepository } from '../repositories/categories-repository'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 
@@ -22,14 +20,12 @@ interface EditTransactionUseCaseRequest {
 type EditTransactionUseCaseResponse = Either<
   | ResourceNotFoundError
   | MemberAccountNotFoundError
-  | InvalidTransactionOperationError
   | NotAllowedError,
   { transaction: Transaction }
 >
 
 export class EditTransactionUseCase {
   constructor(
-    private membersRepository: IMembersRepository,
     private accountsRepository: IAccountsRepository,
     private transactionsRepository: ITransactionsRepository,
     private categoriesRepository: ICategoriesRepository,
@@ -43,12 +39,6 @@ export class EditTransactionUseCase {
     description,
     method,
   }: EditTransactionUseCaseRequest): Promise<EditTransactionUseCaseResponse> {
-    const member = await this.membersRepository.findById(memberId)
-
-    if (!member) {
-      return left(new ResourceNotFoundError())
-    }
-
     const account = await this.accountsRepository.findByHolderId(memberId)
 
     if (!account) {
@@ -67,14 +57,13 @@ export class EditTransactionUseCase {
     }
 
     if (categoryId) {
-      const category = await this.categoriesRepository.findById(categoryId)
+      const category = await this.categoriesRepository.findByIdAndAccountId(
+        categoryId,
+        account.id.toString()
+      )
 
       if (!category) {
         return left(new ResourceNotFoundError())
-      }
-
-      if (category.accountId.toString() !== account.id.toString()) {
-        return left(new NotAllowedError())
       }
 
       transaction.categoryId = new UniqueEntityID(categoryId)

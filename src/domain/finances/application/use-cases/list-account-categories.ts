@@ -1,9 +1,7 @@
-import { IMembersRepository } from '../repositories/members-repository'
-import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
-import { Category } from '@/domain/finances/enterprise/entites/category'
+import { Category } from '@/domain/finances/enterprise/entities/category'
 import { ICategoriesRepository } from '../repositories/categories-repository'
 import { Injectable } from '@nestjs/common'
 
@@ -12,7 +10,7 @@ interface ListAccountCategoriesUseCaseRequest {
 }
 
 type ListAccountCategoriesUseCaseResponse = Either<
-  ResourceNotFoundError | MemberAccountNotFoundError,
+  MemberAccountNotFoundError,
   {
     categories: Category[]
   }
@@ -21,7 +19,6 @@ type ListAccountCategoriesUseCaseResponse = Either<
 @Injectable()
 export class ListAccountCategoriesUseCase {
   constructor(
-    private membersRepository: IMembersRepository,
     private accountsRepository: IAccountsRepository,
     private categoriesRepository: ICategoriesRepository,
   ) {}
@@ -29,12 +26,6 @@ export class ListAccountCategoriesUseCase {
   async execute({
     memberId,
   }: ListAccountCategoriesUseCaseRequest): Promise<ListAccountCategoriesUseCaseResponse> {
-    const member = await this.membersRepository.findById(memberId)
-
-    if (!member) {
-      return left(new ResourceNotFoundError())
-    }
-
     const account = await this.accountsRepository.findByHolderId(memberId)
 
     if (!account) {

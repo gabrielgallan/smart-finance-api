@@ -1,6 +1,3 @@
-import { IMembersRepository } from '../repositories/members-repository'
-import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
-import { makeMember } from 'test/factories/make-member'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { GetAccountSummaryByCategoryUseCase } from './get-account-summary-by-category'
 import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository'
@@ -11,10 +8,9 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ICategoriesRepository } from '../repositories/categories-repository'
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-category-repository'
 import { makeTransaction } from 'test/factories/make-transaction'
-import { TransactionOperation } from '@/domain/finances/enterprise/entites/transaction'
+import { TransactionOperation } from '@/domain/finances/enterprise/entities/transaction'
 import { makeCategory } from 'test/factories/make-category'
 
-let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
 let transactionsRepository: ITransactionsRepository
 let categoriesRepository: ICategoriesRepository
@@ -23,13 +19,11 @@ let sut: GetAccountSummaryByCategoryUseCase
 
 describe('Get account summary by category use case', () => {
   beforeEach(() => {
-    membersRepository = new InMemoryMembersRepository()
     accountsRepository = new InMemoryAccountsRepository()
     transactionsRepository = new InMemoryTransactionsRepository()
     categoriesRepository = new InMemoryCategoriesRepository()
 
     sut = new GetAccountSummaryByCategoryUseCase(
-      membersRepository,
       accountsRepository,
       transactionsRepository,
       categoriesRepository,
@@ -44,10 +38,6 @@ describe('Get account summary by category use case', () => {
 
   it('should be able to get account summary by category', async () => {
     vi.setSystemTime(new Date(2025, 0, 13))
-
-    await membersRepository.create(
-      await makeMember({}, new UniqueEntityID('member-1')),
-    )
 
     const account = makeAccount(
       {

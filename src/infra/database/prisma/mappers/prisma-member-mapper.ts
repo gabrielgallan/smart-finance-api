@@ -1,6 +1,6 @@
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { Member } from "@/domain/finances/enterprise/entites/member";
-import { Hash } from "@/domain/finances/enterprise/entites/value-objects/hash";
+import { Member } from "@/domain/finances/enterprise/entities/member";
+import { Hash } from "@/domain/finances/enterprise/entities/value-objects/hash";
 import { Member as PrismaMember, Prisma } from "@prisma/client"
 
 export class PrismaMemberMapper {

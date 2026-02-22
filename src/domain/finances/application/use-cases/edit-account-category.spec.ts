@@ -1,6 +1,3 @@
-import { IMembersRepository } from '../repositories/members-repository'
-import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
-import { makeMember } from 'test/factories/make-member'
 import { ICategoriesRepository } from '../repositories/categories-repository'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { makeAccount } from 'test/factories/make-account'
@@ -10,7 +7,6 @@ import { EditAccountCategoryUseCase } from './edit-account-category'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { makeCategory } from 'test/factories/make-category'
 
-let membersRepository: IMembersRepository
 let accountsRepository: IAccountsRepository
 let categoriesRepository: ICategoriesRepository
 
@@ -18,22 +14,16 @@ let sut: EditAccountCategoryUseCase
 
 describe('Edit account category use case', () => {
   beforeEach(() => {
-    membersRepository = new InMemoryMembersRepository()
     accountsRepository = new InMemoryAccountsRepository()
     categoriesRepository = new InMemoryCategoriesRepository()
 
     sut = new EditAccountCategoryUseCase(
-      membersRepository,
       accountsRepository,
       categoriesRepository,
     )
   })
 
   it('should be able to edit account category', async () => {
-    await membersRepository.create(
-      await makeMember({}, new UniqueEntityID('member-1')),
-    )
-
     await accountsRepository.create(
       makeAccount(
         {

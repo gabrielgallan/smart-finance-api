@@ -1,4 +1,4 @@
-import { Member } from "@/domain/finances/enterprise/entites/member";
+import { Member } from "@/domain/finances/enterprise/entities/member";
 import { IMembersRepository } from "@/domain/finances/application/repositories/members-repository";
 
 export class InMemoryMembersRepository implements IMembersRepository {
@@ -32,12 +32,6 @@ export class InMemoryMembersRepository implements IMembersRepository {
         if (!member) return null
         
         return member
-    }
-    
-    async findByAccountId(accountId: string) {
-        const member = this.items.find(m => m.accountId?.toString() === accountId)
-
-        return member ?? null
     }
 
     async save(member: Member) {
