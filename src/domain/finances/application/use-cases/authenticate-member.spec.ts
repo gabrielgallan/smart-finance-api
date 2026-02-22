@@ -4,22 +4,27 @@ import { AuthenticateMemberUseCase } from './authenticate-member'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InvalidCredentialsError } from './errors/invalid-credentials-error'
 import { makeMember } from 'test/unit/factories/make-member'
-import { Hasher } from '../criptography/hasher'
-import { BcriptjsHasher } from 'test/unit/criptography/hasher'
+import { Hasher } from '../cryptography/hasher'
+import { HasherStup } from 'test/unit/cryptography/hasher'
+import { Encrypter } from '../cryptography/encrypter'
+import { EncrypterStub } from 'test/unit/cryptography/encrypter'
 
 let membersRepository: IMembersRepository
 let hasher: Hasher
+let encrypter: Encrypter
 
 let sut: AuthenticateMemberUseCase
 
 describe('Authenticate member use case', () => {
   beforeEach(() => {
     membersRepository = new InMemoryMembersRepository()
-    hasher = new BcriptjsHasher()
+    hasher = new HasherStup()
+    encrypter = new EncrypterStub()
 
     sut = new AuthenticateMemberUseCase(
       membersRepository,
-      hasher
+      hasher,
+      encrypter
     )
   })
 
@@ -40,11 +45,7 @@ describe('Authenticate member use case', () => {
     })
 
     expect(result.isRight()).toBe(true)
-
-    if (result.isRight()) {
-      expect(result.value.memberId).toBeInstanceOf(UniqueEntityID)
-      expect(result.value.memberId.toString()).toBe('member-1')
-    }
+    expect(result.value.token).toBe(JSON.stringify({ sub: 'member-1' }))
   })
 
   it('should not be able to authenticate a member with incorrect credentials', async () => {
@@ -60,7 +61,6 @@ describe('Authenticate member use case', () => {
       password: 'incorrectPassword',
     })
 
-    expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(InvalidCredentialsError)
   })
 })

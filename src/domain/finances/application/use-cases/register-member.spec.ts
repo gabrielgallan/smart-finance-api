@@ -4,8 +4,8 @@ import { IMembersRepository } from '../repositories/members-repository'
 import { InMemoryMembersRepository } from 'test/unit/repositories/in-memory-members-repository'
 import { MemberAlreadyExistsError } from './errors/member-already-exists-error'
 import { makeMember } from 'test/unit/factories/make-member'
-import { Hasher } from '../criptography/hasher'
-import { BcriptjsHasher } from 'test/unit/criptography/hasher'
+import { Hasher } from '../cryptography/hasher'
+import { HasherStup } from 'test/unit/cryptography/hasher'
 
 let membersRepository: IMembersRepository
 let hasher: Hasher
@@ -15,7 +15,7 @@ let sut: RegisterMemberUseCase
 describe('Register new member use case', () => {
   beforeEach(() => {
     membersRepository = new InMemoryMembersRepository()
-    hasher = new BcriptjsHasher()
+    hasher = new HasherStup()
     
     sut = new RegisterMemberUseCase(
       membersRepository,

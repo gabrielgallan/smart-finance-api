@@ -9,19 +9,35 @@ import { PrismaCategoryMapper } from "../mappers/prisma-category-mapper";
 export class PrismaCategoriesRepository implements ICategoriesRepository {
     constructor(private prisma: PrismaService) {}
 
+    
     async create(category: Category) {
         const data = PrismaCategoryMapper.toPrisma(category)
-
+        
         const prismaCategory = await this.prisma.category.create({
             data
         })
-
+        
         return
     }
-
+    
     async findById(id: string) {
         const prismaCategory = await this.prisma.category.findUnique({
             where: { id }
+        })
+        
+        if (!prismaCategory) {
+            return null
+        }
+        
+        return PrismaCategoryMapper.toDomain(prismaCategory)
+    }
+    
+    async findByIdAndAccountId(id: string, accountId: string): Promise<Category | null> {
+        const prismaCategory = await this.prisma.category.findUnique({
+            where: {
+                id,
+                accountId
+            }
         })
 
         if (!prismaCategory) {
@@ -32,10 +48,12 @@ export class PrismaCategoriesRepository implements ICategoriesRepository {
     }
 
     async findByAccountIdAndSlug(accountId: string, slug: string) {
-        const prismaCategory = await this.prisma.category.findFirst({
+        const prismaCategory = await this.prisma.category.findUnique({
             where: {
-                accountId,
-                slug
+                accountId_slug: {
+                    accountId,
+                    slug
+                }
             }
         })
 

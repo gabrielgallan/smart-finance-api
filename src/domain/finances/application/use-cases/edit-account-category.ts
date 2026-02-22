@@ -10,7 +10,7 @@ import { Injectable } from '@nestjs/common'
 
 interface EditAccountCategoryUseCaseRequest {
   memberId: string
-  categoryId: string
+  slug: string
   name?: string
   description?: string
 }
@@ -33,7 +33,7 @@ export class EditAccountCategoryUseCase {
 
   async execute({
     memberId,
-    categoryId,
+    slug,
     name,
     description,
   }: EditAccountCategoryUseCaseRequest): Promise<EditAccountCategoryUseCaseResponse> {
@@ -43,9 +43,9 @@ export class EditAccountCategoryUseCase {
       return left(new MemberAccountNotFoundError())
     }
 
-    const category = await this.categoriesRepository.findByIdAndAccountId(
-      categoryId,
-      account.id.toString()
+    const category = await this.categoriesRepository.findByAccountIdAndSlug(
+      account.id.toString(),
+      slug,
     )
 
     if (!category) {

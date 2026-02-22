@@ -74,18 +74,20 @@ describe('Get account summary by category use case', () => {
     const result = await sut.execute({
       memberId: 'member-1',
       categoryId: 'category-1',
-      startDate: new Date(2025, 0, 12),
-      endDate: new Date(2025, 0, 14),
+      interval: {
+        startDate: new Date(2025, 0, 12),
+        endDate: new Date(2025, 0, 14),
+      }
     })
 
     expect(result.isRight()).toBe(true)
 
     if (result.isRight()) {
-      expect(result.value.byCategorySummary.netBalance).toBe(150)
-      expect(result.value.byCategorySummary.transactionsCount).toBe(3)
-      expect(result.value.byCategorySummary.categoryId?.toString()).toBe('category-1')
+      expect(result.value.fromCategorySummary.netBalance).toBe(150)
+      expect(result.value.fromCategorySummary.transactionsCount).toBe(3)
+      expect(result.value.fromCategorySummary.categoryId?.toString()).toBe('category-1')
 
-      expect(result.value.byCategorySummary.percentages).toMatchObject(
+      expect(result.value.fromCategorySummary.percentages).toMatchObject(
         {
           totalIncomePercentage: expect.any(Number),
           totalExpensePercentage: expect.any(Number)

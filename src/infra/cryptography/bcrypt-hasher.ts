@@ -1,0 +1,16 @@
+import { Hasher } from "@/domain/finances/application/cryptography/hasher";
+import { Injectable } from "@nestjs/common";
+import { compare, hash } from "bcryptjs";
+
+@Injectable()
+export class BcryptHasher implements Hasher {
+    async generate(plain: string) {
+        const hashed = await hash(plain, 8)
+
+        return hashed
+    }
+
+    async compare(plain: string, hash: string) {
+        return await compare(plain, hash)
+    }
+}

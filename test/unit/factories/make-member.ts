@@ -1,9 +1,9 @@
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Member, MemberProps } from "@/domain/finances/enterprise/entities/member";
 import { faker } from "@faker-js/faker";
-import { BcriptjsHasher } from "test/unit/criptography/hasher";
+import { HasherStup } from "test/unit/cryptography/hasher";
 
-const hasher = new BcriptjsHasher()
+const hasher = new HasherStup()
 
 export async function makeMember(
     override: Partial<MemberProps> = {},

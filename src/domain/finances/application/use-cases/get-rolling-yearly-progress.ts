@@ -3,12 +3,10 @@ import { IAccountsRepository } from '../repositories/accounts-repository'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import dayjs from 'dayjs'
-import { findHighestOperationDay } from '../utils/find-highest-operation-day'
 
-import { calculateTransactionsTotals } from '../utils/calculate-transactions-totals'
 import { getMonthDateRange } from '../utils/get-month-date-range'
-import { YearMonthSummary } from '../summaries/year-month-summary'
-import { AccountSummary } from '../../enterprise/entities/value-objects/account-summary'
+import { YearAccountSummary, YearMonthSummaryProps } from '../../enterprise/entities/value-objects/summaries/year-account-summary'
+import { AccountSummaryCalculator } from '../services/account-summary-calculator'
 
 interface GetRollingYearProgressUseCaseRequest {
     memberId: string
@@ -17,8 +15,7 @@ interface GetRollingYearProgressUseCaseRequest {
 type GetRollingYearProgressUseCaseResponse = Either<
     MemberAccountNotFoundError,
     {
-        rollingYearSummary: AccountSummary
-        rollingMonthsSummaries: YearMonthSummary[]
+        yearAccountSummary: YearAccountSummary
     }
 >
 
@@ -42,87 +39,59 @@ export class GetRollingYearProgressUseCase {
 
         rollingYearStartDate.setFullYear(rollingYearEndDate.getFullYear() - 1)
 
+        const yearInterval = {
+            startDate: rollingYearStartDate,
+            endDate: rollingYearEndDate
+        }
+
         const rollingYearTransactions = await this.transactionsRepository.findManyByQuery({
             accountId: account.id.toString(),
-            interval: {
-                startDate: rollingYearStartDate,
-                endDate: rollingYearEndDate
-            }
+            interval: yearInterval,
         })
 
-        const rollingYearTransactionsTotals = calculateTransactionsTotals({ transactions: rollingYearTransactions })
+        const rollingYearSummary = AccountSummaryCalculator.calculate({
+            accountId: account.id,
+            interval: yearInterval,
+            transactions: rollingYearTransactions
+        })
 
-        const rollingYearSummary = AccountSummary.generate(
-            {
-                accountId: account.id,
-                interval: { 
-                    startDate: rollingYearStartDate,
-                    endDate: rollingYearEndDate
-                },
-                totalIncome: rollingYearTransactionsTotals.totalIncome,
-                totalExpense: rollingYearTransactionsTotals.totalExpense,
-                highestIncomeDay: findHighestOperationDay(rollingYearTransactionsTotals.incomeTransactions),
-                highestExpenseDay: findHighestOperationDay(rollingYearTransactionsTotals.expenseTransactions),
-                transactionsCount: rollingYearTransactions.length,
-            }
-        )
-
-        const rollingMonthsSummaries: YearMonthSummary[] = []
+        const rollingMonthsSummaries: YearMonthSummaryProps[] = []
 
         for (let c = 11; c >= 0; c--) {
             const referenceDate = dayjs().subtract(c, 'month')
 
-            const { title, start, end } = getMonthDateRange({
+            const { title, interval } = getMonthDateRange({
                 date: referenceDate.toDate()
             })
 
             const transactionsByMonth = 
                 await this.transactionsRepository.findManyByQuery({
                     accountId: account.id.toString(),
-                    interval: {
-                        startDate: start,
-                        endDate: end,
-                    },
+                    interval,
                 })
 
-            // => Totals
-            const {
-                incomeTransactions,
-                expenseTransactions,
-                totalIncome,
-                totalExpense
-            } = calculateTransactionsTotals({ transactions: transactionsByMonth })
-
-            const monthSummary = AccountSummary.generate(
-                {
-                    accountId: account.id,
-                    interval: { 
-                        startDate: start,
-                        endDate: end
-                    },
-                    totalIncome,
-                    totalExpense,
-                    highestIncomeDay: findHighestOperationDay(incomeTransactions),
-                    highestExpenseDay: findHighestOperationDay(expenseTransactions),
-                    transactionsCount: transactionsByMonth.length,
-                }
-            )
+            const monthSummary = AccountSummaryCalculator.calculate({
+                accountId: account.id,
+                interval,
+                transactions: transactionsByMonth
+            })
 
             monthSummary.setComparativePercentages(rollingYearSummary)
 
             rollingMonthsSummaries.push({
-                period: {
-                    monthIndex: referenceDate.month() + 1,
-                    year: referenceDate.year()
-                },
+                monthIndex: referenceDate.month() + 1,
                 title: title,
                 summary: monthSummary
             })
         }
 
+        const yearAccountSummary = YearAccountSummary.create({
+            summary: rollingYearSummary,
+            monthSummaries: rollingMonthsSummaries
+        })
+
         return right({
-            rollingYearSummary,
-            rollingMonthsSummaries,
+            yearAccountSummary
         })
     }
 }

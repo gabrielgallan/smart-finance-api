@@ -1,7 +1,7 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
 import { DateInterval } from '@/core/types/repositories/date-interval'
-import { calculatePartPercentage } from '../../../application/utils/calculate-percentage'
+import { calculatePartPercentage } from '@/domain/finances/application/utils/calculate-percentage'
 import { ValueObject } from '@/core/entities/value-object'
 
 export interface AccountSummaryProps {

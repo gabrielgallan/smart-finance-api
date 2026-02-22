@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import { AppModule } from '@/infra/app.module'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { hash } from 'bcryptjs'
+import { BcryptHasher } from '@/infra/cryptography/bcrypt-hasher'
 
 describe('Authenticate member tests', () => {
   let app: INestApplication
@@ -24,9 +24,9 @@ describe('Authenticate member tests', () => {
   it('[POST] /api/sessions', async () => {
     await prisma.member.create({
         data: {
-            name: 'gabriel@email.com',
+            name: 'Gabriel',
             email: 'gabriel@email.com',
-            passwordHash: await hash('gabriel123', 8)
+            passwordHash: await new BcryptHasher().generate('gabriel123')
         }
     })
 

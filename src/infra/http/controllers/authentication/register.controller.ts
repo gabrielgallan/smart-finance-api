@@ -1,13 +1,11 @@
-import { BadRequestException, Body, ConflictException, Controller, HttpCode, InternalServerErrorException, Post, UsePipes } from '@nestjs/common'
+import { Body, ConflictException, Controller, HttpCode, InternalServerErrorException, Post, UsePipes } from '@nestjs/common'
 import z from 'zod'
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { RegisterMemberUseCase } from '@/domain/finances/application/use-cases/register-member'
-import { InvalidMemberAgeError } from '@/domain/finances/application/use-cases/errors/invalid-member-age-erros'
 import { MemberAlreadyExistsError } from '@/domain/finances/application/use-cases/errors/member-already-exists-error'
 
 const registerBodySchema = z.object({
   name: z.string(),
-  birthDate: z.coerce.date(),
   document: z.string().optional(),
   email: z.string().email(),
   password: z.string()
@@ -25,11 +23,10 @@ export class RegisterController {
   @HttpCode(201)
   @UsePipes(new ZodValidationPipe(registerBodySchema))
   async handle(@Body() body: RegisterBodyDTO) {
-    const { name, email, password, birthDate, document } = body
+    const { name, email, password, document } = body
 
     const result = await this.registerMember.execute({
       name,
-      birthDate,
       document,
       email,
       password,
@@ -39,11 +36,6 @@ export class RegisterController {
       const error = result.value
 
       switch (true) {
-        case error instanceof InvalidMemberAgeError:
-          return new BadRequestException({
-            message: error.message
-          })
-
         case error instanceof MemberAlreadyExistsError:
           return new ConflictException({
             message: error.message

@@ -2,7 +2,8 @@ import { IMembersRepository } from '../repositories/members-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'
 import { MemberAlreadyExistsError } from './errors/member-already-exists-error'
-import { Hasher } from '../criptography/hasher'
+import { Hasher } from '../cryptography/hasher'
+import { Injectable } from '@nestjs/common'
 
 interface EditMemberProfileUseCaseRequest {
   memberId: string
@@ -15,6 +16,7 @@ type EditMemberProfileUseCaseResponse = Either<
   null
 >
 
+@Injectable()
 export class EditMemberProfileUseCase {
   constructor(
     private membersRepository: IMembersRepository,

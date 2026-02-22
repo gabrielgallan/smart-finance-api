@@ -3,13 +3,14 @@ import { Test } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import { AppModule } from '@/infra/app.module'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { hash } from 'bcryptjs'
-import { JwtService } from '@nestjs/jwt'
+import { Hasher } from '@/domain/finances/application/cryptography/hasher'
+import { Encrypter } from '@/domain/finances/application/cryptography/encrypter'
 
 describe('Get member profile tests', () => {
   let app: INestApplication
   let prisma: PrismaService
-  let jwt: JwtService
+  let hasher: Hasher
+  let encrypter: Encrypter
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -20,21 +21,23 @@ describe('Get member profile tests', () => {
 
     prisma = moduleRef.get(PrismaService)
 
-    jwt = moduleRef.get(JwtService)
+    hasher = moduleRef.get(Hasher)
+
+    encrypter = moduleRef.get(Encrypter)
 
     await app.init()
   })
 
   it('[GET] /api/profile', async () => {
-    const user = await prisma.user.create({
+    const member = await prisma.member.create({
         data: {
             name: 'gabriel',
             email: 'gabriel@email.com',
-            password: await hash('gabriel123', 8)
+            passwordHash: await hasher.generate('gabriel123')
         }
     })
 
-    const token = jwt.sign({ sub: user.id })
+    const token = await encrypter.encrypt({ sub: member.id })
 
     const response = await request(app.getHttpServer())
       .get('/api/profile')
@@ -42,7 +45,7 @@ describe('Get member profile tests', () => {
       .expect(200)
       
       expect(response.body).toMatchObject({
-        profile: {
+        member: {
             name: 'gabriel',
             email: 'gabriel@email.com'
         }
