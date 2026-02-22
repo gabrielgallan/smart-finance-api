@@ -10,7 +10,7 @@ export default defineConfig({
         './src/infra/http/controllers/**/*.spec'
     ],
     setupFiles: [
-      'test/setup-e2e'
+      'test/e2e/setup-e2e'
     ],
     globals: true,
     root: './',

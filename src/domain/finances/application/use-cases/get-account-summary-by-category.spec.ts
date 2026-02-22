@@ -1,15 +1,15 @@
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { GetAccountSummaryByCategoryUseCase } from './get-account-summary-by-category'
-import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository'
-import { makeAccount } from 'test/factories/make-account'
-import { InMemoryTransactionsRepository } from 'test/repositories/in-memory-transactions-repository'
+import { InMemoryAccountsRepository } from 'test/unit/repositories/in-memory-accounts-repository'
+import { makeAccount } from 'test/unit/factories/make-account'
+import { InMemoryTransactionsRepository } from 'test/unit/repositories/in-memory-transactions-repository'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ICategoriesRepository } from '../repositories/categories-repository'
-import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-category-repository'
-import { makeTransaction } from 'test/factories/make-transaction'
+import { InMemoryCategoriesRepository } from 'test/unit/repositories/in-memory-category-repository'
+import { makeTransaction } from 'test/unit/factories/make-transaction'
 import { TransactionOperation } from '@/domain/finances/enterprise/entities/transaction'
-import { makeCategory } from 'test/factories/make-category'
+import { makeCategory } from 'test/unit/factories/make-category'
 
 let accountsRepository: IAccountsRepository
 let transactionsRepository: ITransactionsRepository

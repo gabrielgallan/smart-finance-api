@@ -1,13 +1,13 @@
 import { IMembersRepository } from '../repositories/members-repository'
-import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
+import { InMemoryMembersRepository } from 'test/unit/repositories/in-memory-members-repository'
 import { IAccountsRepository } from '../repositories/accounts-repository'
-import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository'
-import { makeMember } from 'test/factories/make-member'
+import { InMemoryAccountsRepository } from 'test/unit/repositories/in-memory-accounts-repository'
+import { makeMember } from 'test/unit/factories/make-member'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { makeAccount } from 'test/factories/make-account'
+import { makeAccount } from 'test/unit/factories/make-account'
 import { IFinancialGoalsRepository } from '../repositories/financial-goals-repository'
 import { CreateFinancialGoalUseCase } from './create-financial-goal'
-import { InMemoryFinancialGoalsRepository } from 'test/repositories/in-memory-financial-goals-repository'
+import { InMemoryFinancialGoalsRepository } from 'test/unit/repositories/in-memory-financial-goals-repository'
 
 let membersRepository: IMembersRepository
 let accountRepository: IAccountsRepository

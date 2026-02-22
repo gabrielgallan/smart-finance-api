@@ -1,14 +1,14 @@
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { ITransactionsRepository } from '../repositories/transactions-repository'
-import { InMemoryAccountsRepository } from 'test/repositories/in-memory-accounts-repository'
-import { InMemoryTransactionsRepository } from 'test/repositories/in-memory-transactions-repository'
-import { makeAccount } from 'test/factories/make-account'
-import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-category-repository'
+import { InMemoryAccountsRepository } from 'test/unit/repositories/in-memory-accounts-repository'
+import { InMemoryTransactionsRepository } from 'test/unit/repositories/in-memory-transactions-repository'
+import { makeAccount } from 'test/unit/factories/make-account'
+import { InMemoryCategoriesRepository } from 'test/unit/repositories/in-memory-category-repository'
 import { ICategoriesRepository } from '../repositories/categories-repository'
-import { makeCategory } from 'test/factories/make-category'
+import { makeCategory } from 'test/unit/factories/make-category'
 import { EditTransactionUseCase } from './edit-transaction'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { makeTransaction } from 'test/factories/make-transaction'
+import { makeTransaction } from 'test/unit/factories/make-transaction'
 
 let accountsRepository: IAccountsRepository
 let transactionsRepository: ITransactionsRepository

@@ -1,9 +1,9 @@
 import { IMembersRepository } from '../repositories/members-repository'
-import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
-import { makeMember } from 'test/factories/make-member'
+import { InMemoryMembersRepository } from 'test/unit/repositories/in-memory-members-repository'
+import { makeMember } from 'test/unit/factories/make-member'
 import { EditMemberProfileUseCase } from './edit-member-profile'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { BcriptjsHasher } from 'test/criptography/hasher'
+import { BcriptjsHasher } from 'test/unit/criptography/hasher'
 import { Hasher } from '../criptography/hasher'
 
 let membersRepository: IMembersRepository

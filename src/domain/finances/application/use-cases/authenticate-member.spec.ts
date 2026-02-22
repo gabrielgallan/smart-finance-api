@@ -1,11 +1,11 @@
 import { IMembersRepository } from '../repositories/members-repository'
-import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
+import { InMemoryMembersRepository } from 'test/unit/repositories/in-memory-members-repository'
 import { AuthenticateMemberUseCase } from './authenticate-member'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InvalidCredentialsError } from './errors/invalid-credentials-error'
-import { makeMember } from 'test/factories/make-member'
+import { makeMember } from 'test/unit/factories/make-member'
 import { Hasher } from '../criptography/hasher'
-import { BcriptjsHasher } from 'test/criptography/hasher'
+import { BcriptjsHasher } from 'test/unit/criptography/hasher'
 
 let membersRepository: IMembersRepository
 let hasher: Hasher

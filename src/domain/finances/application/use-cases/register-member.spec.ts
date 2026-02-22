@@ -1,11 +1,11 @@
 import { RegisterMemberUseCase } from './register-member'
 import { Member } from '../../enterprise/entities/member'
 import { IMembersRepository } from '../repositories/members-repository'
-import { InMemoryMembersRepository } from 'test/repositories/in-memory-members-repository'
+import { InMemoryMembersRepository } from 'test/unit/repositories/in-memory-members-repository'
 import { MemberAlreadyExistsError } from './errors/member-already-exists-error'
-import { makeMember } from 'test/factories/make-member'
+import { makeMember } from 'test/unit/factories/make-member'
 import { Hasher } from '../criptography/hasher'
-import { BcriptjsHasher } from 'test/criptography/hasher'
+import { BcriptjsHasher } from 'test/unit/criptography/hasher'
 
 let membersRepository: IMembersRepository
 let hasher: Hasher

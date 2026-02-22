@@ -1,7 +1,7 @@
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Member, MemberProps } from "@/domain/finances/enterprise/entities/member";
 import { faker } from "@faker-js/faker";
-import { BcriptjsHasher } from "test/criptography/hasher";
+import { BcriptjsHasher } from "test/unit/criptography/hasher";
 
 const hasher = new BcriptjsHasher()
 
