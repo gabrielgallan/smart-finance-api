@@ -3,12 +3,10 @@ import { Test } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import { AppModule } from '@/infra/app.module'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { Encrypter } from '@/domain/finances/application/cryptography/encrypter'
 
-describe('Close member account tests', () => {
+describe('Reset password tests', () => {
     let app: INestApplication
     let prisma: PrismaService
-    let encrypter: Encrypter
 
     beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
@@ -16,32 +14,37 @@ describe('Close member account tests', () => {
         }).compile()
 
         app = moduleRef.createNestApplication()
-
         prisma = moduleRef.get(PrismaService)
-
-        encrypter = moduleRef.get(Encrypter)
-
         await app.init()
     })
 
-    it('[DELETE] /api/accounts', async () => {
-        const account = await prisma.account.create({
+    it('[PUT] /api/profile/password', async () => {
+        const member = await prisma.member.create({
             data: {
-                holder: {
+                email: 'johndoe@email.com',
+                passwordHash: 'johnDoe123',
+                tokens: {
                     create: {
-                        email: 'johndoel@email.com',
+                        id: 'valid-token',
+                        type: 'PASSWORD_RECOVER'
                     }
                 }
             }
         })
 
-        const token = await encrypter.encrypt({ sub: account.holderId })
-
-        return await request(app.getHttpServer())
-            .delete('/api/accounts')
-            .set('Authorization', `Bearer ${token}`)
-            .send()
+        await request(app.getHttpServer())
+            .put('/api/profile/password')
+            .send({
+                code: 'valid-token',
+                password: 'newPassword123'
+            })
             .expect(204)
+
+        const updatedMember = await prisma.member.findUnique({
+            where: { id: member.id }
+        })
+
+        expect(updatedMember?.passwordHash).not.toBe('johnDoe123')
     })
 
     afterAll(async () => {

@@ -3,7 +3,7 @@ https://docs.nestjs.com/controllers#controllers
 */
 
 import { CreateAccountCategoryUseCase } from '@/domain/finances/application/use-cases/create-account-category';
-import { Body, ConflictException, Controller, Get, HttpCode, InternalServerErrorException, NotFoundException, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Get, HttpCode, InternalServerErrorException, NotFoundException, Param, Post, Put } from '@nestjs/common';
 import z from 'zod';
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe';
 import { CurrentUser } from '@/infra/auth/current-user-decorator';
@@ -14,7 +14,6 @@ import { CategoryAlreadyExistsError } from '@/domain/finances/application/use-ca
 import { ListAccountCategoriesUseCase } from '@/domain/finances/application/use-cases/list-account-categories';
 import { CategoryPresenter } from '../../presenters/category-presenter';
 import { EditAccountCategoryUseCase } from '@/domain/finances/application/use-cases/edit-account-category';
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth-guard';
 
 const createCategoryBodySchema = z.object({
     name: z.string(),
@@ -37,7 +36,6 @@ type EditCategoryBodyDTO = z.infer<typeof editCategoryBodySchema>
 type EditCategoryParamsDTO = z.infer<typeof editCategoryParamsSchema>
 
 @Controller('/api/categories')
-@UseGuards(JwtAuthGuard)
 export class CategoryController {
     constructor(
         private createCategory: CreateAccountCategoryUseCase,

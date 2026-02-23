@@ -33,9 +33,7 @@ describe('Get account summaries by categories tests', () => {
             data: {
                 holder: {
                     create: {
-                        name: 'gabriel',
-                        email: 'gabriel@email.com',
-                        passwordHash: 'gab123'
+                        email: 'johndoe@email.com',
                     }
                 },
                 categories: {

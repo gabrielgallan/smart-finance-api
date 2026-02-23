@@ -4,6 +4,7 @@ import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { AuthenticateMemberUseCase } from '@/domain/finances/application/use-cases/authenticate-member'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { InvalidCredentialsError } from '@/domain/finances/application/use-cases/errors/invalid-credentials-error'
+import { Public } from '@/infra/auth/public'
 
 const authenticateBodySchema = z.object({
   email: z.string().email(),
@@ -13,6 +14,7 @@ const authenticateBodySchema = z.object({
 type AuthenticateBodyDTO = z.infer<typeof authenticateBodySchema>
 
 @Controller('/api')
+@Public()
 export class AuthenticateController {
   constructor(
     private authenticateMember: AuthenticateMemberUseCase

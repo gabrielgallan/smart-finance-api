@@ -1,7 +1,6 @@
-import { BadRequestException, Body, Controller, HttpCode, InternalServerErrorException, NotFoundException, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, HttpCode, InternalServerErrorException, NotFoundException, Post } from '@nestjs/common';
 import { CreateTransactionUseCase } from '@/domain/finances/application/use-cases/create-transaction';
 import { CurrentUser } from '@/infra/auth/current-user-decorator';
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth-guard';
 import type { UserPayload } from '@/infra/auth/jwt.strategy';
 import z from 'zod';
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe';
@@ -21,7 +20,6 @@ const createTransactionBodySchema = z.object({
 type CreateTransactionBodyDTO = z.infer<typeof createTransactionBodySchema>
 
 @Controller('/api')
-@UseGuards(JwtAuthGuard)
 export class CreateTransactionController {
     constructor(
         private createTransaction: CreateTransactionUseCase

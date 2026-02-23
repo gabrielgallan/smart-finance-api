@@ -14,6 +14,15 @@ import { GetProfileController } from './controllers/member/get-profile.controlle
 import { OpenAccountController } from './controllers/account/open-account.controller'
 import { CategoryController } from './controllers/category/category.controller'
 import { CloseAccountController } from './controllers/account/close-account.controller'
+import { GetRollingYearProgressController } from './controllers/summary/get-rolling-year-progress.controller'
+import { AuthenticateWithGithubController } from './controllers/authentication/authenticate-with-github.controller'
+import { RequestPasswordRecoverController } from './controllers/authentication/request-password-recover.controller'
+import { GetSummariesByCategoriesController } from './controllers/summary/get-summaries-by-categories.controller'
+import { ResetPasswordController } from './controllers/authentication/reset-password.controller'
+import { CreateTransactionController } from './controllers/transactions/create-transaction.controller'
+import { ListAccountTransactionsController } from './controllers/transactions/list-transactions.controller'
+import { EditAccountTransactionController } from './controllers/transactions/edit-transaction.controller'
+import { GetAccountSummaryController } from './controllers/summary/get-account-summary.controller'
 
 // use-cases
 import { RegisterMemberUseCase } from '@/domain/finances/application/use-cases/register-member'
@@ -24,34 +33,30 @@ import { CreateAccountCategoryUseCase } from '@/domain/finances/application/use-
 import { ListAccountCategoriesUseCase } from '@/domain/finances/application/use-cases/list-account-categories'
 import { EditAccountCategoryUseCase } from '@/domain/finances/application/use-cases/edit-account-category'
 import { CloseAccountUseCase } from '@/domain/finances/application/use-cases/close-account'
-import { EditProfileController } from './controllers/member/edit-profile.controller'
-import { EditMemberProfileUseCase } from '@/domain/finances/application/use-cases/edit-member-profile'
-import { CreateTransactionController } from './controllers/transactions/create-transaction.controller'
-import { ListAccountTransactionsController } from './controllers/transactions/list-transactions.controller'
+import { ResetMemberPasswordUseCase } from '@/domain/finances/application/use-cases/reset-member-password'
 import { CreateTransactionUseCase } from '@/domain/finances/application/use-cases/create-transaction'
 import { ListAccountTransactionsUseCase } from '@/domain/finances/application/use-cases/list-account-transactions'
-import { EditAccountTransactionController } from './controllers/transactions/edit-transaction.controller'
 import { EditTransactionUseCase } from '@/domain/finances/application/use-cases/edit-transaction'
-import { GetAccountSummaryController } from './controllers/summary/get-account-summary.controller'
 import { GetAccountSummaryUseCase } from '@/domain/finances/application/use-cases/get-account-summary'
-import { GetSummariesByCategoriesController } from './controllers/summary/get-summaries-by-categories.controller'
 import { GetAccountSummariesByCategoriesUseCase } from '@/domain/finances/application/use-cases/get-account-summaries-by-categories'
 import { FinancialAnalyticsService } from '@/domain/finances/application/services/financial-analytics/financial-analytics-service'
 import { GetRollingYearProgressUseCase } from '@/domain/finances/application/use-cases/get-rolling-yearly-progress'
-import { GetRollingYearProgressController } from './controllers/summary/get-rolling-year-progress.controller'
-import { AuthenticateWithGithubController } from './controllers/authentication/authenticate-with-github.controller'
+import { EmailService } from '../email/email.service'
+import { EnvModule } from '../env/env.module'
 
 @Module({
     imports: [
         AuthModule,
-        DatabaseModule
+        DatabaseModule,
+        EnvModule
     ],
     controllers: [
         RegisterController,
         AuthenticateController,
         AuthenticateWithGithubController,
         GetProfileController,
-        EditProfileController,
+        RequestPasswordRecoverController,
+        ResetPasswordController,
         OpenAccountController,
         CloseAccountController,
         CategoryController,
@@ -66,7 +71,7 @@ import { AuthenticateWithGithubController } from './controllers/authentication/a
         RegisterMemberUseCase,
         AuthenticateMemberUseCase,
         GetMemberProfileUseCase,
-        EditMemberProfileUseCase,
+        ResetMemberPasswordUseCase,
         OpenAccountUseCase,
         CloseAccountUseCase,
         CreateAccountCategoryUseCase,
@@ -78,7 +83,8 @@ import { AuthenticateWithGithubController } from './controllers/authentication/a
         GetAccountSummaryUseCase,
         GetAccountSummariesByCategoriesUseCase,
         GetRollingYearProgressUseCase,
-        FinancialAnalyticsService
+        FinancialAnalyticsService,
+        EmailService,
     ]
 })
-export class HttpModule {}
+export class HttpModule { }

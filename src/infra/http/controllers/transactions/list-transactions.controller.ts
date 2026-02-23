@@ -1,6 +1,5 @@
-import { Controller, Get, HttpCode, InternalServerErrorException, NotFoundException, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpCode, InternalServerErrorException, NotFoundException, Query } from '@nestjs/common';
 import { CurrentUser } from '@/infra/auth/current-user-decorator';
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth-guard';
 import type { UserPayload } from '@/infra/auth/jwt.strategy';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 import { MemberAccountNotFoundError } from '@/domain/finances/application/use-cases/errors/member-account-not-found-error';
@@ -21,7 +20,6 @@ const listQuerySchema = z.object({
 type ListQueryDTO = z.infer<typeof listQuerySchema>
 
 @Controller('/api')
-@UseGuards(JwtAuthGuard)
 export class ListAccountTransactionsController {
     constructor(
         private listTransactions: ListAccountTransactionsUseCase

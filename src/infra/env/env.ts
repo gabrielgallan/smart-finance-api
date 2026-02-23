@@ -9,7 +9,9 @@ export const envSchema = z.object({
     JWT_PUBLIC_KEY: z.string(),
     GITHUB_OAUTH_CLIENT_ID: z.string(),
     GITHUB_OAUTH_CLIENT_SECRET: z.string(),
-    GITHUB_OAUTH_CLIENT_REDIRECT_URI: z.string().url()
+    GITHUB_OAUTH_CLIENT_REDIRECT_URI: z.string().url(),
+    GMAIL_USER: z.string().email(),
+    GMAIL_PASSWORD: z.string()
 })
 
 export type Env = z.infer<typeof envSchema>

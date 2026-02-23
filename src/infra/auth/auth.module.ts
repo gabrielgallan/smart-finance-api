@@ -9,6 +9,8 @@ import { BcryptHasher } from '../cryptography/bcrypt-hasher';
 import { GithubOAuthService } from './github-oauth.service';
 import { EnvService } from '../env/env.service';
 import { EnvModule } from '../env/env.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './jwt-auth-guard';
 
 @Module({
   imports: [
@@ -40,6 +42,10 @@ import { EnvModule } from '../env/env.module';
     {
       provide: Hasher,
       useClass: BcryptHasher
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard
     }
   ]
 })

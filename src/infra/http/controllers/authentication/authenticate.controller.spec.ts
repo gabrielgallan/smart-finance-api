@@ -24,17 +24,16 @@ describe('Authenticate member tests', () => {
   it('[POST] /api/sessions', async () => {
     await prisma.member.create({
         data: {
-            name: 'Gabriel',
-            email: 'gabriel@email.com',
-            passwordHash: await new BcryptHasher().generate('gabriel123')
+            email: 'johndoe@email.com',
+            passwordHash: await new BcryptHasher().generate('johnDoe123')
         }
     })
 
     const response = await request(app.getHttpServer())
       .post('/api/sessions')
       .send({
-        email: 'gabriel@email.com',
-        password: 'gabriel123'
+        email: 'johndoe@email.com',
+        password: 'johnDoe123'
       })
       .expect(201)
       

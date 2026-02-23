@@ -2,8 +2,7 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { Controller, Get, InternalServerErrorException, NotFoundException, Query, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth-guard';
+import { Controller, Get, InternalServerErrorException, NotFoundException, Query } from '@nestjs/common';
 import { z } from 'zod';
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe';
 import { CurrentUser } from '@/infra/auth/current-user-decorator';
@@ -28,7 +27,6 @@ export class GetSummariesByCategoriesController {
     ) { }
 
     @Get('/account/categories/summary')
-    @UseGuards(JwtAuthGuard)
     async handle(
         @CurrentUser() user: UserPayload,
         @Query(new ZodValidationPipe(querySchema)) query: QueryDTO
