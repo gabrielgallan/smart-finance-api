@@ -29,9 +29,7 @@ describe('Get rolling year account summaries tests', () => {
             data: {
                 holder: {
                     create: {
-                        name: 'gabriel',
-                        email: 'gabriel@email.com',
-                        passwordHash: 'gab123'
+                        email: 'johndoe@email.com',
                     }
                 },
                 transactions: {

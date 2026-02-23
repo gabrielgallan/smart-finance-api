@@ -19,9 +19,9 @@ describe('Register new member tests', () => {
     return request(app.getHttpServer())
       .post('/api/members')
       .send({
-        name: 'gabriel',
-        email: 'gabriel@email.com',
-        password: 'gabriel123'
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+        password: 'johnDoe123'
       })
       .expect(201)
       .expect({})

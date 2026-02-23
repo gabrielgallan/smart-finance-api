@@ -21,14 +21,14 @@ describe('Request password recover tests', () => {
     it('[POST] /api/password/recover', async () => {
         const member = await prisma.member.create({
             data: {
-                email: 'gabriel@email.com',
+                email: 'johndoe@email.com',
             }
         })
 
         await request(app.getHttpServer())
             .post('/api/password/recover')
             .send({
-                email: 'gabriel@email.com'
+                email: 'johndoe@email.com'
             })
             .expect(201)
 

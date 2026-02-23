@@ -31,9 +31,9 @@ describe('Get member profile tests', () => {
   it('[GET] /api/profile', async () => {
     const member = await prisma.member.create({
         data: {
-            name: 'gabriel',
-            email: 'gabriel@email.com',
-            passwordHash: await hasher.generate('gabriel123')
+            name: 'John Doe',
+            email: 'johndoe@email.com',
+            passwordHash: await hasher.generate('johnDoe123')
         }
     })
 
@@ -46,8 +46,8 @@ describe('Get member profile tests', () => {
       
       expect(response.body).toMatchObject({
         member: {
-            name: 'gabriel',
-            email: 'gabriel@email.com'
+            name: 'John Doe',
+            email: 'johndoe@email.com'
         }
       })
   })

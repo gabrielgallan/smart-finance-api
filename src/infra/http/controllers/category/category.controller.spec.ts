@@ -29,9 +29,7 @@ describe('Categories tests', () => {
             data: {
                 holder: {
                     create: {
-                        name: 'gabriel',
-                        email: 'gabriel@email.com',
-                        passwordHash: 'gab123'
+                        email: 'johndoe@email.com',
                     }
                 }            
             }
@@ -54,9 +52,7 @@ describe('Categories tests', () => {
             data: {
                 holder: {
                     create: {
-                        name: 'gabriel',
-                        email: 'gabriel2@email.com',
-                        passwordHash: 'gab123'
+                        email: 'johndoe2@email.com',
                     }
                 },
                 categories: {
@@ -92,9 +88,7 @@ describe('Categories tests', () => {
             data: {
                 holder: {
                     create: {
-                        name: 'gabriel',
-                        email: 'gabriel3@email.com',
-                        passwordHash: 'gab123'
+                        email: 'johndoe3@email.com',
                     }
                 },
                 categories: {
