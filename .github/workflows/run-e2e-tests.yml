@@ -6,6 +6,14 @@ jobs:
   run-e2e-tests:
     runs-on: ubuntu-latest
 
+    env:
+          DATABASE_URL: postgresql://docker:docker@localhost:5432/app_nest?schema=public
+          JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
+          JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
+          GITHUB_OAUTH_CLIENT_ID: secret
+          GITHUB_OAUTH_CLIENT_SECRET: secret
+          GITHUB_OAUTH_CLIENT_REDIRECT_URI: http://localhost:8080/api/auth/callback
+
     services:
       postgres:
         image: bitnami/postgresql
@@ -32,10 +40,3 @@ jobs:
       - run: pnpm prisma migrate deploy
 
       - run: pnpm test:e2e
-        env:
-          DATABASE_URL: postgresql://docker:docker@localhost:5432/app_nest?schema=public
-          JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
-          JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
-          GITHUB_OAUTH_CLIENT_ID: secret
-          GITHUB_OAUTH_CLIENT_SECRET: secret
-          GITHUB_OAUTH_CLIENT_REDIRECT_URI: http://localhost:8080/api/auth/callback
