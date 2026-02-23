@@ -1,4 +1,3 @@
-import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
 import { MemberAccountNotFoundError } from './errors/member-account-not-found-error'
@@ -6,26 +5,26 @@ import { ITransactionsRepository } from '../repositories/transactions-repository
 import dayjs from 'dayjs'
 import { InvalidPeriodError } from './errors/invalid-period-error'
 import { AccountSummary } from '../../enterprise/entities/value-objects/summaries/account-summary'
-import { AccountSummaryCalculator } from '../services/account-summary-calculator'
+import { AccountSummaryCalculator } from '../services/financial-analytics/account-summary-calculator'
+import { Injectable } from '@nestjs/common'
+import { DateInterval } from '@/core/types/repositories/date-interval'
 
 
-interface GetAccountSummaryByIntervalUseCaseRequest {
+interface GetAccountSummaryUseCaseRequest {
   memberId: string
-  startDate: Date
-  endDate: Date
+  interval: DateInterval
 }
 
-type GetAccountSummaryByIntervalUseCaseResponse = Either<
-  ResourceNotFoundError
+type GetAccountSummaryUseCaseResponse = Either<
   | MemberAccountNotFoundError
   | InvalidPeriodError,
   {
-    currentBalance: number
-    accountSummary: AccountSummary
+    summary: AccountSummary
   }
 >
 
-export class GetAccountSummaryByIntervalUseCase {
+@Injectable()
+export class GetAccountSummaryUseCase {
   constructor(
     private accountsRepository: IAccountsRepository,
     private transactionsRepository: ITransactionsRepository,
@@ -33,11 +32,10 @@ export class GetAccountSummaryByIntervalUseCase {
 
   async execute({
     memberId,
-    startDate,
-    endDate,
-  }: GetAccountSummaryByIntervalUseCaseRequest): Promise<GetAccountSummaryByIntervalUseCaseResponse> {
-    const startDateJs = dayjs(startDate)
-    const endDateJs = dayjs(endDate)
+    interval
+  }: GetAccountSummaryUseCaseRequest): Promise<GetAccountSummaryUseCaseResponse> {
+    const startDateJs = dayjs(interval.startDate)
+    const endDateJs = dayjs(interval.endDate)
 
     if (endDateJs.isBefore(startDateJs)) {
       return left(new InvalidPeriodError())
@@ -49,23 +47,20 @@ export class GetAccountSummaryByIntervalUseCase {
       return left(new MemberAccountNotFoundError())
     }
 
-    const interval = { startDate, endDate }
-
     const transactions =
       await this.transactionsRepository.findManyByQuery({
         accountId: account.id.toString(),
         interval
       })
 
-    const accountSummary = AccountSummaryCalculator.calculate({
+    const summary = AccountSummaryCalculator.calculate({
       accountId: account.id,
       interval,
       transactions
     })
 
     return right({
-      currentBalance: account.balance,
-      accountSummary,
+      summary,
     })
   }
 }

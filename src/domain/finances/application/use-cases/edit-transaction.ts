@@ -7,6 +7,7 @@ import { MemberAccountNotFoundError } from './errors/member-account-not-found-er
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ICategoriesRepository } from '../repositories/categories-repository'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
+import { Injectable } from '@nestjs/common'
 
 interface EditTransactionUseCaseRequest {
   memberId: string
@@ -14,7 +15,7 @@ interface EditTransactionUseCaseRequest {
   categoryId?: string
   title?: string
   description?: string
-  method?: 'credit' | 'debit' | 'pix'
+  method?: string
 }
 
 type EditTransactionUseCaseResponse = Either<
@@ -24,6 +25,7 @@ type EditTransactionUseCaseResponse = Either<
   { transaction: Transaction }
 >
 
+@Injectable()
 export class EditTransactionUseCase {
   constructor(
     private accountsRepository: IAccountsRepository,

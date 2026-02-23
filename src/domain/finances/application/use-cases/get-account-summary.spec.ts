@@ -1,5 +1,5 @@
 import { IAccountsRepository } from '../repositories/accounts-repository'
-import { GetAccountSummaryByIntervalUseCase } from './get-account-summary-by-interval'
+import { GetAccountSummaryUseCase } from './get-account-summary'
 import { InMemoryAccountsRepository } from 'test/unit/repositories/in-memory-accounts-repository'
 import { makeAccount } from 'test/unit/factories/make-account'
 import { InMemoryTransactionsRepository } from 'test/unit/repositories/in-memory-transactions-repository'
@@ -11,14 +11,14 @@ import { TransactionOperation } from '@/domain/finances/enterprise/entities/tran
 let accountsRepository: IAccountsRepository
 let transactionsRepository: ITransactionsRepository
 
-let sut: GetAccountSummaryByIntervalUseCase
+let sut: GetAccountSummaryUseCase
 
 describe('Get account summary by interval use case', () => {
   beforeEach(() => {
     accountsRepository = new InMemoryAccountsRepository()
     transactionsRepository = new InMemoryTransactionsRepository()
 
-    sut = new GetAccountSummaryByIntervalUseCase(
+    sut = new GetAccountSummaryUseCase(
       accountsRepository,
       transactionsRepository,
     )
@@ -57,18 +57,19 @@ describe('Get account summary by interval use case', () => {
 
     const result = await sut.execute({
       memberId: 'member-1',
-      startDate: new Date(2025, 0, 12),
-      endDate: new Date(2025, 0, 14),
+      interval: {
+        startDate: new Date(2025, 0, 12),
+        endDate: new Date(2025, 0, 14),
+      }
     })
 
     expect(result.isRight()).toBe(true)
 
     if (result.isRight()) {
-      expect(result.value.currentBalance).toBe(205)
-      expect(result.value.accountSummary.netBalance).toBe(-45)
-      expect(result.value.accountSummary.totalExpense).toBe(45)
-      expect(result.value.accountSummary.totalIncome).toBe(0)
-      expect(result.value.accountSummary.transactionsCount).toBe(1)
+      expect(result.value.summary.netBalance).toBe(-45)
+      expect(result.value.summary.totals.expense).toBe(45)
+      expect(result.value.summary.totals.income).toBe(0)
+      expect(result.value.summary.counts.transactions).toBe(1)
     }
   })
 })

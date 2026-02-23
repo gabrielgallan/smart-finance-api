@@ -6,21 +6,21 @@ export class InMemoryTransactionsRepository implements ITransactionsRepository {
 
     async create(Transaction: Transaction) {
         this.items.push(Transaction)
-        
+
         return
     }
-    
+
     async findById(id: string): Promise<Transaction | null> {
         const transaction = this.items.find(t => t.id.toString() === id)
-        
+
         return transaction ?? null
     }
-    
+
     async listPaginated({
-        accountId, 
-        categoryId, 
-        interval, 
-        pagination 
+        accountId,
+        categoryId,
+        interval,
+        pagination
     }: PaginatedTransactionsQuery) {
         const { page, limit } = pagination
         const { startDate, endDate } = interval
@@ -30,12 +30,12 @@ export class InMemoryTransactionsRepository implements ITransactionsRepository {
             t.createdAt.getTime() >= startDate.getTime() &&
             t.createdAt.getTime() <= endDate.getTime()
         })
+        
+        const transactionsWithCategory = categoryId ? 
+            transactions.filter(t => t.categoryId?.toString() === categoryId)
+            : transactions
 
-        const byCategory = categoryId ? 
-            transactions.filter(t => t.categoryId?.toString() === categoryId) :
-            transactions
-
-        const paginated = byCategory
+        const paginated = transactionsWithCategory
             .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
             .slice((page - 1) * limit, page * limit)
 
@@ -51,8 +51,8 @@ export class InMemoryTransactionsRepository implements ITransactionsRepository {
 
         const transactions = this.items.filter(t => {
             return t.accountId.toString() === accountId &&
-            t.createdAt.getTime() >= startDate.getTime() &&
-            t.createdAt.getTime() <= endDate.getTime()
+                t.createdAt.getTime() >= startDate.getTime() &&
+                t.createdAt.getTime() <= endDate.getTime()
         })
 
         if (categoryId) {
@@ -61,7 +61,6 @@ export class InMemoryTransactionsRepository implements ITransactionsRepository {
 
         return transactions
     }
-    
 
     async save(transaction: Transaction) {
         const transactionIndex = this.items.findIndex(t => t.id.toString() === transaction.id.toString())

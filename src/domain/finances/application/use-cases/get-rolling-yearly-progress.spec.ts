@@ -80,7 +80,10 @@ describe('Get rolling yearly progress use case', () => {
           expect.objectContaining({
             monthIndex: 10,
             summary: expect.objectContaining({
-              totalIncome: 179.9,
+              totals: {
+                income: 179.9,
+                expense: expect.any(Number)
+              },
             }),
           }),
         ])

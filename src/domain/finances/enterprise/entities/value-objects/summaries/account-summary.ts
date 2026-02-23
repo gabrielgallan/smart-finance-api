@@ -1,51 +1,33 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { Optional } from '@/core/types/optional'
 import { DateInterval } from '@/core/types/repositories/date-interval'
-import { calculatePartPercentage } from '@/domain/finances/application/utils/calculate-percentage'
 import { ValueObject } from '@/core/entities/value-object'
 
 export interface AccountSummaryProps {
     accountId: UniqueEntityID
     categoryId?: UniqueEntityID // -> classify the summary category
-
-    // -> Totals
-    totalIncome: number
-    totalExpense: number
-    netBalance: number
-
-    // -> Days
-    highestIncomeDay: Date | null
-    highestExpenseDay: Date | null
-
-    // -> Counts
-    transactionsCount: number
-
-    // -> Dates
     interval: DateInterval
-    requestedAt: Date
-
-    // -> Comparatives to another summary
-    comparativePercentages?: ComparativePercentages
+    totals: {
+        income: number,
+        expense: number
+    }
+    counts: {
+        transactions: number
+    }
+    
+    netBalance: number
+    percentages?: ComparativePercentages
 }
 
 export interface ComparativePercentages {
-    totalIncomePercentage: number
-    totalExpensePercentage: number
+    income: number
+    expense: number
 }
 
 export class AccountSummary extends ValueObject<AccountSummaryProps> {
     static generate(
-        props: Optional<AccountSummaryProps, 'netBalance' | 'requestedAt'>,
+        props: AccountSummaryProps,
     ) {
-        const accountSummary = new AccountSummary(
-            {
-                ...props,
-                netBalance: props.netBalance ?? props.totalIncome - props.totalExpense,
-                requestedAt: new Date(),
-            },
-        )
-
-        return accountSummary
+        return new AccountSummary(props)
     }
 
     // => Getters
@@ -57,48 +39,27 @@ export class AccountSummary extends ValueObject<AccountSummaryProps> {
         return this.props.categoryId
     }
 
-    get totalIncome() {
-        return this.props.totalIncome
+    get interval() {
+        return this.props.interval
     }
 
-    get totalExpense() {
-        return this.props.totalExpense
+    get totals() {
+        return this.props.totals
+    }
+
+    get counts() {
+        return this.props.counts
     }
 
     get netBalance() {
         return this.props.netBalance
     }
 
-    get highestIncomeDay() {
-        return this.props.highestIncomeDay
-    }
-
-    get highestExpenseDay() {
-        return this.props.highestExpenseDay
-    }
-
-    get transactionsCount() {
-        return this.props.transactionsCount
-    }
-
     get percentages() {
-        return this.props.comparativePercentages
+        return this.props.percentages
     }
 
-    // Methods
-    public setComparativePercentages(summaryToCompare: AccountSummary) {
-        const percentages = {
-            totalIncomePercentage: calculatePartPercentage({
-                totalValue: summaryToCompare.totalIncome,
-                partValue: this.props.totalIncome
-            }),
-            
-            totalExpensePercentage: calculatePartPercentage({
-                totalValue: summaryToCompare.totalExpense,
-                partValue: this.props.totalExpense
-            })
-        }
-
-        this.props.comparativePercentages = percentages
+    set percentages(percentages: ComparativePercentages | undefined) {
+        this.props.percentages = percentages
     }
 }

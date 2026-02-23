@@ -57,6 +57,10 @@ export class Transaction extends AggregateRoot<TransactionProps> {
     return this.props.amount
   }
 
+  get operation() {
+    return this.props.operation
+  }
+
   get method() {
     return this.props.method
   }

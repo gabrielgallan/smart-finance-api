@@ -35,6 +35,6 @@ export class CloseAccountController {
       }
     }
 
-    return {}
+    return
   }
 }

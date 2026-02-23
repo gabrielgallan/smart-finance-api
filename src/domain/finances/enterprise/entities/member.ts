@@ -3,10 +3,10 @@ import { Entity } from '@/core/entities/entity'
 import { Optional } from '@/core/types/optional'
 
 export interface MemberProps {
-  name: string
+  name?: string | null
   document?: string | null
   email: string
-  password: string
+  password?: string | null
   createdAt: Date
 }
 
@@ -48,11 +48,15 @@ export class Member extends Entity<MemberProps> {
   }
 
   // => Setters
+  set name(name: string | null | undefined) {
+    this.props.name = name
+  }
+
   set email(email: string) {
     this.props.email = email
   }
 
-  set password(password: string) {
+  set password(password: string | null | undefined) {
     this.props.password = password
   }
 }

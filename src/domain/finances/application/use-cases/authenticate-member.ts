@@ -29,7 +29,7 @@ export class AuthenticateMemberUseCase {
   }: AuthenticateMemberUseCaseRequest): Promise<AuthenticateMemberUseCaseResponse> {
     const member = await this.membersRepository.findByEmail(email)
 
-    if (!member) {
+    if (!member || !member.password) {
       return left(new InvalidCredentialsError())
     }
 

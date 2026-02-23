@@ -5,7 +5,7 @@ import type { UserPayload } from '../../../auth/jwt.strategy'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { EditMemberProfileUseCase } from '@/domain/finances/application/use-cases/edit-member-profile'
 import z from 'zod'
-import { ZodValidationPipe } from 'dist/http/pipes/zod-validation-pipe'
+import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { MemberAlreadyExistsError } from '@/domain/finances/application/use-cases/errors/member-already-exists-error'
 
 const editProfileBodySchema = z.object({

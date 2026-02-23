@@ -1,5 +1,6 @@
 @baseUrl = http://localhost:8001
 @authToken = {{authenticate.response.body.token}}
+@githubAuthToken = {{authenticate_with_github.response.body.token}}
 
 # @name register
 POST {{baseUrl}}/api/members
@@ -25,17 +26,27 @@ Content-Type: application/json
 
 ###
 
+# @name authenticate_with_github
+POST {{baseUrl}}/api/sessions/github
+Content-Type: application/json
+
+{
+    "code": "23b5043e634209f785ab"
+}
+
+###
+
 # @name get_profile
 GET {{baseUrl}}/api/profile
 Content-Type: application/json
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{githubAuthToken}}
 
 ###
 
 # @name open_account
 POST {{baseUrl}}/api/accounts
 Content-Type: application/json
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{githubAuthToken}}
 
 {
     "initialBalance": "90"
@@ -71,3 +82,5 @@ Authorization: Bearer {{authToken}}
     "name": "Sports",
     "description": "sports expenses"
 }
+
+# https://github.com/login/oauth/authorize?client_id=Ov23lijb17SAzL5BXi69&redirect_uri=http://localhost:8080/api/auth/callback&scope=user:email
