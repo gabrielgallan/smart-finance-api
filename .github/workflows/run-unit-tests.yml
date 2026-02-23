@@ -3,7 +3,7 @@ name: Run Unit Tests
 on: [push]
 
 jobs:
-  run-e2e-tests:
+  run-unit-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -12,13 +12,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: pnpm
 
-      - run: corepack enable
-      - run: corepack prepare pnpm@latest --activate
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - run: pnpm install --frozen-lockfile
-
-      - run: pnpm prisma migrate deploy
 
       - run: pnpm test:unit
