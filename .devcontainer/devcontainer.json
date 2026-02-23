@@ -1,19 +1,6 @@
 {
-  "name": "node-pnpm-dev",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
-
-  "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
-  },
-
-  "postCreateCommand": "corepack enable && corepack prepare pnpm@latest --activate && pnpm install",
-
-  "mounts": [
-    "source=pnpm-store,target=/home/node/.local/share/pnpm/store,type=volume"
-  ],
-
-  "forwardPorts": [3000],
-
+  "name": "Node.js + pnpm",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20-bullseye",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -23,6 +10,7 @@
       ]
     }
   },
-
-  "remoteUser": "node"
+  "postCreateCommand": "pnpm install",
+  "remoteUser": "node",
+  "workspaceFolder": "/workspace/app-with-nestjs"
 }
