@@ -6,7 +6,9 @@ import dayjs from 'dayjs'
 
 import { getMonthDateRange } from '../utils/get-month-date-range'
 import { YearAccountSummary, YearMonthSummaryProps } from '../../enterprise/entities/value-objects/summaries/year-account-summary'
-import { AccountSummaryCalculator } from '../services/account-summary-calculator'
+import { AccountSummaryCalculator } from '../services/financial-analytics/account-summary-calculator'
+import { AccountSummaryComparator } from '../services/financial-analytics/account-summary-comparator'
+import { Injectable } from '@nestjs/common'
 
 interface GetRollingYearProgressUseCaseRequest {
     memberId: string
@@ -19,6 +21,7 @@ type GetRollingYearProgressUseCaseResponse = Either<
     }
 >
 
+@Injectable()
 export class GetRollingYearProgressUseCase {
     constructor(
         private accountsRepository: IAccountsRepository,
@@ -76,7 +79,12 @@ export class GetRollingYearProgressUseCase {
                 transactions: transactionsByMonth
             })
 
-            monthSummary.setComparativePercentages(rollingYearSummary)
+            const percentages = AccountSummaryComparator.compare({
+                totalSummary: rollingYearSummary,
+                partSummary: monthSummary
+            })
+
+            monthSummary.percentages = percentages
 
             rollingMonthsSummaries.push({
                 monthIndex: referenceDate.month() + 1,

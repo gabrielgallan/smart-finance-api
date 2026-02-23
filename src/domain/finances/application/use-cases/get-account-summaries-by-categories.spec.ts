@@ -10,10 +10,12 @@ import { InMemoryCategoriesRepository } from 'test/unit/repositories/in-memory-c
 import { makeTransaction } from 'test/unit/factories/make-transaction'
 import { TransactionOperation } from '@/domain/finances/enterprise/entities/transaction'
 import { makeCategory } from 'test/unit/factories/make-category'
+import { FinancialAnalyticsService } from '../services/financial-analytics/financial-analytics-service'
 
 let accountsRepository: IAccountsRepository
 let transactionsRepository: ITransactionsRepository
 let categoriesRepository: ICategoriesRepository
+let financialAnalyticsService: FinancialAnalyticsService
 
 let sut: GetAccountSummariesByCategoriesUseCase
 
@@ -22,11 +24,13 @@ describe('Get account summaries by categories use case', () => {
     accountsRepository = new InMemoryAccountsRepository()
     transactionsRepository = new InMemoryTransactionsRepository()
     categoriesRepository = new InMemoryCategoriesRepository()
+    financialAnalyticsService = new FinancialAnalyticsService()
 
     sut = new GetAccountSummariesByCategoriesUseCase(
       accountsRepository,
       transactionsRepository,
       categoriesRepository,
+      financialAnalyticsService
     )
 
     vi.useFakeTimers()
@@ -106,27 +110,25 @@ describe('Get account summaries by categories use case', () => {
 
     if (result.isRight()) {
       expect(result.value.fromCategoriesSummaries).toHaveLength(2)
-      expect(result.value.fromCategoriesSummaries[0].netBalance).toBe(100)
-      expect(result.value.fromCategoriesSummaries[0].categoryId?.toString()).toBe(
-        'category-1',
-      )
-      expect(result.value.fromCategoriesSummaries[1].netBalance).toBe(-75)
-      expect(result.value.fromCategoriesSummaries[1].categoryId?.toString()).toBe(
-        'category-2',
-      )
-
-      expect(result.value.fromCategoriesSummaries[0].percentages).toMatchObject(
-        {
-          totalIncomePercentage: expect.any(Number),
-          totalExpensePercentage: expect.any(Number)
-        }
-      )
-
-      expect(result.value.fromCategoriesSummaries[1].percentages).toMatchObject(
-        {
-          totalIncomePercentage: expect.any(Number),
-          totalExpensePercentage: expect.any(Number)
-        }
+      expect(result.value.fromCategoriesSummaries).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            categoryId: new UniqueEntityID('category-1'),
+            totals: {
+              income: 100,
+              expense: 0
+            },
+            netBalance: 100
+          }),
+          expect.objectContaining({
+            categoryId: new UniqueEntityID('category-2'),
+            totals: {
+              income: 0,
+              expense: 75
+            },
+            netBalance: -75
+          })
+        ])
       )
     }
   })

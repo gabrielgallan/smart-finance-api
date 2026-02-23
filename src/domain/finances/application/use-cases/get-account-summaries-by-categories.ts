@@ -8,7 +8,8 @@ import { ICategoriesRepository } from '../repositories/categories-repository'
 import { AnyCategoryFoundForAccountError } from './errors/any-category-found-for-account-error'
 import { AccountSummary } from '../../enterprise/entities/value-objects/summaries/account-summary'
 import { DateInterval } from '@/core/types/repositories/date-interval'
-import { AccountSummaryCalculator } from '../services/account-summary-calculator'
+import { FinancialAnalyticsService } from '../services/financial-analytics/financial-analytics-service'
+import { Injectable } from '@nestjs/common'
 
 interface GetAccountSummariesByCategoriesUseCaseRequest {
   memberId: string
@@ -18,19 +19,20 @@ interface GetAccountSummariesByCategoriesUseCaseRequest {
 type GetAccountSummariesByCategoriesUseCaseResponse = Either<
   | ResourceNotFoundError
   | MemberAccountNotFoundError
-  | AnyCategoryFoundForAccountError
-  | InvalidPeriodError,
+  | AnyCategoryFoundForAccountError,
   {
     fullTermAccounSummary: AccountSummary
     fromCategoriesSummaries: AccountSummary[]
   }
 >
 
+@Injectable()
 export class GetAccountSummariesByCategoriesUseCase {
   constructor(
     private accountsRepository: IAccountsRepository,
     private transactionsRepository: ITransactionsRepository,
     private categoriesRepository: ICategoriesRepository,
+    private analyticsService: FinancialAnalyticsService,
   ) { }
 
   async execute({
@@ -51,42 +53,21 @@ export class GetAccountSummariesByCategoriesUseCase {
       return left(new AnyCategoryFoundForAccountError())
     }
 
-    const allTransactions = await this.transactionsRepository.findManyByQuery({
+    const transactions = await this.transactionsRepository.findManyByQuery({
       accountId: account.id.toString(),
       interval
     })
 
-    const allTransactionsSummary = AccountSummaryCalculator.calculate({
+    const result = this.analyticsService.summarizeByCategories({
       accountId: account.id,
-      interval,
-      transactions: allTransactions
+      categories,
+      transactions,
+      interval
     })
 
-    const fromCategoriesSummaries: AccountSummary[] = []
-
-    for (const category of categories) {
-      const transactionsByCategory =
-        await this.transactionsRepository.findManyByQuery({
-          accountId: account.id.toString(),
-          categoryId: category.id.toString(),
-          interval
-        })
-
-      const categorySummary = AccountSummaryCalculator.calculate({
-        accountId: account.id,
-        categoryId: category.id,
-        interval,
-        transactions: transactionsByCategory
-      })
-
-      categorySummary.setComparativePercentages(allTransactionsSummary)
-
-      fromCategoriesSummaries.push(categorySummary)
-    }
-
     return right({
-      fullTermAccounSummary: allTransactionsSummary,
-      fromCategoriesSummaries,
+      fullTermAccounSummary: result.totalSummary,
+      fromCategoriesSummaries: result.partsSummaries,
     })
   }
 }

@@ -26,6 +26,20 @@ import { EditAccountCategoryUseCase } from '@/domain/finances/application/use-ca
 import { CloseAccountUseCase } from '@/domain/finances/application/use-cases/close-account'
 import { EditProfileController } from './controllers/member/edit-profile.controller'
 import { EditMemberProfileUseCase } from '@/domain/finances/application/use-cases/edit-member-profile'
+import { CreateTransactionController } from './controllers/transactions/create-transaction.controller'
+import { ListAccountTransactionsController } from './controllers/transactions/list-transactions.controller'
+import { CreateTransactionUseCase } from '@/domain/finances/application/use-cases/create-transaction'
+import { ListAccountTransactionsUseCase } from '@/domain/finances/application/use-cases/list-account-transactions'
+import { EditAccountTransactionController } from './controllers/transactions/edit-transaction.controller'
+import { EditTransactionUseCase } from '@/domain/finances/application/use-cases/edit-transaction'
+import { GetAccountSummaryController } from './controllers/summary/get-account-summary.controller'
+import { GetAccountSummaryUseCase } from '@/domain/finances/application/use-cases/get-account-summary'
+import { GetSummariesByCategoriesController } from './controllers/summary/get-summaries-by-categories.controller'
+import { GetAccountSummariesByCategoriesUseCase } from '@/domain/finances/application/use-cases/get-account-summaries-by-categories'
+import { FinancialAnalyticsService } from '@/domain/finances/application/services/financial-analytics/financial-analytics-service'
+import { GetRollingYearProgressUseCase } from '@/domain/finances/application/use-cases/get-rolling-yearly-progress'
+import { GetRollingYearProgressController } from './controllers/summary/get-rolling-year-progress.controller'
+import { AuthenticateWithGithubController } from './controllers/authentication/authenticate-with-github.controller'
 
 @Module({
     imports: [
@@ -35,11 +49,18 @@ import { EditMemberProfileUseCase } from '@/domain/finances/application/use-case
     controllers: [
         RegisterController,
         AuthenticateController,
+        AuthenticateWithGithubController,
         GetProfileController,
         EditProfileController,
         OpenAccountController,
         CloseAccountController,
-        CategoryController
+        CategoryController,
+        CreateTransactionController,
+        ListAccountTransactionsController,
+        EditAccountTransactionController,
+        GetAccountSummaryController,
+        GetSummariesByCategoriesController,
+        GetRollingYearProgressController
     ],
     providers: [
         RegisterMemberUseCase,
@@ -50,7 +71,14 @@ import { EditMemberProfileUseCase } from '@/domain/finances/application/use-case
         CloseAccountUseCase,
         CreateAccountCategoryUseCase,
         ListAccountCategoriesUseCase,
-        EditAccountCategoryUseCase
+        EditAccountCategoryUseCase,
+        CreateTransactionUseCase,
+        ListAccountTransactionsUseCase,
+        EditTransactionUseCase,
+        GetAccountSummaryUseCase,
+        GetAccountSummariesByCategoriesUseCase,
+        GetRollingYearProgressUseCase,
+        FinancialAnalyticsService
     ]
 })
 export class HttpModule {}

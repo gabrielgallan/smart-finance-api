@@ -46,6 +46,6 @@ export class RegisterController {
       }
     }
 
-    return {}
+    return
   }
 }

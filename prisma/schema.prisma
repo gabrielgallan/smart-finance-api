@@ -15,13 +15,15 @@ datasource db {
 
 model Member {
   id           String   @id @default(uuid())
-  name         String
+  name         String?
   document     String?
   email        String   @unique
-  passwordHash String   @map("password_hash")
+  passwordHash String?  @map("password_hash")
   createdAt    DateTime @default(now()) @map("created_at")
 
-  account Account?
+  account          Account?
+  externalAccounts ExternalAccount[]
+  tokens           Token[]
 
   @@map("members")
 }
@@ -80,4 +82,35 @@ model Category {
 
   @@unique([accountId, slug])
   @@map("categories")
+}
+
+enum TokenType {
+  PASSWORD_RECOVER
+}
+
+model Token {
+  id        String    @id @default(uuid())
+  type      TokenType
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  member   Member @relation(fields: [memberId], references: [id])
+  memberId String @map("member_id")
+
+  @@map("tokens")
+}
+
+enum ExternalAccountProvider {
+  GITHUB
+}
+
+model ExternalAccount {
+  id                String                  @id @default(uuid())
+  provider          ExternalAccountProvider
+  providerAccountId String                  @unique @map("provider_account_id")
+
+  member   Member @relation(fields: [memberId], references: [id])
+  memberId String @map("member_id")
+
+  @@unique([provider, memberId])
+  @@map("external_accounts")
 }

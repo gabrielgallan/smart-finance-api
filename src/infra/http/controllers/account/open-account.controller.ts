@@ -53,6 +53,6 @@ export class OpenAccountController {
       }
     }
 
-    return {}
+    return
   }
 }

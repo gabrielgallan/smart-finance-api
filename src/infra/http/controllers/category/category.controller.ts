@@ -84,7 +84,7 @@ export class CategoryController {
             }
         }
 
-        return {}
+        return
     }
 
     @Get()
@@ -111,7 +111,8 @@ export class CategoryController {
         }
 
         return {
-            categories: result.value.categories.map(c => CategoryPresenter.toHTTP(c))
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            categories: result.value.categories.map(CategoryPresenter.toHTTP)
         }
     }
 

@@ -10,6 +10,7 @@ import { MemberAccountNotFoundError } from './errors/member-account-not-found-er
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InvalidTransactionOperationError } from './errors/invalid-transaction-operation-error'
 import { ICategoriesRepository } from '../repositories/categories-repository'
+import { Injectable } from '@nestjs/common'
 
 interface CreateTransactionUseCaseRequest {
   memberId: string
@@ -28,6 +29,7 @@ type CreateTransactionUseCaseResponse = Either<
   { transaction: Transaction }
 >
 
+@Injectable()
 export class CreateTransactionUseCase {
   constructor(
     private accountsRepository: IAccountsRepository,

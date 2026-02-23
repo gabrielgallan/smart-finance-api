@@ -1,26 +1,23 @@
-import { IAccountsRepository } from '../repositories/accounts-repository'
 import { InMemoryAccountsRepository } from 'test/unit/repositories/in-memory-accounts-repository'
 import { makeAccount } from 'test/unit/factories/make-account'
 import { InMemoryTransactionsRepository } from 'test/unit/repositories/in-memory-transactions-repository'
-import { ITransactionsRepository } from '../repositories/transactions-repository'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { ICategoriesRepository } from '../repositories/categories-repository'
 import { InMemoryCategoriesRepository } from 'test/unit/repositories/in-memory-category-repository'
 import { ListAccountTransactionsUseCase } from './list-account-transactions'
 import { makeCategory } from 'test/unit/factories/make-category'
 import { makeTransaction } from 'test/unit/factories/make-transaction'
 
-let accountsRepository: IAccountsRepository
-let transactionsRepository: ITransactionsRepository
-let categoriesRepository: ICategoriesRepository
+let accountsRepository: InMemoryAccountsRepository
+let transactionsRepository: InMemoryTransactionsRepository
+let categoriesRepository: InMemoryCategoriesRepository
 
 let sut: ListAccountTransactionsUseCase
 
 describe('List account trasanctions by interval and category use case', () => {
   beforeEach(() => {
     accountsRepository = new InMemoryAccountsRepository()
-    transactionsRepository = new InMemoryTransactionsRepository()
     categoriesRepository = new InMemoryCategoriesRepository()
+    transactionsRepository = new InMemoryTransactionsRepository()
 
     sut = new ListAccountTransactionsUseCase(
       accountsRepository,
@@ -96,6 +93,14 @@ describe('List account trasanctions by interval and category use case', () => {
     if (result.isRight()) {
       expect(transactionsRepository.items).toHaveLength(5)
       expect(result.value.transactions).toHaveLength(3)
+
+      expect(result.value.transactions).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ category: expect.objectContaining({ slug: 'sports' }) }),
+          expect.objectContaining({ category: expect.objectContaining({ slug: 'sports' }) }),
+          expect.objectContaining({ category: expect.objectContaining({ slug: 'sports' }) }),
+        ])
+      )
     }
   })
 })

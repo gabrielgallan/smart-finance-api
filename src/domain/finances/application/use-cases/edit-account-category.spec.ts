@@ -47,7 +47,7 @@ describe('Edit account category use case', () => {
 
     const result = await sut.execute({
       memberId: 'member-1',
-      categoryId: 'category-1',
+      slug: 'sports-expenses',
       name: 'Food Expenses',
       description: 'my food expenses'
     })
