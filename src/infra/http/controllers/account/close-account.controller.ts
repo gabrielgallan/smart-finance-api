@@ -1,12 +1,10 @@
-import { Controller, Delete, HttpCode, InternalServerErrorException, NotFoundException, UseGuards } from '@nestjs/common'
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth-guard'
+import { Controller, Delete, HttpCode, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import type { UserPayload } from '@/infra/auth/jwt.strategy'
 import { CloseAccountUseCase } from '@/domain/finances/application/use-cases/close-account'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 
 @Controller('/api')
-@UseGuards(JwtAuthGuard)
 export class CloseAccountController {
   constructor(
     private closeAccount: CloseAccountUseCase

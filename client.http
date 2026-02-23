@@ -20,18 +20,40 @@ POST {{baseUrl}}/api/sessions
 Content-Type: application/json
 
 {
-    "email": "gallan@email.com",
-    "password": "gallan123"
+    "email": "gabriel31.gal@gmail.com",
+    "password": "gallan"
 }
 
 ###
 
+# https://github.com/login/oauth/authorize?client_id=Ov23lijb17SAzL5BXi69&redirect_uri=http://localhost:8080/api/auth/callback&scope=user:email
 # @name authenticate_with_github
 POST {{baseUrl}}/api/sessions/github
 Content-Type: application/json
 
 {
-    "code": "23b5043e634209f785ab"
+    "code": "969949d8ef8edd748586"
+}
+
+###
+
+# @name request_password_recover
+POST {{baseUrl}}/api/password/recover
+Content-Type: application/json
+
+{
+    "email": "gabriel31.gal@gmail.com"
+}
+
+###
+
+# @name reset_password
+PUT {{baseUrl}}/api/profile/password
+Content-Type: application/json
+
+{
+    "code": "04049017-342a-404b-a951-718fe6a069f8",
+    "password": "gallan"
 }
 
 ###
@@ -39,14 +61,14 @@ Content-Type: application/json
 # @name get_profile
 GET {{baseUrl}}/api/profile
 Content-Type: application/json
-Authorization: Bearer {{githubAuthToken}}
+Authorization: Bearer {{authToken}}
 
 ###
 
 # @name open_account
 POST {{baseUrl}}/api/accounts
 Content-Type: application/json
-Authorization: Bearer {{githubAuthToken}}
+Authorization: Bearer {{authToken}}
 
 {
     "initialBalance": "90"
@@ -83,4 +105,23 @@ Authorization: Bearer {{authToken}}
     "description": "sports expenses"
 }
 
-# https://github.com/login/oauth/authorize?client_id=Ov23lijb17SAzL5BXi69&redirect_uri=http://localhost:8080/api/auth/callback&scope=user:email
+###
+
+# @name get_summary
+GET {{baseUrl}}/api/account/summary?start=2026-02-01&end=2026-02-30
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name get_summaries_by_categories
+GET {{baseUrl}}/api/account/categories/summary?start=2026-02-01&end=2026-02-30
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name get_year_progress
+GET {{baseUrl}}/api/account/year/progress
+Content-Type: application/json
+Authorization: Bearer {{authToken}}

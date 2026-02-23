@@ -1,5 +1,4 @@
-import { Controller, Get, InternalServerErrorException, NotFoundException, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth-guard';
+import { Controller, Get, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CurrentUser } from '@/infra/auth/current-user-decorator';
 import type { UserPayload } from '@/infra/auth/jwt.strategy';
 import { MemberAccountNotFoundError } from '@/domain/finances/application/use-cases/errors/member-account-not-found-error';
@@ -13,7 +12,6 @@ export class GetRollingYearProgressController {
     ) { }
 
     @Get('/account/year/progress')
-    @UseGuards(JwtAuthGuard)
     async handle(
         @CurrentUser() user: UserPayload,
     ) {

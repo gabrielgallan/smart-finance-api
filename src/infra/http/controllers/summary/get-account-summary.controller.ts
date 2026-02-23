@@ -2,9 +2,8 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { BadRequestException, Controller, Get, HttpCode, InternalServerErrorException, NotFoundException, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Controller, Get, HttpCode, InternalServerErrorException, NotFoundException, Query } from '@nestjs/common';
 import { GetAccountSummaryUseCase } from '@/domain/finances/application/use-cases/get-account-summary';
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth-guard';
 import { z } from 'zod';
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe';
 import { CurrentUser } from '@/infra/auth/current-user-decorator';
@@ -28,7 +27,6 @@ export class GetAccountSummaryController {
 
     @Get('/account/summary')
     @HttpCode(200)
-    @UseGuards(JwtAuthGuard)
     async handle(
         @CurrentUser() user: UserPayload,
         @Query(new ZodValidationPipe(getAccountSummaryQuerySchema)) query: GetAccountSummaryQueryDTO

@@ -1,6 +1,5 @@
-import { Body, Controller, HttpCode, InternalServerErrorException, NotFoundException, Param, Put, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, InternalServerErrorException, NotFoundException, Param, Put, UnauthorizedException } from '@nestjs/common';
 import { CurrentUser } from '@/infra/auth/current-user-decorator';
-import { JwtAuthGuard } from '@/infra/auth/jwt-auth-guard';
 import type { UserPayload } from '@/infra/auth/jwt.strategy';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 import { MemberAccountNotFoundError } from '@/domain/finances/application/use-cases/errors/member-account-not-found-error';
@@ -24,7 +23,6 @@ type EditTransactionBodyDTO = z.infer<typeof editTransactionBodySchema>
 type EditTransactionParamDTO = z.infer<typeof editTransactionParamSchema>
 
 @Controller('/api')
-@UseGuards(JwtAuthGuard)
 export class EditAccountTransactionController {
     constructor(
         private editTransaction: EditTransactionUseCase

@@ -1,5 +1,4 @@
-import { Controller, Get, HttpCode, InternalServerErrorException, NotFoundException, UseGuards } from '@nestjs/common'
-import { JwtAuthGuard } from '../../../auth/jwt-auth-guard'
+import { Controller, Get, HttpCode, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { CurrentUser } from '../../../auth/current-user-decorator'
 import type { UserPayload } from '../../../auth/jwt.strategy'
 import { GetMemberProfileUseCase } from '@/domain/finances/application/use-cases/get-member-profile'
@@ -7,7 +6,6 @@ import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { MemberPresenter } from '../../presenters/member-presenter'
 
 @Controller('/api')
-@UseGuards(JwtAuthGuard)
 export class GetProfileController {
   constructor(
     private getMemberProfile: GetMemberProfileUseCase

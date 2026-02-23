@@ -1,32 +1,30 @@
-import { IMembersRepository } from '../repositories/members-repository'
 import { InMemoryMembersRepository } from 'test/unit/repositories/in-memory-members-repository'
 import { makeMember } from 'test/unit/factories/make-member'
-import { EditMemberProfileUseCase } from './edit-member-profile'
+import { ResetMemberPasswordUseCase } from './reset-member-password'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { HasherStup } from 'test/unit/cryptography/hasher'
 import { Hasher } from '../cryptography/hasher'
 
-let membersRepository: IMembersRepository
+let membersRepository: InMemoryMembersRepository
 let hasher: Hasher
 
-let sut: EditMemberProfileUseCase
+let sut: ResetMemberPasswordUseCase
 
-describe('Edit member profile use case', () => {
+describe('Reset member password use case', () => {
   beforeEach(() => {
     membersRepository = new InMemoryMembersRepository()
     hasher = new HasherStup()
 
-    sut = new EditMemberProfileUseCase(
+    sut = new ResetMemberPasswordUseCase(
       membersRepository,
       hasher
     )
   })
 
-  it('should be able to edit a member profile', async () => {
+  it('should be able to reset a member password', async () => {
     await membersRepository.create(
       await makeMember(
         {
-          email: 'johndoe@email.com',
           password: await hasher.generate('johnDoe123'),
         },
         new UniqueEntityID('member-1'),
@@ -35,21 +33,16 @@ describe('Edit member profile use case', () => {
 
     const result = await sut.execute({
       memberId: 'member-1',
-      email: 'newjohn@email.com',
       password: 'newJohnPass',
     })
 
     expect(result.isRight()).toBe(true)
 
-    if (result.isRight()) {
-      expect(membersRepository.items[0].email).toBe('newjohn@email.com')
+    const passCorrect = await hasher.compare(
+      'newJohnPass',
+      membersRepository.items[0].password!
+    )
 
-      const passCorrect = await hasher.compare(
-        'newJohnPass',
-        membersRepository.items[0].password
-      )
-      
-      expect(passCorrect).toBe(true)
-    }
+    expect(passCorrect).toBe(true)
   })
 })

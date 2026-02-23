@@ -3,6 +3,7 @@ import z from 'zod'
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { RegisterMemberUseCase } from '@/domain/finances/application/use-cases/register-member'
 import { MemberAlreadyExistsError } from '@/domain/finances/application/use-cases/errors/member-already-exists-error'
+import { Public } from '@/infra/auth/public'
 
 const registerBodySchema = z.object({
   name: z.string(),
@@ -14,6 +15,7 @@ const registerBodySchema = z.object({
 type RegisterBodyDTO = z.infer<typeof registerBodySchema>
 
 @Controller('/api')
+@Public()
 export class RegisterController {
   constructor(
     private registerMember: RegisterMemberUseCase
@@ -35,14 +37,12 @@ export class RegisterController {
     if (result.isLeft()) {
       const error = result.value
 
-      switch (true) {
-        case error instanceof MemberAlreadyExistsError:
-          return new ConflictException({
-            message: error.message
-          })
+      switch (error.constructor) {
+        case MemberAlreadyExistsError:
+          throw new ConflictException(error.message)
 
         default:
-          return new InternalServerErrorException()
+          throw new InternalServerErrorException()
       }
     }
 

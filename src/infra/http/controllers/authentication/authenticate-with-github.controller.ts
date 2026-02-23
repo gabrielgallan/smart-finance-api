@@ -4,6 +4,7 @@ import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { GithubOAuthService } from '@/infra/auth/github-oauth.service'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { Encrypter } from '@/domain/finances/application/cryptography/encrypter'
+import { Public } from '@/infra/auth/public'
 
 const bodySchema = z.object({
     code: z.string()
@@ -12,6 +13,7 @@ const bodySchema = z.object({
 type BodyDTO = z.infer<typeof bodySchema>
 
 @Controller('/api')
+@Public()
 export class AuthenticateWithGithubController {
     constructor(
         private githubOAuthService: GithubOAuthService,
