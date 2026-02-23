@@ -4,7 +4,6 @@ on: [pull_request]
 
 jobs:
   run-e2e-tests:
-    name: Run E2E Tests
     runs-on: ubuntu-latest
 
     services:
@@ -18,18 +17,21 @@ jobs:
           POSTGRES_DATABASE: app_nest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
-          node-version: 24
-          cache: 'npm'
+          node-version: 20
+          cache: 'pnpm'
 
-      - run: npm install
+      - run: corepack enable
+      - run: corepack prepare pnpm@latest --activate
 
-      - run: npx prisma migrate deploy
+      - run: pnpm install --frozen-lockfile
 
-      - run: npm run test:e2e
+      - run: pnpm prisma migrate deploy
+
+      - run: pnpm test:e2e
         env:
           DATABASE_URL: postgresql://docker:docker@localhost:5432/app_nest?schema=public
           JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
