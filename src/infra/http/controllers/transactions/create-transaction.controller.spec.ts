@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import { AppModule } from '@/infra/app.module'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { Encrypter } from '@/domain/finances/application/cryptography/encrypter'
+import { Encrypter } from '@/domain/identity/application/cryptography/encrypter'
 import { Account } from '@prisma/client'
 
 describe('Create transaction tests', () => {

@@ -12,6 +12,12 @@ import { IMembersRepository } from '@/domain/finances/application/repositories/m
 import { IAccountsRepository } from '@/domain/finances/application/repositories/accounts-repository';
 import { ICategoriesRepository } from '@/domain/finances/application/repositories/categories-repository';
 import { ITransactionsRepository } from '@/domain/finances/application/repositories/transactions-repository';
+import { UsersRepository } from '@/domain/identity/application/repositories/users-repository';
+import { PrismaUsersRepository } from './prisma/repositories/prisma-users-repository';
+import { PrismaExternalAccountsRepository } from './prisma/repositories/prisma-external-accounts-repository';
+import { ExternalAccountRepository } from '@/domain/identity/application/repositories/external-account-repository';
+import { TokensRepository } from '@/domain/identity/application/repositories/tokens-repository';
+import { PrismaTokensRepository } from './prisma/repositories/prisma-tokens-repository';
 
 @Module({
     providers: [
@@ -31,6 +37,18 @@ import { ITransactionsRepository } from '@/domain/finances/application/repositor
         {
             provide: ITransactionsRepository,
             useClass: PrismaTransactionsRepository
+        },
+        {
+            provide: UsersRepository,
+            useClass: PrismaUsersRepository
+        },
+        {
+            provide: ExternalAccountRepository,
+            useClass: PrismaExternalAccountsRepository
+        },
+        {
+            provide: TokensRepository,
+            useClass: PrismaTokensRepository
         }
     ],
     exports: [
@@ -38,7 +56,10 @@ import { ITransactionsRepository } from '@/domain/finances/application/repositor
         IMembersRepository,
         IAccountsRepository,
         ICategoriesRepository,
-        ITransactionsRepository
+        ITransactionsRepository,
+        UsersRepository,
+        ExternalAccountRepository,
+        TokensRepository
     ],
 })
-export class DatabaseModule {}
+export class DatabaseModule { }

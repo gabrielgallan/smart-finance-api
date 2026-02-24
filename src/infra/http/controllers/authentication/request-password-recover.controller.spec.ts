@@ -19,7 +19,7 @@ describe('Request password recover tests', () => {
     })
 
     it('[POST] /api/password/recover', async () => {
-        const member = await prisma.member.create({
+        const user = await prisma.user.create({
             data: {
                 email: 'johndoe@email.com',
             }
@@ -33,7 +33,7 @@ describe('Request password recover tests', () => {
             .expect(201)
 
         const recoverToken = await prisma.token.findFirst({
-            where: { type: 'PASSWORD_RECOVER', memberId: member.id }
+            where: { type: 'PASSWORD_RECOVER', userId: user.id }
         })
 
         expect(recoverToken).toBeTruthy()

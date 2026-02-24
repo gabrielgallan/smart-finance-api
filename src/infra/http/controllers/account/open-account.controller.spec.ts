@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import { AppModule } from '@/infra/app.module'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { Encrypter } from '@/domain/finances/application/cryptography/encrypter'
+import { Encrypter } from '@/domain/identity/application/cryptography/encrypter'
 
 describe('Open member account tests', () => {
   let app: INestApplication
@@ -25,13 +25,13 @@ describe('Open member account tests', () => {
   })
 
   it('[POST] /api/accounts', async () => {
-    const member = await prisma.member.create({
-        data: {
-            email: 'johndoe@email.com',
-        }
+    const user = await prisma.user.create({
+      data: {
+        email: 'johndoe@email.com',
+      }
     })
 
-    const token = await encrypter.encrypt({ sub: member.id })
+    const token = await encrypter.encrypt({ sub: user.id })
 
     return await request(app.getHttpServer())
       .post('/api/accounts')

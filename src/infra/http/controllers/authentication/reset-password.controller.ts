@@ -1,10 +1,10 @@
-import { Body, Controller, HttpCode, InternalServerErrorException, NotFoundException, Put } from '@nestjs/common'
+import { BadRequestException, Body, Controller, HttpCode, InternalServerErrorException, NotFoundException, Put } from '@nestjs/common'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
-import { ResetMemberPasswordUseCase } from '@/domain/finances/application/use-cases/reset-member-password'
 import z from 'zod'
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { Public } from '@/infra/auth/public'
+import { ResetPasswordUseCase } from '@/domain/identity/application/use-cases/reset-password'
+import { InvalidTokenError } from '@/domain/identity/application/use-cases/errors/invalid-token-error'
 
 const bodySchema = z.object({
   code: z.string(),
@@ -17,8 +17,7 @@ type BodyDTO = z.infer<typeof bodySchema>
 @Public()
 export class ResetPasswordController {
   constructor(
-    private resetPassword: ResetMemberPasswordUseCase,
-    private prisma: PrismaService,
+    private resetPassword: ResetPasswordUseCase,
   ) { }
 
   @Put('/profile/password')
@@ -28,19 +27,8 @@ export class ResetPasswordController {
   ) {
     const { code, password } = body
 
-    const token = await this.prisma.token.findFirst({
-      where: {
-        id: code,
-        type: 'PASSWORD_RECOVER'
-      }
-    })
-
-    if (!token) {
-      throw new NotFoundException('Invalid code')
-    }
-
     const result = await this.resetPassword.execute({
-      memberId: token.memberId,
+      recoverCode: code,
       password
     })
 
@@ -50,6 +38,9 @@ export class ResetPasswordController {
       switch (error.constructor) {
         case ResourceNotFoundError:
           throw new NotFoundException(error.message)
+
+        case InvalidTokenError:
+          throw new BadRequestException(error.message)
 
         default:
           throw new InternalServerErrorException()

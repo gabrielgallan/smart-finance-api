@@ -1,4 +1,3 @@
-import { IMembersRepository } from '../repositories/members-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Either, left, right } from '@/core/types/either'
 import { IAccountsRepository } from '../repositories/accounts-repository'
@@ -29,10 +28,9 @@ type CreateFinancialGoalUseCaseResponse = Either<
 
 export class CreateFinancialGoalUseCase {
   constructor(
-    private membersRepository: IMembersRepository,
     private accountsRepository: IAccountsRepository,
     private financialGoalsRepository: IFinancialGoalsRepository
-  ) {}
+  ) { }
 
   async execute({
     memberId,
@@ -51,12 +49,6 @@ export class CreateFinancialGoalUseCase {
       return left(new InvalidPositiveNumberError())
     }
 
-    const member = await this.membersRepository.findById(memberId)
-
-    if (!member) {
-      return left(new ResourceNotFoundError())
-    }
-
     const account = await this.accountsRepository.findByHolderId(memberId)
 
     if (!account) {
@@ -64,11 +56,11 @@ export class CreateFinancialGoalUseCase {
     }
 
     const financialGoal = FinancialGoal.create({
-        accountId: account.id,
-        title,
-        description,
-        targetAmount,
-        targetDate
+      accountId: account.id,
+      title,
+      description,
+      targetAmount,
+      targetDate
     })
 
     await this.financialGoalsRepository.create(financialGoal)

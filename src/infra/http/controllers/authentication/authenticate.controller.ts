@@ -1,9 +1,8 @@
-import { Body, Controller, HttpCode, InternalServerErrorException, NotFoundException, Post, UnauthorizedException, UsePipes } from '@nestjs/common'
+import { BadRequestException, Body, Controller, HttpCode, InternalServerErrorException, Post } from '@nestjs/common'
 import z from 'zod'
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
-import { AuthenticateMemberUseCase } from '@/domain/finances/application/use-cases/authenticate-member'
-import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
-import { InvalidCredentialsError } from '@/domain/finances/application/use-cases/errors/invalid-credentials-error'
+import { AuthenticateUseCase } from '@/domain/identity/application/use-cases/authenticate'
+import { InvalidCredentialsError } from '@/domain/identity/application/use-cases/errors/invalid-credentials-error'
 import { Public } from '@/infra/auth/public'
 
 const authenticateBodySchema = z.object({
@@ -17,35 +16,30 @@ type AuthenticateBodyDTO = z.infer<typeof authenticateBodySchema>
 @Public()
 export class AuthenticateController {
   constructor(
-    private authenticateMember: AuthenticateMemberUseCase
+    private authenticate: AuthenticateUseCase
   ) { }
 
   @Post('/sessions')
   @HttpCode(201)
-  @UsePipes(new ZodValidationPipe(authenticateBodySchema))
-  async handle(@Body() body: AuthenticateBodyDTO) {
+  async handle(
+    @Body(new ZodValidationPipe(authenticateBodySchema)) body: AuthenticateBodyDTO
+  ) {
     const { email, password } = body
 
-    const result = await this.authenticateMember.execute({
-      email, password
+    const result = await this.authenticate.execute({
+      email,
+      password
     })
 
     if (result.isLeft()) {
       const error = result.value
 
-      switch (true) {
-        case error instanceof ResourceNotFoundError:
-          return new NotFoundException({
-            message: error.message
-          })
-
-        case error instanceof InvalidCredentialsError:
-          return new UnauthorizedException({
-            message: error.message
-          })
+      switch (error.constructor) {
+        case InvalidCredentialsError:
+          throw new BadRequestException(error.message)
 
         default:
-          return new InternalServerErrorException()
+          throw new InternalServerErrorException()
       }
     }
 
