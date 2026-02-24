@@ -1,4 +1,4 @@
-import { Hasher } from "@/domain/finances/application/cryptography/hasher";
+import { Hasher } from "@/domain/identity/application/cryptography/hasher";
 import { Injectable } from "@nestjs/common";
 import { compare, hash } from "bcryptjs";
 

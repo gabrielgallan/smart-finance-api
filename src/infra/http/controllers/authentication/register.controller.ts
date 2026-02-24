@@ -1,9 +1,9 @@
 import { Body, ConflictException, Controller, HttpCode, InternalServerErrorException, Post, UsePipes } from '@nestjs/common'
 import z from 'zod'
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
-import { RegisterMemberUseCase } from '@/domain/finances/application/use-cases/register-member'
-import { MemberAlreadyExistsError } from '@/domain/finances/application/use-cases/errors/member-already-exists-error'
 import { Public } from '@/infra/auth/public'
+import { RegisterUseCase } from '@/domain/identity/application/use-cases/register'
+import { UserAlreadyExistsError } from '@/domain/identity/application/use-cases/errors/user-already-exists-error'
 
 const registerBodySchema = z.object({
   name: z.string(),
@@ -18,18 +18,17 @@ type RegisterBodyDTO = z.infer<typeof registerBodySchema>
 @Public()
 export class RegisterController {
   constructor(
-    private registerMember: RegisterMemberUseCase
-  ) {}
+    private register: RegisterUseCase
+  ) { }
 
-  @Post('/members')
+  @Post('/users')
   @HttpCode(201)
   @UsePipes(new ZodValidationPipe(registerBodySchema))
   async handle(@Body() body: RegisterBodyDTO) {
-    const { name, email, password, document } = body
+    const { name, email, password } = body
 
-    const result = await this.registerMember.execute({
+    const result = await this.register.execute({
       name,
-      document,
       email,
       password,
     })
@@ -38,7 +37,7 @@ export class RegisterController {
       const error = result.value
 
       switch (error.constructor) {
-        case MemberAlreadyExistsError:
+        case UserAlreadyExistsError:
           throw new ConflictException(error.message)
 
         default:

@@ -1,48 +1,48 @@
-import { IMembersRepository } from '../repositories/members-repository'
 import { InvalidCredentialsError } from './errors/invalid-credentials-error'
 import { Either, left, right } from '@/core/types/either'
 import { Injectable } from '@nestjs/common'
 import { Hasher } from '../cryptography/hasher'
 import { Encrypter } from '../cryptography/encrypter'
+import { UsersRepository } from '../repositories/users-repository'
 
-interface AuthenticateMemberUseCaseRequest {
+interface AuthenticateUseCaseRequest {
   email: string
   password: string
 }
 
-type AuthenticateMemberUseCaseResponse = Either<
+type AuthenticateUseCaseResponse = Either<
   InvalidCredentialsError,
   { token: string }
 >
 
 @Injectable()
-export class AuthenticateMemberUseCase {
+export class AuthenticateUseCase {
   constructor(
-    private membersRepository: IMembersRepository,
+    private usersRepository: UsersRepository,
     private hasher: Hasher,
     private encrypter: Encrypter
-  ) {}
+  ) { }
 
   async execute({
     email,
     password,
-  }: AuthenticateMemberUseCaseRequest): Promise<AuthenticateMemberUseCaseResponse> {
-    const member = await this.membersRepository.findByEmail(email)
+  }: AuthenticateUseCaseRequest): Promise<AuthenticateUseCaseResponse> {
+    const userFromEmail = await this.usersRepository.findByEmail(email)
 
-    if (!member || !member.password) {
+    if (!userFromEmail || !userFromEmail.passwordHash) {
       return left(new InvalidCredentialsError())
     }
 
     const isPasswordCorrect = await this.hasher.compare(
-      password, 
-      member.password
+      password,
+      userFromEmail.passwordHash
     )
 
     if (!isPasswordCorrect) {
       return left(new InvalidCredentialsError())
     }
 
-    const token = await this.encrypter.encrypt({ sub: member.id.toString() })
+    const token = await this.encrypter.encrypt({ sub: userFromEmail.id.toString() })
 
     return right({
       token

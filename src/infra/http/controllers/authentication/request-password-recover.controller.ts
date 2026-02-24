@@ -1,9 +1,9 @@
-import { Body, Controller, HttpCode, NotFoundException, Post } from '@nestjs/common'
+import { Body, Controller, HttpCode, InternalServerErrorException, NotFoundException, Post } from '@nestjs/common'
 import z from 'zod'
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { Public } from '@/infra/auth/public'
-import { EmailService } from '@/infra/email/email.service'
+import { RequestPasswordRecoverUseCase } from '@/domain/identity/application/use-cases/request-password-recover'
+import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 
 const bodySchema = z.object({
   email: z.string().email()
@@ -15,8 +15,7 @@ type BodyDTO = z.infer<typeof bodySchema>
 @Public()
 export class RequestPasswordRecoverController {
   constructor(
-    private prisma: PrismaService,
-    private emailService: EmailService
+    private requestPasswordRecover: RequestPasswordRecoverUseCase
   ) { }
 
   @Post('/password/recover')
@@ -26,32 +25,19 @@ export class RequestPasswordRecoverController {
   ) {
     const { email } = body
 
-    const member = await this.prisma.member.findUnique({
-      where: {
-        email
+    const result = await this.requestPasswordRecover.execute({ email })
+
+    if (result.isLeft()) {
+      const error = result.value
+
+      switch (error.constructor) {
+        case ResourceNotFoundError:
+          throw new NotFoundException(error.message)
+
+        default:
+          throw new InternalServerErrorException()
       }
-    })
-
-    if (!member) {
-      throw new NotFoundException('Member not found')
     }
-
-    const token = await this.prisma.token.create({
-      data: {
-        memberId: member.id,
-        type: 'PASSWORD_RECOVER'
-      }
-    })
-
-    if (!token) {
-      throw new NotFoundException('Invalid code')
-    }
-
-    await this.emailService.sendEmail({
-      to: email,
-      subject: 'Password Recovery',
-      text: `Use the following token to recover your password: ${token.id}`
-    })
 
     return
   }

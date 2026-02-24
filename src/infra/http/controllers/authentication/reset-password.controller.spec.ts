@@ -19,14 +19,15 @@ describe('Reset password tests', () => {
     })
 
     it('[PUT] /api/profile/password', async () => {
-        const member = await prisma.member.create({
+        const user = await prisma.user.create({
             data: {
                 email: 'johndoe@email.com',
                 passwordHash: 'johnDoe123',
                 tokens: {
                     create: {
                         id: 'valid-token',
-                        type: 'PASSWORD_RECOVER'
+                        type: 'PASSWORD_RECOVER',
+                        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 1)
                     }
                 }
             }
@@ -40,11 +41,11 @@ describe('Reset password tests', () => {
             })
             .expect(204)
 
-        const updatedMember = await prisma.member.findUnique({
-            where: { id: member.id }
+        const updatedUser = await prisma.user.findUnique({
+            where: { id: user.id }
         })
 
-        expect(updatedMember?.passwordHash).not.toBe('johnDoe123')
+        expect(updatedUser?.passwordHash).not.toBe('johnDoe123')
     })
 
     afterAll(async () => {

@@ -1,15 +1,13 @@
-import { IMembersRepository } from '../repositories/members-repository'
 import { InMemoryMembersRepository } from 'test/unit/repositories/in-memory-members-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { OpenAccountUseCase } from './open-account'
-import { IAccountsRepository } from '../repositories/accounts-repository'
 import { InMemoryAccountsRepository } from 'test/unit/repositories/in-memory-accounts-repository'
 import { MemberAlreadyHasAccountError } from './errors/member-alredy-has-account-error'
 import { makeMember } from 'test/unit/factories/make-member'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
-let membersRepository: IMembersRepository
-let accountRepository: IAccountsRepository
+let membersRepository: InMemoryMembersRepository
+let accountRepository: InMemoryAccountsRepository
 let sut: OpenAccountUseCase
 
 describe('Open member account use case', () => {
@@ -21,9 +19,9 @@ describe('Open member account use case', () => {
   })
 
   it('should be able to open a member account with initial balance', async () => {
-    await membersRepository.create(
-      await makeMember({}, new UniqueEntityID('member-1')),
-    )
+    const member = await makeMember({}, new UniqueEntityID('member-1'))
+
+    membersRepository.items.push(member)
 
     const result = await sut.execute({
       memberId: 'member-1',
@@ -32,7 +30,7 @@ describe('Open member account use case', () => {
 
     expect(result.isRight()).toBe(true)
 
-    
+
     if (result.isRight()) {
       expect(result.value.account.balance).toBe(250)
       expect(result.value.account.holderId.toString()).toBe('member-1')
@@ -49,9 +47,9 @@ describe('Open member account use case', () => {
   })
 
   it('should not be able to open account of a member already has account', async () => {
-    await membersRepository.create(
-      await makeMember({}, new UniqueEntityID('member-1')),
-    )
+    const member = await makeMember({}, new UniqueEntityID('member-1'))
+
+    membersRepository.items.push(member)
 
     await sut.execute({
       memberId: 'member-1',

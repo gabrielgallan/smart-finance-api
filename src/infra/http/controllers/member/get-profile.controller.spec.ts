@@ -3,13 +3,11 @@ import { Test } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import { AppModule } from '@/infra/app.module'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { Hasher } from '@/domain/finances/application/cryptography/hasher'
-import { Encrypter } from '@/domain/finances/application/cryptography/encrypter'
+import { Encrypter } from '@/domain/identity/application/cryptography/encrypter'
 
 describe('Get member profile tests', () => {
   let app: INestApplication
   let prisma: PrismaService
-  let hasher: Hasher
   let encrypter: Encrypter
 
   beforeAll(async () => {
@@ -21,35 +19,33 @@ describe('Get member profile tests', () => {
 
     prisma = moduleRef.get(PrismaService)
 
-    hasher = moduleRef.get(Hasher)
-
     encrypter = moduleRef.get(Encrypter)
 
     await app.init()
   })
 
   it('[GET] /api/profile', async () => {
-    const member = await prisma.member.create({
-        data: {
-            name: 'John Doe',
-            email: 'johndoe@email.com',
-            passwordHash: await hasher.generate('johnDoe123')
-        }
+    const user = await prisma.user.create({
+      data: {
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+      }
     })
 
-    const token = await encrypter.encrypt({ sub: member.id })
+    const token = await encrypter.encrypt({ sub: user.id })
 
     const response = await request(app.getHttpServer())
       .get('/api/profile')
       .set('Authorization', `Bearer ${token}`)
       .expect(200)
-      
-      expect(response.body).toMatchObject({
-        member: {
-            name: 'John Doe',
-            email: 'johndoe@email.com'
-        }
-      })
+
+    expect(response.body).toMatchObject({
+      user: {
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+        avatarUrl: null
+      }
+    })
   })
 
   afterAll(async () => {

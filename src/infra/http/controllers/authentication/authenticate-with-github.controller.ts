@@ -3,7 +3,7 @@ import z from 'zod'
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { GithubOAuthService } from '@/infra/auth/github-oauth.service'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { Encrypter } from '@/domain/finances/application/cryptography/encrypter'
+import { Encrypter } from '@/domain/identity/application/cryptography/encrypter'
 import { Public } from '@/infra/auth/public'
 
 const bodySchema = z.object({
@@ -19,7 +19,7 @@ export class AuthenticateWithGithubController {
         private githubOAuthService: GithubOAuthService,
         private prisma: PrismaService,
         private encrypter: Encrypter
-    ) {}
+    ) { }
 
     @Post('/sessions/github')
     @HttpCode(201)

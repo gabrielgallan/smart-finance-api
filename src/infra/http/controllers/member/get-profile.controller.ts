@@ -1,21 +1,21 @@
 import { Controller, Get, HttpCode, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { CurrentUser } from '../../../auth/current-user-decorator'
 import type { UserPayload } from '../../../auth/jwt.strategy'
-import { GetMemberProfileUseCase } from '@/domain/finances/application/use-cases/get-member-profile'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
-import { MemberPresenter } from '../../presenters/member-presenter'
+import { GetProfileUseCase } from '@/domain/identity/application/use-cases/get-profile'
+import { UserPresenter } from '../../presenters/user-presenter'
 
 @Controller('/api')
 export class GetProfileController {
   constructor(
-    private getMemberProfile: GetMemberProfileUseCase
+    private getProfile: GetProfileUseCase
   ) { }
 
   @Get('/profile')
   @HttpCode(200)
   async handle(@CurrentUser() user: UserPayload) {
-    const result = await this.getMemberProfile.execute({
-      memberId: user.sub
+    const result = await this.getProfile.execute({
+      userId: user.sub
     })
 
     if (result.isLeft()) {
@@ -33,7 +33,7 @@ export class GetProfileController {
     }
 
     return {
-      member: MemberPresenter.toHTTP(result.value.member)
+      user: UserPresenter.toHTTP(result.value.user)
     }
   }
 }

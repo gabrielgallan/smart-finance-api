@@ -22,11 +22,11 @@ describe('Authenticate member tests', () => {
   })
 
   it('[POST] /api/sessions', async () => {
-    await prisma.member.create({
-        data: {
-            email: 'johndoe@email.com',
-            passwordHash: await new BcryptHasher().generate('johnDoe123')
-        }
+    await prisma.user.create({
+      data: {
+        email: 'johndoe@email.com',
+        passwordHash: await new BcryptHasher().generate('johnDoe123')
+      }
     })
 
     const response = await request(app.getHttpServer())
@@ -36,10 +36,10 @@ describe('Authenticate member tests', () => {
         password: 'johnDoe123'
       })
       .expect(201)
-      
-      expect(response.body).toMatchObject({
-        token: expect.any(String)
-      })
+
+    expect(response.body).toMatchObject({
+      token: expect.any(String)
+    })
   })
 
   afterAll(async () => {

@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import { AppModule } from '@/infra/app.module'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { Encrypter } from '@/domain/finances/application/cryptography/encrypter'
+import { Encrypter } from '@/domain/identity/application/cryptography/encrypter'
 import { Account } from '@prisma/client'
 import { UUIDGenerator } from 'test/e2e/factories/uuid-generator'
 
@@ -16,8 +16,8 @@ describe('Get account summaries by categories tests', () => {
     let token: string
 
     const uuids = UUIDGenerator(3)
-    
-    
+
+
     beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
             imports: [AppModule],

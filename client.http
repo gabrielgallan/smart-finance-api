@@ -3,13 +3,13 @@
 @githubAuthToken = {{authenticate_with_github.response.body.token}}
 
 # @name register
-POST {{baseUrl}}/api/members
+POST {{baseUrl}}/api/users
 Content-Type: application/json
 
 {
-    "name": "",
-    "email": "",
-    "password": ""
+    "name": "John Doe",
+    "email": "johndoe@email.com",
+    "password": "john123"
 }
 
 ###
@@ -19,8 +19,8 @@ POST {{baseUrl}}/api/sessions
 Content-Type: application/json
 
 {
-    "email": "",
-    "password": ""
+    "email": "johndoe@email.com",
+    "password": "doe123"
 }
 
 ###
@@ -31,7 +31,7 @@ POST {{baseUrl}}/api/sessions/github
 Content-Type: application/json
 
 {
-    "code": ""
+    "code": "265ab41e0ac315682102"
 }
 
 ###
@@ -41,7 +41,7 @@ POST {{baseUrl}}/api/password/recover
 Content-Type: application/json
 
 {
-    "email": ""
+    "email": "johndoe@email.com"
 }
 
 ###
@@ -51,8 +51,8 @@ PUT {{baseUrl}}/api/profile/password
 Content-Type: application/json
 
 {
-    "code": "",
-    "password": ""
+    "code": "d765c7a9-13b2-490a-ba18-61a9cb11400e",
+    "password": "doe123"
 }
 
 ###
@@ -70,7 +70,7 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-    "initialBalance": 
+    "initialBalance": 50
 }
 
 ###
@@ -81,7 +81,7 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-    "name": ""
+    "name": "iFood"
 }
 
 ###
@@ -94,14 +94,12 @@ Authorization: Bearer {{authToken}}
 ###
 
 # @name edit_category
-PUT {{baseUrl}}/api/categories
+PUT {{baseUrl}}/api/categories/ifood
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-    "categoryId": "",
-    "name": "",
-    "description": ""
+    "description": "my ifood expenses"
 }
 
 ###

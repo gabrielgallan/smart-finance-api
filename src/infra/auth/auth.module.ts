@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
-import { Encrypter } from '@/domain/finances/application/cryptography/encrypter';
+import { Encrypter } from '@/domain/identity/application/cryptography/encrypter';
 import { JwtEncrypter } from '../cryptography/jwt-encrypter';
-import { Hasher } from '@/domain/finances/application/cryptography/hasher';
+import { Hasher } from '@/domain/identity/application/cryptography/hasher';
 import { BcryptHasher } from '../cryptography/bcrypt-hasher';
 import { GithubOAuthService } from './github-oauth.service';
 import { EnvService } from '../env/env.service';
@@ -17,18 +17,18 @@ import { JwtAuthGuard } from './jwt-auth-guard';
     EnvModule,
     PassportModule,
     JwtModule.registerAsync({
-        imports: [EnvModule],
-        inject: [EnvService],
-        useFactory(env: EnvService) {
-            const privateKey = env.get('JWT_PRIVATE_KEY')
-            const publicKey = env.get('JWT_PUBLIC_KEY')
+      imports: [EnvModule],
+      inject: [EnvService],
+      useFactory(env: EnvService) {
+        const privateKey = env.get('JWT_PRIVATE_KEY')
+        const publicKey = env.get('JWT_PUBLIC_KEY')
 
-            return {
-                signOptions: { algorithm: 'RS256' },
-                privateKey: Buffer.from(privateKey, 'base64'),
-                publicKey: Buffer.from(publicKey, 'base64')
-            }
+        return {
+          signOptions: { algorithm: 'RS256' },
+          privateKey: Buffer.from(privateKey, 'base64'),
+          publicKey: Buffer.from(publicKey, 'base64')
         }
+      }
     })
   ],
   exports: [JwtModule, Encrypter, Hasher, GithubOAuthService],
@@ -49,4 +49,4 @@ import { JwtAuthGuard } from './jwt-auth-guard';
     }
   ]
 })
-export class AuthModule {}
+export class AuthModule { }

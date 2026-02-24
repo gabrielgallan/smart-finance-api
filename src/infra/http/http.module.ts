@@ -25,15 +25,11 @@ import { EditAccountTransactionController } from './controllers/transactions/edi
 import { GetAccountSummaryController } from './controllers/summary/get-account-summary.controller'
 
 // use-cases
-import { RegisterMemberUseCase } from '@/domain/finances/application/use-cases/register-member'
-import { AuthenticateMemberUseCase } from '@/domain/finances/application/use-cases/authenticate-member'
-import { GetMemberProfileUseCase } from '@/domain/finances/application/use-cases/get-member-profile'
 import { OpenAccountUseCase } from '@/domain/finances/application/use-cases/open-account'
 import { CreateAccountCategoryUseCase } from '@/domain/finances/application/use-cases/create-account-category'
 import { ListAccountCategoriesUseCase } from '@/domain/finances/application/use-cases/list-account-categories'
 import { EditAccountCategoryUseCase } from '@/domain/finances/application/use-cases/edit-account-category'
 import { CloseAccountUseCase } from '@/domain/finances/application/use-cases/close-account'
-import { ResetMemberPasswordUseCase } from '@/domain/finances/application/use-cases/reset-member-password'
 import { CreateTransactionUseCase } from '@/domain/finances/application/use-cases/create-transaction'
 import { ListAccountTransactionsUseCase } from '@/domain/finances/application/use-cases/list-account-transactions'
 import { EditTransactionUseCase } from '@/domain/finances/application/use-cases/edit-transaction'
@@ -41,14 +37,20 @@ import { GetAccountSummaryUseCase } from '@/domain/finances/application/use-case
 import { GetAccountSummariesByCategoriesUseCase } from '@/domain/finances/application/use-cases/get-account-summaries-by-categories'
 import { FinancialAnalyticsService } from '@/domain/finances/application/services/financial-analytics/financial-analytics-service'
 import { GetRollingYearProgressUseCase } from '@/domain/finances/application/use-cases/get-rolling-yearly-progress'
-import { EmailService } from '../email/email.service'
 import { EnvModule } from '../env/env.module'
+import { EmailModule } from '../email/email.module'
+import { RegisterUseCase } from '@/domain/identity/application/use-cases/register'
+import { AuthenticateUseCase } from '@/domain/identity/application/use-cases/authenticate'
+import { GetProfileUseCase } from '@/domain/identity/application/use-cases/get-profile'
+import { ResetPasswordUseCase } from '@/domain/identity/application/use-cases/reset-password'
+import { RequestPasswordRecoverUseCase } from '@/domain/identity/application/use-cases/request-password-recover'
 
 @Module({
     imports: [
         AuthModule,
         DatabaseModule,
-        EnvModule
+        EnvModule,
+        EmailModule
     ],
     controllers: [
         RegisterController,
@@ -68,10 +70,11 @@ import { EnvModule } from '../env/env.module'
         GetRollingYearProgressController
     ],
     providers: [
-        RegisterMemberUseCase,
-        AuthenticateMemberUseCase,
-        GetMemberProfileUseCase,
-        ResetMemberPasswordUseCase,
+        RegisterUseCase,
+        AuthenticateUseCase,
+        GetProfileUseCase,
+        ResetPasswordUseCase,
+        RequestPasswordRecoverUseCase,
         OpenAccountUseCase,
         CloseAccountUseCase,
         CreateAccountCategoryUseCase,
@@ -83,8 +86,7 @@ import { EnvModule } from '../env/env.module'
         GetAccountSummaryUseCase,
         GetAccountSummariesByCategoriesUseCase,
         GetRollingYearProgressUseCase,
-        FinancialAnalyticsService,
-        EmailService,
+        FinancialAnalyticsService
     ]
 })
 export class HttpModule { }

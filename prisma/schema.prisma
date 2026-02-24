@@ -13,19 +13,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Member {
-  id           String   @id @default(uuid())
+model User {
+  id           String    @id @default(uuid())
   name         String?
-  document     String?
-  email        String   @unique
-  passwordHash String?  @map("password_hash")
-  createdAt    DateTime @default(now()) @map("created_at")
+  email        String    @unique
+  passwordHash String?   @map("password_hash")
+  avatarUrl    String?   @map("avatar_url")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime? @updatedAt @map("updated_at")
 
   account          Account?
   externalAccounts ExternalAccount[]
   tokens           Token[]
 
-  @@map("members")
+  @@map("users")
 }
 
 model Account {
@@ -34,7 +35,7 @@ model Account {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
-  holder   Member @relation(fields: [holderId], references: [id])
+  holder   User   @relation(fields: [holderId], references: [id])
   holderId String @unique @map("holder_id")
 
   transactions Transaction[]
@@ -91,10 +92,12 @@ enum TokenType {
 model Token {
   id        String    @id @default(uuid())
   type      TokenType
+  usedAt    DateTime? @map("used_at")
+  expiresAt DateTime  @map("expires_at")
   createdAt DateTime  @default(now()) @map("created_at")
 
-  member   Member @relation(fields: [memberId], references: [id])
-  memberId String @map("member_id")
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @map("user_id")
 
   @@map("tokens")
 }
@@ -106,11 +109,11 @@ enum ExternalAccountProvider {
 model ExternalAccount {
   id                String                  @id @default(uuid())
   provider          ExternalAccountProvider
-  providerAccountId String                  @unique @map("provider_account_id")
+  providerAccountId String?                 @unique @map("provider_account_id")
 
-  member   Member @relation(fields: [memberId], references: [id])
-  memberId String @map("member_id")
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @map("user_id")
 
-  @@unique([provider, memberId])
+  @@unique([provider, userId])
   @@map("external_accounts")
 }
