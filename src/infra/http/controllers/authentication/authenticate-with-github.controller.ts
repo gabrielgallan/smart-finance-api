@@ -3,7 +3,7 @@ import z from 'zod'
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { Public } from '@/infra/auth/public'
 import { AuthenticateWithExternalProviderUseCase } from '@/domain/identity/application/use-cases/authenticate-with-external-provider'
-import { Provider } from '@/domain/identity/enterprise/entities/external-account'
+import { ExternalAccountProvider } from '@prisma/client'
 
 const bodySchema = z.object({
     code: z.string()
@@ -26,7 +26,7 @@ export class AuthenticateWithGithubController {
         const { code } = body
 
         const result = await this.authenticateWithGitHub.execute({
-            provider: Provider.GITHUB,
+            provider: ExternalAccountProvider.GITHUB,
             code
         })
 

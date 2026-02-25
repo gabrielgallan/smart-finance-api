@@ -25,13 +25,12 @@ Content-Type: application/json
 
 ###
 
-# https://github.com/login/oauth/authorize?client_id=Ov23lijb17SAzL5BXi69&redirect_uri=http://localhost:8080/api/auth/callback&scope=user:email
 # @name authenticate_with_github
 POST {{baseUrl}}/api/sessions/github
 Content-Type: application/json
 
 {
-    "code": "265ab41e0ac315682102"
+    "code": ""
 }
 
 ###

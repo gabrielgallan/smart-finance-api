@@ -8,8 +8,7 @@ interface GithubOAuthProviderInput {
     OAuthCode: string
 }
 
-interface GithubUser extends ExternalUserProps {
-}
+type GithubUser = ExternalUserProps
 
 @Injectable()
 export class GithubOAuthProvider implements ExternalAuthProvider<
@@ -59,6 +58,7 @@ export class GithubOAuthProvider implements ExternalAuthProvider<
             }).safeParse(githubUserResponse)
 
             if (!githubUserResult.success) {
+                console.error(githubUserResponse)
                 throw new BadGatewayException({
                     message: 'Wrong user data returned from GitHub API'
                 })

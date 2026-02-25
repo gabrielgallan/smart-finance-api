@@ -32,7 +32,12 @@ import { ExternalAuthProvider } from '@/domain/identity/application/auth/auth-pr
       }
     })
   ],
-  exports: [JwtModule, Encrypter, Hasher, ExternalAuthProvider],
+  exports: [
+    JwtModule, 
+    Encrypter, 
+    Hasher, 
+    ExternalAuthProvider
+  ],
   providers: [
     JwtStrategy,
     {

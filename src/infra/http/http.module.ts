@@ -44,6 +44,7 @@ import { AuthenticateUseCase } from '@/domain/identity/application/use-cases/aut
 import { GetProfileUseCase } from '@/domain/identity/application/use-cases/get-profile'
 import { ResetPasswordUseCase } from '@/domain/identity/application/use-cases/reset-password'
 import { RequestPasswordRecoverUseCase } from '@/domain/identity/application/use-cases/request-password-recover'
+import { AuthenticateWithExternalProviderUseCase } from '@/domain/identity/application/use-cases/authenticate-with-external-provider'
 
 @Module({
     imports: [
@@ -72,6 +73,7 @@ import { RequestPasswordRecoverUseCase } from '@/domain/identity/application/use
     providers: [
         RegisterUseCase,
         AuthenticateUseCase,
+        AuthenticateWithExternalProviderUseCase,
         GetProfileUseCase,
         ResetPasswordUseCase,
         RequestPasswordRecoverUseCase,

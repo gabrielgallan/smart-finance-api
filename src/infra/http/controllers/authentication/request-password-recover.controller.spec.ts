@@ -3,6 +3,8 @@ import { Test } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import { AppModule } from '@/infra/app.module'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { EmailSenderMock } from 'test/unit/email/email-sender'
+import { EmailSender } from '@/domain/identity/application/email/email-sender'
 
 describe('Request password recover tests', () => {
     let app: INestApplication
@@ -11,7 +13,10 @@ describe('Request password recover tests', () => {
     beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
             imports: [AppModule],
-        }).compile()
+        })
+        .overrideProvider(EmailSender)
+        .useClass(EmailSenderMock)
+        .compile()
 
         app = moduleRef.createNestApplication()
         prisma = moduleRef.get(PrismaService)
