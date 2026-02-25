@@ -1,12 +1,13 @@
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Token } from "@/domain/identity/enterprise/entities/token";
-import { Token as PrismaToken } from "@prisma/client";
+import { Token as PrismaToken, Prisma } from "@prisma/client";
+import { PrismaTokenTypeMapper } from "./prisma-token-type-mapper";
 
 export class PrismaTokenMapper {
     static toDomain(raw: PrismaToken): Token {
         return Token.create({
             userId: new UniqueEntityID(raw.userId),
-            type: raw.type,
+            type: PrismaTokenTypeMapper.toDomain(raw.type),
             usedAt: raw.usedAt,
             expiresAt: raw.expiresAt,
             createdAt: raw.createdAt
@@ -15,10 +16,10 @@ export class PrismaTokenMapper {
         )
     }
 
-    static toPrisma(token: Token): PrismaToken {
+    static toPrisma(token: Token): Prisma.TokenUncheckedCreateInput {
         return {
             id: token.id.toString(),
-            type: token.type,
+            type: PrismaTokenTypeMapper.toPrisma(token.type),
             usedAt: token.usedAt ?? null,
             expiresAt: token.expiresAt,
             createdAt: token.createdAt,

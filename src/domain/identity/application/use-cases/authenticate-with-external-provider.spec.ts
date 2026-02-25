@@ -5,7 +5,6 @@ import { AuthenticateWithExternalProviderUseCase } from './authenticate-with-ext
 import { InMemoryExternalAccountsRepository } from 'test/unit/repositories/in-memory-external-accounts-repository'
 import { ExternalAuthProvider } from '../auth/auth-provider'
 import { ExternalAuthProviderStub } from 'test/unit/auth/auth-provider'
-import { Provider } from '../../enterprise/entities/external-account'
 
 let usersRepository: InMemoryUsersRepository
 let externalAccountsRepository: InMemoryExternalAccountsRepository
@@ -31,8 +30,8 @@ describe('Authenticate with external provider use case', () => {
 
     it('should be able to authenticate with external provider', async () => {
         const result = await sut.execute({
-            provider: Provider.GITHUB,
-            code: 'provider-fake-code'
+            provider: 'fake-provider',
+            code: 'fake-provider-code'
         })
 
         expect(result.isRight()).toBe(true)

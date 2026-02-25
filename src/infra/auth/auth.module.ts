@@ -6,11 +6,12 @@ import { Encrypter } from '@/domain/identity/application/cryptography/encrypter'
 import { JwtEncrypter } from '../cryptography/jwt-encrypter';
 import { Hasher } from '@/domain/identity/application/cryptography/hasher';
 import { BcryptHasher } from '../cryptography/bcrypt-hasher';
-import { GithubOAuthService } from './github-oauth.service';
+import { GithubOAuthProvider } from './github-oauth-provider';
 import { EnvService } from '../env/env.service';
 import { EnvModule } from '../env/env.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './jwt-auth-guard';
+import { ExternalAuthProvider } from '@/domain/identity/application/auth/auth-provider';
 
 @Module({
   imports: [
@@ -31,10 +32,18 @@ import { JwtAuthGuard } from './jwt-auth-guard';
       }
     })
   ],
-  exports: [JwtModule, Encrypter, Hasher, GithubOAuthService],
+  exports: [
+    JwtModule, 
+    Encrypter, 
+    Hasher, 
+    ExternalAuthProvider
+  ],
   providers: [
     JwtStrategy,
-    GithubOAuthService,
+    {
+      provide: ExternalAuthProvider,
+      useClass: GithubOAuthProvider
+    },
     {
       provide: Encrypter,
       useClass: JwtEncrypter

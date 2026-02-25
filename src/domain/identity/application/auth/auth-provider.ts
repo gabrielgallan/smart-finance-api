@@ -1,8 +1,8 @@
 export interface ExternalUserProps {
-    id?: string
-    name?: string
-    avatarUrl?: string
+    id: string | null
+    name: string | null
     email: string
+    avatarUrl: string | null
 }
 
 export interface DefaultSignInData {

@@ -1,5 +1,7 @@
 import { EmailProps, EmailSender } from "@/domain/identity/application/email/email-sender";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class EmailSenderMock extends EmailSender {
     public emails: EmailProps[] = []
 

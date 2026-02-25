@@ -3,7 +3,7 @@ import { Either, left, right } from '@/core/types/either'
 import { Injectable } from '@nestjs/common'
 import { UsersRepository } from '../repositories/users-repository'
 import { TokensRepository } from '../repositories/tokens-repository'
-import { TokenType } from '@prisma/client'
+import { TokenType } from '@/domain/identity/enterprise/entities/token'
 import { Token } from '../../enterprise/entities/token'
 import { EmailSender } from '../email/email-sender'
 

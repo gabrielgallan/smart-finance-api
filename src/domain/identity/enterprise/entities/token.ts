@@ -2,9 +2,13 @@ import { Entity } from "@/core/entities/entity";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Optional } from "@/core/types/optional";
 
+export enum TokenType {
+  PASSWORD_RECOVER = 'PASSWORD_RECOVER'
+}
+
 export interface TokenProps {
   userId: UniqueEntityID
-  type: 'PASSWORD_RECOVER'
+  type: TokenType
   usedAt?: Date | null
   expiresAt: Date
   createdAt: Date

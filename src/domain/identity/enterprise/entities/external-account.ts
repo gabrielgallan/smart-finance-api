@@ -1,13 +1,9 @@
 import { Entity } from "@/core/entities/entity";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
-export enum Provider {
-    GITHUB = 'GITHUB',
-}
-
 interface ExternalAccountProps {
     userId: UniqueEntityID
-    provider: Provider
+    provider: string
     providerUserId?: string | null
 }
 

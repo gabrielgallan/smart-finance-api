@@ -5,10 +5,10 @@ import { UsersRepository } from '../repositories/users-repository'
 import { ExternalAccountRepository } from '../repositories/external-account-repository'
 import { ExternalAuthProvider } from '../auth/auth-provider'
 import { User } from '../../enterprise/entities/user'
-import { ExternalAccount, Provider } from '../../enterprise/entities/external-account'
+import { ExternalAccount } from '../../enterprise/entities/external-account'
 
 interface AuthenticateWithExternalProviderUseCaseRequest {
-    provider: Provider
+    provider: string
     code: string
 }
 
