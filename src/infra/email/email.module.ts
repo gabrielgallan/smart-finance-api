@@ -1,7 +1,7 @@
 import { EmailSender } from "@/domain/identity/application/email/email-sender";
 import { Module } from "@nestjs/common";
-import { NodemailerEmailSenderService } from "./nodemailer/nodemailer-email-sender.service";
 import { EnvModule } from "../env/env.module";
+import { ResendEmailSenderService } from "./resend/resend-email-sender.service";
 
 @Module({
     imports: [EnvModule],
@@ -9,7 +9,7 @@ import { EnvModule } from "../env/env.module";
     providers: [
         {
             provide: EmailSender,
-            useClass: NodemailerEmailSenderService
+            useClass: ResendEmailSenderService
         }
     ]
 })
