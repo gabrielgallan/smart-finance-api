@@ -2,18 +2,25 @@ import { BadGatewayException, BadRequestException, Injectable } from "@nestjs/co
 import { z } from "zod";
 import { EnvService } from "../env/env.service";
 import ky, { HTTPError } from "ky";
+import { ExternalAuthProvider, ExternalUserProps } from "@/domain/identity/application/auth/auth-provider";
 
-interface GithubOAuthServiceInput {
+interface GithubOAuthProviderInput {
     OAuthCode: string
 }
 
+interface GithubUser extends ExternalUserProps {
+}
+
 @Injectable()
-export class GithubOAuthService {
+export class GithubOAuthProvider implements ExternalAuthProvider<
+    GithubUser,
+    GithubOAuthProviderInput
+> {
     constructor(
         private env: EnvService
     ) { }
 
-    async getGithubUser({ OAuthCode: code }: GithubOAuthServiceInput) {
+    async signIn({ OAuthCode }: GithubOAuthProviderInput) {
         const githubOAuthURL = new URL('https://github.com/login/oauth/access_token')
 
         try {
@@ -22,7 +29,7 @@ export class GithubOAuthService {
                     client_id: this.env.get('GITHUB_OAUTH_CLIENT_ID'),
                     client_secret: this.env.get('GITHUB_OAUTH_CLIENT_SECRET'),
                     redirect_uri: this.env.get('GITHUB_OAUTH_CLIENT_REDIRECT_URI'),
-                    code
+                    code: OAuthCode
                 }
             }).json()
 
@@ -71,7 +78,7 @@ export class GithubOAuthService {
             }
 
             return {
-                githubId,
+                id: githubId,
                 email,
                 name,
                 avatarUrl

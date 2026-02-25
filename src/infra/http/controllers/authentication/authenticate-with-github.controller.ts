@@ -1,10 +1,9 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common'
+import { Body, Controller, HttpCode, InternalServerErrorException, Post } from '@nestjs/common'
 import z from 'zod'
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
-import { GithubOAuthService } from '@/infra/auth/github-oauth.service'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { Encrypter } from '@/domain/identity/application/cryptography/encrypter'
 import { Public } from '@/infra/auth/public'
+import { AuthenticateWithExternalProviderUseCase } from '@/domain/identity/application/use-cases/authenticate-with-external-provider'
+import { Provider } from '@/domain/identity/enterprise/entities/external-account'
 
 const bodySchema = z.object({
     code: z.string()
@@ -16,9 +15,7 @@ type BodyDTO = z.infer<typeof bodySchema>
 @Public()
 export class AuthenticateWithGithubController {
     constructor(
-        private githubOAuthService: GithubOAuthService,
-        private prisma: PrismaService,
-        private encrypter: Encrypter
+        private authenticateWithGitHub: AuthenticateWithExternalProviderUseCase
     ) { }
 
     @Post('/sessions/github')
@@ -28,50 +25,17 @@ export class AuthenticateWithGithubController {
     ) {
         const { code } = body
 
-        const githubUser = await this.githubOAuthService.getGithubUser({
-            OAuthCode: code
+        const result = await this.authenticateWithGitHub.execute({
+            provider: Provider.GITHUB,
+            code
         })
 
-        let member = await this.prisma.member.findUnique({
-            where: {
-                email: githubUser.email
-            }
-        })
-
-        if (!member) {
-            member = await this.prisma.member.create({
-                data: {
-                    name: githubUser.name,
-                    email: githubUser.email
-                }
-            })
+        if (result.isLeft()) {
+            throw new InternalServerErrorException()
         }
-
-        const externalAccount = await this.prisma.externalAccount.findUnique({
-            where: {
-                provider_memberId: {
-                    provider: 'GITHUB',
-                    memberId: member.id
-                }
-            }
-        })
-
-        if (!externalAccount) {
-            await this.prisma.externalAccount.create({
-                data: {
-                    provider: 'GITHUB',
-                    providerAccountId: githubUser.githubId,
-                    member: {
-                        connect: { id: member.id }
-                    }
-                }
-            })
-        }
-
-        const token = await this.encrypter.encrypt({ sub: member.id })
 
         return {
-            token
+            token: result.value.token
         }
     }
 }
