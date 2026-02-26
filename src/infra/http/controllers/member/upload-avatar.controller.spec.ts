@@ -4,6 +4,8 @@ import { INestApplication } from '@nestjs/common'
 import { AppModule } from '@/infra/app.module'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { Encrypter } from '@/domain/identity/application/cryptography/encrypter'
+import { UploaderMock } from 'test/unit/mocks/uploader'
+import { Uploader } from '@/domain/identity/application/storage/uploader'
 
 describe('Upload user avatar tests', () => {
   let app: INestApplication
@@ -13,7 +15,10 @@ describe('Upload user avatar tests', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile()
+    })
+    .overrideProvider(Uploader)
+    .useClass(UploaderMock)
+    .compile()
 
     app = moduleRef.createNestApplication()
 
@@ -34,7 +39,7 @@ describe('Upload user avatar tests', () => {
 
     const token = await encrypter.encrypt({ sub: user.id })
 
-    const response = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/api/profile/avatar')
       .set('Authorization', `Bearer ${token}`)
       .attach('file', './test/e2e/sample-upload.jpg')

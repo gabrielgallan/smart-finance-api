@@ -1,18 +1,16 @@
-import { IAccountsRepository } from '../repositories/accounts-repository'
-import { ITransactionsRepository } from '../repositories/transactions-repository'
 import { CreateTransactionUseCase } from './create-transaction'
 import { InMemoryAccountsRepository } from 'test/unit/repositories/in-memory-accounts-repository'
 import { InMemoryTransactionsRepository } from 'test/unit/repositories/in-memory-transactions-repository'
 import { makeAccount } from 'test/unit/factories/make-account'
 import { InMemoryCategoriesRepository } from 'test/unit/repositories/in-memory-category-repository'
-import { ICategoriesRepository } from '../repositories/categories-repository'
 import { makeCategory } from 'test/unit/factories/make-category'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { InvalidPositiveNumberError } from '@/core/errors/invalid-positive-number-error'
 
-let accountsRepository: IAccountsRepository
-let transactionsRepository: ITransactionsRepository
-let categoriesRepository: ICategoriesRepository
+let accountsRepository: InMemoryAccountsRepository
+let transactionsRepository: InMemoryTransactionsRepository
+let categoriesRepository: InMemoryCategoriesRepository
 
 let sut: CreateTransactionUseCase
 
@@ -131,5 +129,18 @@ describe('Create transaction use case', () => {
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
+
+  it('should not be able to create a transaction with negative amount', async () => {
+    const result = await sut.execute({
+      memberId: 'member-1',
+      categoryId: 'category-1',
+      title: 'Uber',
+      amount: -25.9,
+      operation: 'expense',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(InvalidPositiveNumberError)
   })
 })

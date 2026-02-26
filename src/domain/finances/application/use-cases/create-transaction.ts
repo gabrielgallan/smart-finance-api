@@ -11,6 +11,7 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InvalidTransactionOperationError } from './errors/invalid-transaction-operation-error'
 import { ICategoriesRepository } from '../repositories/categories-repository'
 import { Injectable } from '@nestjs/common'
+import { InvalidPositiveNumberError } from '@/core/errors/invalid-positive-number-error'
 
 interface CreateTransactionUseCaseRequest {
   memberId: string
@@ -35,7 +36,7 @@ export class CreateTransactionUseCase {
     private accountsRepository: IAccountsRepository,
     private transactionsRepository: ITransactionsRepository,
     private categoriesRepository: ICategoriesRepository,
-  ) {}
+  ) { }
 
   async execute({
     memberId,
@@ -46,6 +47,12 @@ export class CreateTransactionUseCase {
     operation,
     method,
   }: CreateTransactionUseCaseRequest): Promise<CreateTransactionUseCaseResponse> {
+    if (amount <= 0) {
+      return left(new InvalidPositiveNumberError())
+    }
+
+    const formattedAmount = Math.round(amount * 100) / 100
+
     const account = await this.accountsRepository.findByHolderId(memberId)
 
     if (!account) {
@@ -69,13 +76,13 @@ export class CreateTransactionUseCase {
       case 'expense':
         transactionOperation = TransactionOperation.EXPENSE
 
-        account.withdraw(amount)
+        account.withdraw(formattedAmount)
 
         break
       case 'income':
         transactionOperation = TransactionOperation.INCOME
 
-        account.deposit(amount)
+        account.deposit(formattedAmount)
 
         break
       default:
@@ -89,7 +96,7 @@ export class CreateTransactionUseCase {
       categoryId: categoryId ? new UniqueEntityID(categoryId) : undefined,
       title,
       description,
-      amount,
+      amount: formattedAmount,
       operation: transactionOperation,
       method,
     })
