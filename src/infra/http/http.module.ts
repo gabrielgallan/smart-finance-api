@@ -45,19 +45,24 @@ import { GetProfileUseCase } from '@/domain/identity/application/use-cases/get-p
 import { ResetPasswordUseCase } from '@/domain/identity/application/use-cases/reset-password'
 import { RequestPasswordRecoverUseCase } from '@/domain/identity/application/use-cases/request-password-recover'
 import { AuthenticateWithExternalProviderUseCase } from '@/domain/identity/application/use-cases/authenticate-with-external-provider'
+import { UploadAvatarController } from './controllers/member/upload-avatar.controller'
+import { StorageModule } from '../storage/storage.module'
+import { UploadAvatarUseCase } from '@/domain/identity/application/use-cases/upload-avatar'
 
 @Module({
     imports: [
         AuthModule,
         DatabaseModule,
         EnvModule,
-        EmailModule
+        EmailModule,
+        StorageModule
     ],
     controllers: [
         RegisterController,
         AuthenticateController,
         AuthenticateWithGithubController,
         GetProfileController,
+        UploadAvatarController,
         RequestPasswordRecoverController,
         ResetPasswordController,
         OpenAccountController,
@@ -75,6 +80,7 @@ import { AuthenticateWithExternalProviderUseCase } from '@/domain/identity/appli
         AuthenticateUseCase,
         AuthenticateWithExternalProviderUseCase,
         GetProfileUseCase,
+        UploadAvatarUseCase,
         ResetPasswordUseCase,
         RequestPasswordRecoverUseCase,
         OpenAccountUseCase,

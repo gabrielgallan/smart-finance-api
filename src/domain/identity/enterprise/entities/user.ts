@@ -52,6 +52,10 @@ export class User extends Entity<UserProps> {
     return this.props.updatedAt
   }
 
+  set avatarUrl(url: string | null | undefined) {
+    this.props.avatarUrl = url
+  }
+
   set passwordHash(passwordHash: string | null | undefined) {
     this.props.passwordHash = passwordHash
 
