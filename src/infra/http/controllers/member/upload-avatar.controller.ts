@@ -4,7 +4,9 @@ import type { UserPayload } from '../../../auth/jwt.strategy'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { UploadAvatarUseCase } from '@/domain/identity/application/use-cases/upload-avatar'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { ApiTags } from '@nestjs/swagger'
 
+@ApiTags('Profile')
 @Controller('/api')
 export class UploadAvatarController {
     constructor(

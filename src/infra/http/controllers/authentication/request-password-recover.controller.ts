@@ -1,17 +1,20 @@
-import { Body, Controller, HttpCode, InternalServerErrorException, NotFoundException, Post } from '@nestjs/common'
+import { Body, Controller, InternalServerErrorException, NotFoundException, Post } from '@nestjs/common'
 import z from 'zod'
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { Public } from '@/infra/auth/public'
 import { RequestPasswordRecoverUseCase } from '@/domain/identity/application/use-cases/request-password-recover'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { createZodDto } from 'nestjs-zod'
 
 const bodySchema = z.object({
   email: z.string().email()
 })
 
-type BodyDTO = z.infer<typeof bodySchema>
+class BodyDTO extends createZodDto(bodySchema) { }
 
 @Controller('/api')
+@ApiTags('Authentication')
 @Public()
 export class RequestPasswordRecoverController {
   constructor(
@@ -19,7 +22,7 @@ export class RequestPasswordRecoverController {
   ) { }
 
   @Post('/password/recover')
-  @HttpCode(201)
+  @ApiOperation({ summary: 'request password recover' })
   async handle(
     @Body(new ZodValidationPipe(bodySchema)) body: BodyDTO
   ) {

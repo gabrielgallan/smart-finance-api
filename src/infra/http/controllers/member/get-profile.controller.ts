@@ -4,7 +4,9 @@ import type { UserPayload } from '../../../auth/jwt.strategy'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { GetProfileUseCase } from '@/domain/identity/application/use-cases/get-profile'
 import { UserPresenter } from '../../presenters/user-presenter'
+import { ApiTags } from '@nestjs/swagger'
 
+@ApiTags('Profile')
 @Controller('/api')
 export class GetProfileController {
   constructor(

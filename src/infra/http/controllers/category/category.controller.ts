@@ -14,6 +14,7 @@ import { CategoryAlreadyExistsError } from '@/domain/finances/application/use-ca
 import { ListAccountCategoriesUseCase } from '@/domain/finances/application/use-cases/list-account-categories';
 import { CategoryPresenter } from '../../presenters/category-presenter';
 import { EditAccountCategoryUseCase } from '@/domain/finances/application/use-cases/edit-account-category';
+import { ApiTags } from '@nestjs/swagger';
 
 const createCategoryBodySchema = z.object({
     name: z.string(),
@@ -35,13 +36,14 @@ type EditCategoryBodyDTO = z.infer<typeof editCategoryBodySchema>
 
 type EditCategoryParamsDTO = z.infer<typeof editCategoryParamsSchema>
 
+@ApiTags('Categories')
 @Controller('/api/categories')
 export class CategoryController {
     constructor(
         private createCategory: CreateAccountCategoryUseCase,
         private listCategories: ListAccountCategoriesUseCase,
         private editCategory: EditAccountCategoryUseCase,
-    ) {}
+    ) { }
 
     @Post()
     @HttpCode(201)

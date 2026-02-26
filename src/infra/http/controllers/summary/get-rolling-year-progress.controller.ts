@@ -4,7 +4,9 @@ import type { UserPayload } from '@/infra/auth/jwt.strategy';
 import { MemberAccountNotFoundError } from '@/domain/finances/application/use-cases/errors/member-account-not-found-error';
 import { GetRollingYearProgressUseCase } from '@/domain/finances/application/use-cases/get-rolling-yearly-progress';
 import { AccountYearSummaryPresenter } from '../../presenters/account-year-summary-presenter';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Summaries')
 @Controller('/api')
 export class GetRollingYearProgressController {
     constructor(

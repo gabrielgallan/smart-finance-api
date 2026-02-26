@@ -7,6 +7,7 @@ import { ZodValidationPipe } from '../../pipes/zod-validation-pipe';
 import z from 'zod';
 import { EditTransactionUseCase } from '@/domain/finances/application/use-cases/edit-transaction';
 import { NotAllowedError } from '@/core/errors/not-allowed-error';
+import { ApiTags } from '@nestjs/swagger';
 
 const editTransactionBodySchema = z.object({
     categoryId: z.string().uuid().optional(),
@@ -22,11 +23,12 @@ const editTransactionParamSchema = z.object({
 type EditTransactionBodyDTO = z.infer<typeof editTransactionBodySchema>
 type EditTransactionParamDTO = z.infer<typeof editTransactionParamSchema>
 
+@ApiTags('Transactions')
 @Controller('/api')
 export class EditAccountTransactionController {
     constructor(
         private editTransaction: EditTransactionUseCase
-    ) {}
+    ) { }
 
     @Put('/transactions/:id')
     @HttpCode(204)

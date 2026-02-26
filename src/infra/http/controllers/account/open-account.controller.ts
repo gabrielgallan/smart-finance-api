@@ -6,6 +6,7 @@ import type { UserPayload } from '@/infra/auth/jwt.strategy'
 import { OpenAccountUseCase } from '@/domain/finances/application/use-cases/open-account'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { MemberAlreadyHasAccountError } from '@/domain/finances/application/use-cases/errors/member-alredy-has-account-error'
+import { ApiTags } from '@nestjs/swagger'
 
 const openAccountBodySchema = z.object({
   initialBalance: z.coerce.number().optional()
@@ -13,6 +14,7 @@ const openAccountBodySchema = z.object({
 
 type OpenAccountBodyDTO = z.infer<typeof openAccountBodySchema>
 
+@ApiTags('Account')
 @Controller('/api')
 export class OpenAccountController {
   constructor(

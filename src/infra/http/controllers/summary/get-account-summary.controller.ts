@@ -11,6 +11,7 @@ import type { UserPayload } from '@/infra/auth/jwt.strategy';
 import { MemberAccountNotFoundError } from '@/domain/finances/application/use-cases/errors/member-account-not-found-error';
 import { InvalidPeriodError } from '@/domain/finances/application/use-cases/errors/invalid-period-error';
 import { AccountSummaryPresenter } from '../../presenters/account-summary-presenter';
+import { ApiTags } from '@nestjs/swagger';
 
 const getAccountSummaryQuerySchema = z.object({
     start: z.coerce.date(),
@@ -19,6 +20,7 @@ const getAccountSummaryQuerySchema = z.object({
 
 type GetAccountSummaryQueryDTO = z.infer<typeof getAccountSummaryQuerySchema>
 
+@ApiTags('Summaries')
 @Controller('/api')
 export class GetAccountSummaryController {
     constructor(

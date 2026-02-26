@@ -12,6 +12,7 @@ import { AccountSummaryPresenter } from '../../presenters/account-summary-presen
 import { GetAccountSummariesByCategoriesUseCase } from '@/domain/finances/application/use-cases/get-account-summaries-by-categories';
 import { AnyCategoryFoundForAccountError } from '@/domain/finances/application/use-cases/errors/any-category-found-for-account-error';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
+import { ApiTags } from '@nestjs/swagger';
 
 const querySchema = z.object({
     start: z.coerce.date(),
@@ -20,6 +21,7 @@ const querySchema = z.object({
 
 type QueryDTO = z.infer<typeof querySchema>
 
+@ApiTags('Summaries')
 @Controller('/api')
 export class GetSummariesByCategoriesController {
     constructor(

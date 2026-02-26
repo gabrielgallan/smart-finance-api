@@ -8,6 +8,7 @@ import { ZodValidationPipe } from '../../pipes/zod-validation-pipe';
 import z from 'zod';
 import { DateInterval } from '@/core/types/repositories/date-interval';
 import { TransactionPresenter } from '../../presenters/transaction-presenter';
+import { ApiTags } from '@nestjs/swagger';
 
 const listQuerySchema = z.object({
     categoryId: z.string().uuid().optional(),
@@ -19,11 +20,12 @@ const listQuerySchema = z.object({
 
 type ListQueryDTO = z.infer<typeof listQuerySchema>
 
+@ApiTags('Transactions')
 @Controller('/api')
 export class ListAccountTransactionsController {
     constructor(
         private listTransactions: ListAccountTransactionsUseCase
-    ) {}
+    ) { }
 
     @Get('/transactions')
     @HttpCode(200)
@@ -34,10 +36,10 @@ export class ListAccountTransactionsController {
         const { categoryId, page, limit, start, end } = query
 
         const interval: DateInterval | undefined = start && end ?
-        {
-            startDate: start,
-            endDate: end
-        } : undefined
+            {
+                startDate: start,
+                endDate: end
+            } : undefined
 
         const result = await this.listTransactions.execute({
             memberId: user.sub,

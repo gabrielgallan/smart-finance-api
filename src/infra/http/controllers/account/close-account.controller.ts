@@ -3,7 +3,9 @@ import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import type { UserPayload } from '@/infra/auth/jwt.strategy'
 import { CloseAccountUseCase } from '@/domain/finances/application/use-cases/close-account'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { ApiTags } from '@nestjs/swagger'
 
+@ApiTags('Account')
 @Controller('/api')
 export class CloseAccountController {
   constructor(

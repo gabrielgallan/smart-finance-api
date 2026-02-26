@@ -5,16 +5,19 @@ import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { Public } from '@/infra/auth/public'
 import { ResetPasswordUseCase } from '@/domain/identity/application/use-cases/reset-password'
 import { InvalidTokenError } from '@/domain/identity/application/use-cases/errors/invalid-token-error'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { createZodDto } from 'nestjs-zod'
 
 const bodySchema = z.object({
   code: z.string(),
   password: z.string().min(6)
 })
 
-type BodyDTO = z.infer<typeof bodySchema>
+class BodyDTO extends createZodDto(bodySchema) { }
 
 @Controller('/api')
 @Public()
+@ApiTags('Authentication')
 export class ResetPasswordController {
   constructor(
     private resetPassword: ResetPasswordUseCase,
@@ -22,6 +25,7 @@ export class ResetPasswordController {
 
   @Put('/profile/password')
   @HttpCode(204)
+  @ApiOperation({ summary: 'reset suer password' })
   async handle(
     @Body(new ZodValidationPipe(bodySchema)) body: BodyDTO
   ) {

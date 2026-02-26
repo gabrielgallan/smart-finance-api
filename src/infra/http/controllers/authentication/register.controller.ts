@@ -1,20 +1,22 @@
-import { Body, ConflictException, Controller, HttpCode, InternalServerErrorException, Post, UsePipes } from '@nestjs/common'
+import { Body, ConflictException, Controller, InternalServerErrorException, Post } from '@nestjs/common'
 import z from 'zod'
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { Public } from '@/infra/auth/public'
 import { RegisterUseCase } from '@/domain/identity/application/use-cases/register'
 import { UserAlreadyExistsError } from '@/domain/identity/application/use-cases/errors/user-already-exists-error'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { createZodDto } from 'nestjs-zod'
 
 const registerBodySchema = z.object({
   name: z.string(),
-  document: z.string().optional(),
   email: z.string().email(),
   password: z.string()
 })
 
-type RegisterBodyDTO = z.infer<typeof registerBodySchema>
+class RegisterBodyDTO extends createZodDto(registerBodySchema) { }
 
 @Controller('/api')
+@ApiTags('Authentication')
 @Public()
 export class RegisterController {
   constructor(
@@ -22,9 +24,11 @@ export class RegisterController {
   ) { }
 
   @Post('/users')
-  @HttpCode(201)
-  @UsePipes(new ZodValidationPipe(registerBodySchema))
-  async handle(@Body() body: RegisterBodyDTO) {
+  @ApiOperation({ summary: 'register new user' })
+  async handle(
+    @Body(new ZodValidationPipe(registerBodySchema))
+    body: RegisterBodyDTO
+  ) {
     const { name, email, password } = body
 
     const result = await this.register.execute({

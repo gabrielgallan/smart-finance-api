@@ -4,14 +4,17 @@ import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { Public } from '@/infra/auth/public'
 import { AuthenticateWithExternalProviderUseCase } from '@/domain/identity/application/use-cases/authenticate-with-external-provider'
 import { ExternalAccountProvider } from '@prisma/client'
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { createZodDto } from 'nestjs-zod'
 
 const bodySchema = z.object({
     code: z.string()
 })
 
-type BodyDTO = z.infer<typeof bodySchema>
+class BodyDTO extends createZodDto(bodySchema) { }
 
 @Controller('/api')
+@ApiTags('Authentication')
 @Public()
 export class AuthenticateWithGithubController {
     constructor(
@@ -20,6 +23,8 @@ export class AuthenticateWithGithubController {
 
     @Post('/sessions/github')
     @HttpCode(201)
+    @ApiBody({ type: BodyDTO })
+    @ApiOperation({ summary: 'authenticate with github' })
     async handle(
         @Body(new ZodValidationPipe(bodySchema)) body: BodyDTO
     ) {

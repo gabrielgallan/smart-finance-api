@@ -7,6 +7,7 @@ import { ZodValidationPipe } from '../../pipes/zod-validation-pipe';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 import { MemberAccountNotFoundError } from '@/domain/finances/application/use-cases/errors/member-account-not-found-error';
 import { InvalidTransactionOperationError } from '@/domain/finances/application/use-cases/errors/invalid-transaction-operation-error';
+import { ApiTags } from '@nestjs/swagger';
 
 const createTransactionBodySchema = z.object({
     categoryId: z.string().uuid().optional(),
@@ -19,6 +20,7 @@ const createTransactionBodySchema = z.object({
 
 type CreateTransactionBodyDTO = z.infer<typeof createTransactionBodySchema>
 
+@ApiTags('Transactions')
 @Controller('/api')
 export class CreateTransactionController {
     constructor(
