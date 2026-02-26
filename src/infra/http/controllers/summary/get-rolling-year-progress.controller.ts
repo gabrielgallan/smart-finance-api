@@ -4,16 +4,17 @@ import type { UserPayload } from '@/infra/auth/jwt.strategy';
 import { MemberAccountNotFoundError } from '@/domain/finances/application/use-cases/errors/member-account-not-found-error';
 import { GetRollingYearProgressUseCase } from '@/domain/finances/application/use-cases/get-rolling-yearly-progress';
 import { AccountYearSummaryPresenter } from '../../presenters/account-year-summary-presenter';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('Summaries')
 @Controller('/api')
+@ApiTags('Summaries')
 export class GetRollingYearProgressController {
     constructor(
         private getRollingYearProgress: GetRollingYearProgressUseCase
     ) { }
 
     @Get('/account/year/progress')
+    @ApiOperation({ summary: 'get rolling year progress' })
     async handle(
         @CurrentUser() user: UserPayload,
     ) {
@@ -24,14 +25,12 @@ export class GetRollingYearProgressController {
         if (result.isLeft()) {
             const error = result.value
 
-            switch (true) {
-                case error instanceof MemberAccountNotFoundError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
+            switch (error.constructor) {
+                case MemberAccountNotFoundError:
+                    throw new NotFoundException(error.message)
 
                 default:
-                    return new InternalServerErrorException()
+                    throw new InternalServerErrorException()
             }
         }
 

@@ -1,0 +1,582 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/users": {
+      "post": {
+        "operationId": "RegisterController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "register new user",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/sessions": {
+      "post": {
+        "operationId": "AuthenticateController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthenticateBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "authenticate with credentials",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/sessions/github": {
+      "post": {
+        "operationId": "AuthenticateWithGithubController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthenticateWithGithubBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "authenticate with github",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/profile": {
+      "get": {
+        "operationId": "GetProfileController_handle",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "get user profile",
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/api/profile/avatar": {
+      "post": {
+        "operationId": "UploadAvatarController_handle",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "upload user avatar",
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/api/password/recover": {
+      "post": {
+        "operationId": "RequestPasswordRecoverController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestPasswordRecoverBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "request password recover",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/profile/password": {
+      "put": {
+        "operationId": "ResetPasswordController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPassBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "summary": "reset user password",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/accounts": {
+      "post": {
+        "operationId": "OpenAccountController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpenAccountBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Account"
+        ]
+      },
+      "delete": {
+        "operationId": "CloseAccountController_handle",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Account"
+        ]
+      }
+    },
+    "/api/categories": {
+      "post": {
+        "operationId": "CategoryController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "create a new account category",
+        "tags": [
+          "Categories"
+        ]
+      },
+      "get": {
+        "operationId": "CategoryController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "list all account categories",
+        "tags": [
+          "Categories"
+        ]
+      }
+    },
+    "/api/categories/{slug}": {
+      "put": {
+        "operationId": "CategoryController_edit",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditCategoryBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "summary": "edit an account category",
+        "tags": [
+          "Categories"
+        ]
+      }
+    },
+    "/api/transactions": {
+      "post": {
+        "operationId": "CreateTransactionController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTransactionBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "create a new transaction",
+        "tags": [
+          "Transactions"
+        ]
+      },
+      "get": {
+        "operationId": "ListAccountTransactionsController_handle",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "list account transactions with pagination and optional filters",
+        "tags": [
+          "Transactions"
+        ]
+      }
+    },
+    "/api/transactions/{id}": {
+      "put": {
+        "operationId": "EditAccountTransactionController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditTransactionBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "summary": "edit a transaction",
+        "tags": [
+          "Transactions"
+        ]
+      }
+    },
+    "/api/account/summary": {
+      "get": {
+        "operationId": "GetAccountSummaryController_handle",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "get account summary for a given period",
+        "tags": [
+          "Summaries"
+        ]
+      }
+    },
+    "/api/account/categories/summary": {
+      "get": {
+        "operationId": "GetSummariesByCategoriesController_handle",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "get account summaries grouped by categories for a given period",
+        "tags": [
+          "Summaries"
+        ]
+      }
+    },
+    "/api/account/year/progress": {
+      "get": {
+        "operationId": "GetRollingYearProgressController_handle",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "get rolling year progress",
+        "tags": [
+          "Summaries"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Smart Finance API",
+    "description": "Finance manager API",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "RegisterBodyDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "password"
+        ]
+      },
+      "AuthenticateBodyDTO": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "AuthenticateWithGithubBodyDTO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "RequestPasswordRecoverBodyDTO": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ResetPassBodyDTO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6
+          }
+        },
+        "required": [
+          "code",
+          "password"
+        ]
+      },
+      "OpenAccountBodyDTO": {
+        "type": "object",
+        "properties": {
+          "initialBalance": {
+            "type": "number"
+          }
+        }
+      },
+      "CreateCategoryBodyDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "EditCategoryBodyDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateTransactionBodyDTO": {
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "x-nestjs_zod-has-const": true
+          },
+          "title": {
+            "type": "string",
+            "x-nestjs_zod-has-const": true
+          },
+          "description": {
+            "type": "string",
+            "x-nestjs_zod-has-const": true
+          },
+          "amount": {
+            "type": "number",
+            "x-nestjs_zod-has-const": true
+          },
+          "operation": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "income"
+              },
+              {
+                "type": "string",
+                "const": "expense"
+              }
+            ],
+            "x-nestjs_zod-has-const": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "method": {
+            "type": "string",
+            "x-nestjs_zod-has-const": true
+          }
+        },
+        "required": [
+          "title",
+          "amount",
+          "operation"
+        ]
+      },
+      "EditTransactionBodyDTO": {
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

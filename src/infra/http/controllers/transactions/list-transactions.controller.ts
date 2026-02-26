@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, InternalServerErrorException, NotFoundException, Query } from '@nestjs/common';
+import { Controller, Get, InternalServerErrorException, NotFoundException, Query } from '@nestjs/common';
 import { CurrentUser } from '@/infra/auth/current-user-decorator';
 import type { UserPayload } from '@/infra/auth/jwt.strategy';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
@@ -8,7 +8,8 @@ import { ZodValidationPipe } from '../../pipes/zod-validation-pipe';
 import z from 'zod';
 import { DateInterval } from '@/core/types/repositories/date-interval';
 import { TransactionPresenter } from '../../presenters/transaction-presenter';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
 
 const listQuerySchema = z.object({
     categoryId: z.string().uuid().optional(),
@@ -20,15 +21,15 @@ const listQuerySchema = z.object({
 
 type ListQueryDTO = z.infer<typeof listQuerySchema>
 
-@ApiTags('Transactions')
 @Controller('/api')
+@ApiTags('Transactions')
 export class ListAccountTransactionsController {
     constructor(
         private listTransactions: ListAccountTransactionsUseCase
     ) { }
 
     @Get('/transactions')
-    @HttpCode(200)
+    @ApiOperation({ summary: 'list account transactions with pagination and optional filters' })
     async handle(
         @CurrentUser() user: UserPayload,
         @Query(new ZodValidationPipe(listQuerySchema)) query: ListQueryDTO
@@ -54,19 +55,15 @@ export class ListAccountTransactionsController {
         if (result.isLeft()) {
             const error = result.value
 
-            switch (true) {
-                case error instanceof ResourceNotFoundError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
+            switch (error.constructor) {
+                case ResourceNotFoundError:
+                    throw new NotFoundException(error.message)
 
-                case error instanceof MemberAccountNotFoundError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
+                case MemberAccountNotFoundError:
+                    throw new NotFoundException(error.message)
 
                 default:
-                    return new InternalServerErrorException()
+                    throw new InternalServerErrorException()
             }
         }
 

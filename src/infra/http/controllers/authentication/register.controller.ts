@@ -16,8 +16,8 @@ const registerBodySchema = z.object({
 class RegisterBodyDTO extends createZodDto(registerBodySchema) { }
 
 @Controller('/api')
-@ApiTags('Authentication')
 @Public()
+@ApiTags('Authentication')
 export class RegisterController {
   constructor(
     private register: RegisterUseCase

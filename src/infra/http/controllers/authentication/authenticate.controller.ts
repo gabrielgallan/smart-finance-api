@@ -4,7 +4,7 @@ import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { AuthenticateUseCase } from '@/domain/identity/application/use-cases/authenticate'
 import { InvalidCredentialsError } from '@/domain/identity/application/use-cases/errors/invalid-credentials-error'
 import { Public } from '@/infra/auth/public'
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { createZodDto } from 'nestjs-zod'
 
 const authenticateBodySchema = z.object({
@@ -15,15 +15,14 @@ const authenticateBodySchema = z.object({
 class AuthenticateBodyDTO extends createZodDto(authenticateBodySchema) { }
 
 @Controller('/api')
-@ApiTags('Authentication')
 @Public()
+@ApiTags('Authentication')
 export class AuthenticateController {
   constructor(
     private authenticate: AuthenticateUseCase
   ) { }
 
   @Post('/sessions')
-  @ApiBody({ type: AuthenticateBodyDTO })
   @ApiOperation({ summary: 'authenticate with credentials' })
   async handle(
     @Body(new ZodValidationPipe(authenticateBodySchema)) body: AuthenticateBodyDTO

@@ -14,7 +14,8 @@ import { CategoryAlreadyExistsError } from '@/domain/finances/application/use-ca
 import { ListAccountCategoriesUseCase } from '@/domain/finances/application/use-cases/list-account-categories';
 import { CategoryPresenter } from '../../presenters/category-presenter';
 import { EditAccountCategoryUseCase } from '@/domain/finances/application/use-cases/edit-account-category';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
 
 const createCategoryBodySchema = z.object({
     name: z.string(),
@@ -30,14 +31,14 @@ const editCategoryParamsSchema = z.object({
     slug: z.string()
 })
 
-type CreateCategoryBodyDTO = z.infer<typeof createCategoryBodySchema>
+class CreateCategoryBodyDTO extends createZodDto(createCategoryBodySchema) { }
 
-type EditCategoryBodyDTO = z.infer<typeof editCategoryBodySchema>
+class EditCategoryBodyDTO extends createZodDto(editCategoryBodySchema) { }
 
-type EditCategoryParamsDTO = z.infer<typeof editCategoryParamsSchema>
+class EditCategoryParamsDTO extends createZodDto(editCategoryParamsSchema) { }  
 
-@ApiTags('Categories')
 @Controller('/api/categories')
+@ApiTags('Categories')
 export class CategoryController {
     constructor(
         private createCategory: CreateAccountCategoryUseCase,
@@ -46,7 +47,7 @@ export class CategoryController {
     ) { }
 
     @Post()
-    @HttpCode(201)
+    @ApiOperation({ summary: 'create a new account category' })
     async create(
         @CurrentUser() user: UserPayload,
         @Body(new ZodValidationPipe(createCategoryBodySchema)) body: CreateCategoryBodyDTO
@@ -63,24 +64,18 @@ export class CategoryController {
         if (result.isLeft()) {
             const error = result.value
 
-            switch (true) {
-                case error instanceof ResourceNotFoundError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
+            switch (error.constructor) {
+                case ResourceNotFoundError:
+                    throw new NotFoundException(error.message)
 
-                case error instanceof MemberAccountNotFoundError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
+                case MemberAccountNotFoundError:
+                    throw new NotFoundException(error.message)
 
-                case error instanceof CategoryAlreadyExistsError:
-                    return new ConflictException({
-                        message: error.message
-                    })
+                case CategoryAlreadyExistsError:
+                    throw new ConflictException(error.message)
 
                 default:
-                    return new InternalServerErrorException()
+                    throw new InternalServerErrorException()
             }
         }
 
@@ -88,7 +83,7 @@ export class CategoryController {
     }
 
     @Get()
-    @HttpCode(200)
+    @ApiOperation({ summary: 'list all account categories' })
     async list(
         @CurrentUser() user: UserPayload,
     ) {
@@ -99,14 +94,12 @@ export class CategoryController {
         if (result.isLeft()) {
             const error = result.value
 
-            switch (true) {
-                case error instanceof MemberAccountNotFoundError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
+            switch (error.constructor) {
+                case MemberAccountNotFoundError:
+                    throw new NotFoundException(error.message)
 
                 default:
-                    return new InternalServerErrorException()
+                    throw new InternalServerErrorException()
             }
         }
 
@@ -118,6 +111,7 @@ export class CategoryController {
 
     @Put('/:slug')
     @HttpCode(204)
+    @ApiOperation({ summary: 'edit an account category' })
     async edit(
         @CurrentUser() user: UserPayload,
         @Body(new ZodValidationPipe(editCategoryBodySchema)) body: EditCategoryBodyDTO,
@@ -136,24 +130,18 @@ export class CategoryController {
         if (result.isLeft()) {
             const error = result.value
 
-            switch (true) {
-                case error instanceof ResourceNotFoundError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
+            switch (error.constructor) {
+                case ResourceNotFoundError:
+                    throw new NotFoundException(error.message)
 
-                case error instanceof MemberAccountNotFoundError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
+                case MemberAccountNotFoundError:
+                    throw new NotFoundException(error.message)
 
-                case error instanceof CategoryAlreadyExistsError:
-                    return new ConflictException({
-                        message: error.message
-                    })
+                case CategoryAlreadyExistsError:
+                    throw new ConflictException(error.message)
 
                 default:
-                    return new InternalServerErrorException()
+                    throw new InternalServerErrorException()
             }
         }
 

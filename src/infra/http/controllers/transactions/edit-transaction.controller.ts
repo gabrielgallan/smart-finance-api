@@ -7,7 +7,8 @@ import { ZodValidationPipe } from '../../pipes/zod-validation-pipe';
 import z from 'zod';
 import { EditTransactionUseCase } from '@/domain/finances/application/use-cases/edit-transaction';
 import { NotAllowedError } from '@/core/errors/not-allowed-error';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
 
 const editTransactionBodySchema = z.object({
     categoryId: z.string().uuid().optional(),
@@ -20,8 +21,8 @@ const editTransactionParamSchema = z.object({
     id: z.string().uuid()
 })
 
-type EditTransactionBodyDTO = z.infer<typeof editTransactionBodySchema>
-type EditTransactionParamDTO = z.infer<typeof editTransactionParamSchema>
+class EditTransactionBodyDTO extends createZodDto(editTransactionBodySchema) { }
+class EditTransactionParamDTO extends createZodDto(editTransactionParamSchema) { }
 
 @ApiTags('Transactions')
 @Controller('/api')
@@ -32,6 +33,7 @@ export class EditAccountTransactionController {
 
     @Put('/transactions/:id')
     @HttpCode(204)
+    @ApiOperation({ summary: 'edit a transaction' })
     async handle(
         @CurrentUser() user: UserPayload,
         @Body(new ZodValidationPipe(editTransactionBodySchema)) body: EditTransactionBodyDTO,
@@ -52,24 +54,18 @@ export class EditAccountTransactionController {
         if (result.isLeft()) {
             const error = result.value
 
-            switch (true) {
-                case error instanceof ResourceNotFoundError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
+            switch (error.constructor) {
+                case ResourceNotFoundError:
+                    throw new NotFoundException(error.message)
 
-                case error instanceof MemberAccountNotFoundError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
+                case MemberAccountNotFoundError:
+                    throw new NotFoundException(error.message)
 
-                case error instanceof NotAllowedError:
-                    return new UnauthorizedException({
-                        message: `This transaction doesn't belong to your account`
-                    })
+                case NotAllowedError:
+                    throw new UnauthorizedException(`This transaction doesn't belong to your account`)
 
                 default:
-                    return new InternalServerErrorException()
+                    throw new InternalServerErrorException()
             }
         }
 

@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, HttpCode, InternalServerErrorException, NotFoundException, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, InternalServerErrorException, NotFoundException, Post } from '@nestjs/common';
 import { CreateTransactionUseCase } from '@/domain/finances/application/use-cases/create-transaction';
 import { CurrentUser } from '@/infra/auth/current-user-decorator';
 import type { UserPayload } from '@/infra/auth/jwt.strategy';
@@ -7,7 +7,8 @@ import { ZodValidationPipe } from '../../pipes/zod-validation-pipe';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
 import { MemberAccountNotFoundError } from '@/domain/finances/application/use-cases/errors/member-account-not-found-error';
 import { InvalidTransactionOperationError } from '@/domain/finances/application/use-cases/errors/invalid-transaction-operation-error';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
 
 const createTransactionBodySchema = z.object({
     categoryId: z.string().uuid().optional(),
@@ -18,17 +19,17 @@ const createTransactionBodySchema = z.object({
     method: z.string().optional(),
 })
 
-type CreateTransactionBodyDTO = z.infer<typeof createTransactionBodySchema>
+class CreateTransactionBodyDTO extends createZodDto(createTransactionBodySchema) { }
 
-@ApiTags('Transactions')
 @Controller('/api')
+@ApiTags('Transactions')
 export class CreateTransactionController {
     constructor(
         private createTransaction: CreateTransactionUseCase
     ) { }
 
     @Post('/transactions')
-    @HttpCode(201)
+    @ApiOperation({ summary: 'create a new transaction' })
     async handle(
         @CurrentUser() user: UserPayload,
         @Body(new ZodValidationPipe(createTransactionBodySchema)) body: CreateTransactionBodyDTO
@@ -48,24 +49,18 @@ export class CreateTransactionController {
         if (result.isLeft()) {
             const error = result.value
 
-            switch (true) {
-                case error instanceof ResourceNotFoundError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
+            switch (error.constructor) {
+                case ResourceNotFoundError:
+                    throw new NotFoundException(error.message)
 
-                case error instanceof MemberAccountNotFoundError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
+                case MemberAccountNotFoundError:
+                    throw new NotFoundException(error.message   )
 
-                case error instanceof InvalidTransactionOperationError:
-                    return new BadRequestException({
-                        message: error.message
-                    })
+                case InvalidTransactionOperationError:
+                    throw new BadRequestException(error.message)
 
                 default:
-                    return new InternalServerErrorException()
+                    throw new InternalServerErrorException()
             }
         }
 

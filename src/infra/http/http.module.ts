@@ -10,7 +10,7 @@ import { DatabaseModule } from '../database/database.module'
 // controllers
 import { RegisterController } from './controllers/authentication/register.controller'
 import { AuthenticateController } from './controllers/authentication/authenticate.controller'
-import { GetProfileController } from './controllers/member/get-profile.controller'
+import { GetProfileController } from './controllers/profile/get-profile.controller'
 import { OpenAccountController } from './controllers/account/open-account.controller'
 import { CategoryController } from './controllers/category/category.controller'
 import { CloseAccountController } from './controllers/account/close-account.controller'
@@ -45,7 +45,7 @@ import { GetProfileUseCase } from '@/domain/identity/application/use-cases/get-p
 import { ResetPasswordUseCase } from '@/domain/identity/application/use-cases/reset-password'
 import { RequestPasswordRecoverUseCase } from '@/domain/identity/application/use-cases/request-password-recover'
 import { AuthenticateWithExternalProviderUseCase } from '@/domain/identity/application/use-cases/authenticate-with-external-provider'
-import { UploadAvatarController } from './controllers/member/upload-avatar.controller'
+import { UploadAvatarController } from './controllers/profile/upload-avatar.controller'
 import { StorageModule } from '../storage/storage.module'
 import { UploadAvatarUseCase } from '@/domain/identity/application/use-cases/upload-avatar'
 

@@ -11,11 +11,11 @@ const bodySchema = z.object({
   email: z.string().email()
 })
 
-class BodyDTO extends createZodDto(bodySchema) { }
+class RequestPasswordRecoverBodyDTO extends createZodDto(bodySchema) { }
 
 @Controller('/api')
-@ApiTags('Authentication')
 @Public()
+@ApiTags('Authentication')
 export class RequestPasswordRecoverController {
   constructor(
     private requestPasswordRecover: RequestPasswordRecoverUseCase
@@ -24,7 +24,7 @@ export class RequestPasswordRecoverController {
   @Post('/password/recover')
   @ApiOperation({ summary: 'request password recover' })
   async handle(
-    @Body(new ZodValidationPipe(bodySchema)) body: BodyDTO
+    @Body(new ZodValidationPipe(bodySchema)) body: RequestPasswordRecoverBodyDTO
   ) {
     const { email } = body
 

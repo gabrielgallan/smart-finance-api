@@ -24,14 +24,12 @@ export class CloseAccountController {
     if (result.isLeft()) {
       const error = result.value
 
-      switch (true) {
-        case error instanceof ResourceNotFoundError:
-          return new NotFoundException({
-            message: error.message
-          })
+      switch (error.constructor) {
+        case ResourceNotFoundError:
+          throw new NotFoundException(error.message)
 
         default:
-          return new InternalServerErrorException()
+          throw new InternalServerErrorException()
       }
     }
 

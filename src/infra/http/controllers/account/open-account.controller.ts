@@ -1,4 +1,4 @@
-import { Body, ConflictException, Controller, HttpCode, InternalServerErrorException, NotFoundException, Post } from '@nestjs/common'
+import { Body, ConflictException, Controller, InternalServerErrorException, NotFoundException, Post } from '@nestjs/common'
 import z from 'zod'
 import { ZodValidationPipe } from '../../pipes/zod-validation-pipe'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
@@ -7,12 +7,13 @@ import { OpenAccountUseCase } from '@/domain/finances/application/use-cases/open
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { MemberAlreadyHasAccountError } from '@/domain/finances/application/use-cases/errors/member-alredy-has-account-error'
 import { ApiTags } from '@nestjs/swagger'
+import { createZodDto } from 'nestjs-zod'
 
 const openAccountBodySchema = z.object({
   initialBalance: z.coerce.number().optional()
 })
 
-type OpenAccountBodyDTO = z.infer<typeof openAccountBodySchema>
+class OpenAccountBodyDTO extends createZodDto(openAccountBodySchema) {}
 
 @ApiTags('Account')
 @Controller('/api')
@@ -22,7 +23,6 @@ export class OpenAccountController {
   ) { }
 
   @Post('/accounts')
-  @HttpCode(201)
   async handle(
     @CurrentUser() user: UserPayload,
     @Body(new ZodValidationPipe(openAccountBodySchema)) body: OpenAccountBodyDTO
@@ -37,16 +37,12 @@ export class OpenAccountController {
     if (result.isLeft()) {
       const error = result.value
 
-      switch (true) {
-        case error instanceof ResourceNotFoundError:
-          return new NotFoundException({
-            message: error.message
-          })
+      switch (error.constructor) {
+        case ResourceNotFoundError:
+          throw new NotFoundException(error.message)
 
-        case error instanceof MemberAlreadyHasAccountError:
-          return new ConflictException({
-            message: error.message
-          })
+        case MemberAlreadyHasAccountError:
+          throw new ConflictException(error.message)
 
         default:
           return new InternalServerErrorException()

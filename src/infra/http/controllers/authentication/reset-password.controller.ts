@@ -13,7 +13,7 @@ const bodySchema = z.object({
   password: z.string().min(6)
 })
 
-class BodyDTO extends createZodDto(bodySchema) { }
+class ResetPassBodyDTO extends createZodDto(bodySchema) { }
 
 @Controller('/api')
 @Public()
@@ -25,9 +25,9 @@ export class ResetPasswordController {
 
   @Put('/profile/password')
   @HttpCode(204)
-  @ApiOperation({ summary: 'reset suer password' })
+  @ApiOperation({ summary: 'reset user password' })
   async handle(
-    @Body(new ZodValidationPipe(bodySchema)) body: BodyDTO
+    @Body(new ZodValidationPipe(bodySchema)) body: ResetPassBodyDTO
   ) {
     const { code, password } = body
 

@@ -1,21 +1,21 @@
-import { Controller, FileTypeValidator, HttpCode, InternalServerErrorException, MaxFileSizeValidator, NotFoundException, ParseFilePipe, Post, UploadedFile, UseInterceptors } from '@nestjs/common'
+import { Controller, FileTypeValidator, InternalServerErrorException, MaxFileSizeValidator, NotFoundException, ParseFilePipe, Post, UploadedFile, UseInterceptors } from '@nestjs/common'
 import { CurrentUser } from '../../../auth/current-user-decorator'
 import type { UserPayload } from '../../../auth/jwt.strategy'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { UploadAvatarUseCase } from '@/domain/identity/application/use-cases/upload-avatar'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
-import { ApiTags } from '@nestjs/swagger'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
 
-@ApiTags('Profile')
 @Controller('/api')
+@ApiTags('Profile')
 export class UploadAvatarController {
     constructor(
         private uploadAvatar: UploadAvatarUseCase
     ) { }
 
     @Post('/profile/avatar')
-    @HttpCode(201)
     @UseInterceptors(FileInterceptor('file'))
+    @ApiOperation({ summary: 'upload user avatar' })
     async handle(
         @CurrentUser() user: UserPayload,
         @UploadedFile(new ParseFilePipe({
@@ -35,14 +35,12 @@ export class UploadAvatarController {
         if (result.isLeft()) {
             const error = result.value
 
-            switch (true) {
-                case error instanceof ResourceNotFoundError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
+            switch (error.constructor) {
+                case ResourceNotFoundError:
+                    throw new NotFoundException(error.message)
 
                 default:
-                    return new InternalServerErrorException()
+                    throw new InternalServerErrorException()
             }
         }
 

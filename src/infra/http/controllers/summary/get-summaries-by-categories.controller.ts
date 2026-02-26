@@ -12,26 +12,27 @@ import { AccountSummaryPresenter } from '../../presenters/account-summary-presen
 import { GetAccountSummariesByCategoriesUseCase } from '@/domain/finances/application/use-cases/get-account-summaries-by-categories';
 import { AnyCategoryFoundForAccountError } from '@/domain/finances/application/use-cases/errors/any-category-found-for-account-error';
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 const querySchema = z.object({
     start: z.coerce.date(),
     end: z.coerce.date()
 })
 
-type QueryDTO = z.infer<typeof querySchema>
+type GetSummariesByCategoriesQueryDTO = z.infer<typeof querySchema>
 
-@ApiTags('Summaries')
 @Controller('/api')
+@ApiTags('Summaries')
 export class GetSummariesByCategoriesController {
     constructor(
         private getSummariesByCategories: GetAccountSummariesByCategoriesUseCase
     ) { }
 
     @Get('/account/categories/summary')
+    @ApiOperation({ summary: 'get account summaries grouped by categories for a given period' })
     async handle(
         @CurrentUser() user: UserPayload,
-        @Query(new ZodValidationPipe(querySchema)) query: QueryDTO
+        @Query(new ZodValidationPipe(querySchema)) query: GetSummariesByCategoriesQueryDTO
     ) {
         const { start, end } = query
 
@@ -46,24 +47,18 @@ export class GetSummariesByCategoriesController {
         if (result.isLeft()) {
             const error = result.value
 
-            switch (true) {
-                case error instanceof MemberAccountNotFoundError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
+            switch (error.constructor) {
+                case MemberAccountNotFoundError:
+                    throw new NotFoundException(error.message)
 
-                case error instanceof AnyCategoryFoundForAccountError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
+                case AnyCategoryFoundForAccountError:
+                    throw new NotFoundException(error.message   )
 
-                case error instanceof ResourceNotFoundError:
-                    return new NotFoundException({
-                        message: error.message
-                    })
+                case ResourceNotFoundError:
+                    throw new NotFoundException(error.message)
 
                 default:
-                    return new InternalServerErrorException()
+                    throw new InternalServerErrorException()
             }
         }
 
