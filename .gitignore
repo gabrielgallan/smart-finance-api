@@ -60,6 +60,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 /prisma/migrations
 *.db
 *.sqlite
+swagger.json
 
 # Keys
 *.key

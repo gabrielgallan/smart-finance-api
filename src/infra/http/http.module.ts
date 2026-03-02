@@ -48,6 +48,8 @@ import { AuthenticateWithExternalProviderUseCase } from '@/domain/identity/appli
 import { UploadAvatarController } from './controllers/profile/upload-avatar.controller'
 import { StorageModule } from '../storage/storage.module'
 import { UploadAvatarUseCase } from '@/domain/identity/application/use-cases/upload-avatar'
+import { GetAccountInfoController } from './controllers/account/get-info.controller'
+import { GetAccountInfoUseCase } from '@/domain/finances/application/use-cases/get-account-info'
 
 @Module({
     imports: [
@@ -73,7 +75,8 @@ import { UploadAvatarUseCase } from '@/domain/identity/application/use-cases/upl
         EditAccountTransactionController,
         GetAccountSummaryController,
         GetSummariesByCategoriesController,
-        GetRollingYearProgressController
+        GetRollingYearProgressController,
+        GetAccountInfoController
     ],
     providers: [
         RegisterUseCase,
@@ -94,7 +97,8 @@ import { UploadAvatarUseCase } from '@/domain/identity/application/use-cases/upl
         GetAccountSummaryUseCase,
         GetAccountSummariesByCategoriesUseCase,
         GetRollingYearProgressUseCase,
-        FinancialAnalyticsService
+        FinancialAnalyticsService,
+        GetAccountInfoUseCase
     ]
 })
 export class HttpModule { }

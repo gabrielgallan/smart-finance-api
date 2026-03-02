@@ -178,12 +178,26 @@
         "tags": [
           "Account"
         ]
-      },
+      }
+    },
+    "/api/account": {
       "delete": {
         "operationId": "CloseAccountController_handle",
         "parameters": [],
         "responses": {
           "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Account"
+        ]
+      },
+      "get": {
+        "operationId": "GetAccountInfoController_handle",
+        "parameters": [],
+        "responses": {
+          "200": {
             "description": ""
           }
         },

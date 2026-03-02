@@ -5,7 +5,7 @@ import ky, { HTTPError } from "ky";
 import { ExternalAuthProvider, ExternalUserProps } from "@/domain/identity/application/auth/auth-provider";
 
 interface GithubOAuthProviderInput {
-    OAuthCode: string
+    code: string
 }
 
 type GithubUser = ExternalUserProps
@@ -19,18 +19,16 @@ export class GithubOAuthProvider implements ExternalAuthProvider<
         private env: EnvService
     ) { }
 
-    async signIn({ OAuthCode }: GithubOAuthProviderInput) {
+    async signIn({ code: OAuthCode }: GithubOAuthProviderInput) {
         const githubOAuthURL = new URL('https://github.com/login/oauth/access_token')
 
+        githubOAuthURL.searchParams.set('client_id', this.env.get('GITHUB_OAUTH_CLIENT_ID'))
+        githubOAuthURL.searchParams.set('client_secret', this.env.get('GITHUB_OAUTH_CLIENT_SECRET'))
+        githubOAuthURL.searchParams.set('redirect_uri', this.env.get('GITHUB_OAUTH_CLIENT_REDIRECT_URI'))
+        githubOAuthURL.searchParams.set('code', OAuthCode)
+
         try {
-            const githubOAuthTokenResponse = await ky.post(githubOAuthURL, {
-                searchParams: {
-                    client_id: this.env.get('GITHUB_OAUTH_CLIENT_ID'),
-                    client_secret: this.env.get('GITHUB_OAUTH_CLIENT_SECRET'),
-                    redirect_uri: this.env.get('GITHUB_OAUTH_CLIENT_REDIRECT_URI'),
-                    code: OAuthCode
-                }
-            }).json()
+            const githubOAuthTokenResponse = await ky.post(githubOAuthURL).json()
 
             const OAuthResult = z.object({
                 access_token: z.string(),
@@ -39,8 +37,6 @@ export class GithubOAuthProvider implements ExternalAuthProvider<
             }).safeParse(githubOAuthTokenResponse)
 
             if (!OAuthResult.success) {
-                console.error(githubOAuthTokenResponse)
-
                 throw new BadGatewayException({
                     message: 'Wrong data format returned from GitHub OAuth API'
                 })
