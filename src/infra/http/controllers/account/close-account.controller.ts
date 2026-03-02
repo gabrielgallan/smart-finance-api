@@ -12,7 +12,7 @@ export class CloseAccountController {
     private closeAccount: CloseAccountUseCase
   ) { }
 
-  @Delete('/accounts')
+  @Delete('/account')
   @HttpCode(204)
   async handle(
     @CurrentUser() user: UserPayload,

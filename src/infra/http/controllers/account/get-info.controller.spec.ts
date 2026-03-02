@@ -5,7 +5,7 @@ import { AppModule } from '@/infra/app.module'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { Encrypter } from '@/domain/identity/application/cryptography/encrypter'
 
-describe('Close member account tests', () => {
+describe('Get member account info tests', () => {
     let app: INestApplication
     let prisma: PrismaService
     let encrypter: Encrypter
@@ -24,7 +24,7 @@ describe('Close member account tests', () => {
         await app.init()
     })
 
-    it('[DELETE] /api/account', async () => {
+    it('[GET] /api/account', async () => {
         const account = await prisma.account.create({
             data: {
                 holder: {
@@ -37,11 +37,16 @@ describe('Close member account tests', () => {
 
         const token = await encrypter.encrypt({ sub: account.holderId })
 
-        return await request(app.getHttpServer())
-            .delete('/api/account')
+        const response = await request(app.getHttpServer())
+            .get('/api/account')
             .set('Authorization', `Bearer ${token}`)
             .send()
-            .expect(204)
+            .expect(200)
+
+        expect(response.body).toMatchObject({
+            balance: 0,
+            createdAt: expect.any(String)
+        })
     })
 
     afterAll(async () => {
